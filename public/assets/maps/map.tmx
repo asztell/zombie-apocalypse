@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="24" height="16" tilewidth="32" tileheight="32" backgroundcolor="#69231e" nextobjectid="1">
+ <tileset firstgid="1" name="Landscapes" tilewidth="32" tileheight="32" tilecount="192" columns="16">
+  <image source="../zombie_map/Tiles/HF1_A2.png" trans="ff00ff" width="512" height="384"/>
+ </tileset>
+ <tileset firstgid="193" name="Trees" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+  <image source="../zombie_map/Tiles/HF1_Trees_1.png" trans="ff00ff" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="449" name="AnimatedTiles" tilewidth="32" tileheight="32" tilecount="192" columns="16">
+  <image source="../zombie_map/Tiles/cwpVW12.png" width="512" height="384"/>
+  <tile id="48">
+   <animation>
+    <frame tileid="48" duration="100"/>
+    <frame tileid="50" duration="100"/>
+    <frame tileid="52" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxzZWBgCAXiMCJpUtSCaDcozUgD7IpmdiKVzJ0BpUOh7sen1hKPHCH3oLuf2pgY91Mz/AnhZCLUGA5i9w+V8M/AIjZ9CLmfUmwxxN2PHP6uUD/QigYAZP4b0A==
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFowA7SGRkYEgC4mQgTmGkvvmFQDOLgLgYiEuoaP5HqFmNQLoJiJuBuIUG7p8INHMSEE8G4ik0MH8h0MxFQLwYiJfQwPxRMAoAHVELOQ==
+  </data>
+ </layer>
+</map>
