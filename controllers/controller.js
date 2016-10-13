@@ -1,20 +1,33 @@
 var express = require('express');
 var router = express.Router();
+var connection = require('../config/connection.js');
 
 router.get('/', function (req, res) {
 	res.render('index');
 });
 
-router.get('/login', function (req, res) {
-	//TODO: Return login view
+router.get('/characters', function(req, res){
+
+	//SC need something like this to display characters
+	//We could probably use Sequelize for this and make a character model
+	var queryString = 'SELECT * FROM characters';
+	connection.query(queryString, function(err, result){
+		if(err) throw err;
+		var hbsObj = {characters: result};
+		res.render('characters', hbsObj);
+	});
 });
 
-router.get('/register', function (req, res) {
-	//TODO: Return register view
-});
-
-router.post('/register', function (req, res) {
+router.post('/signup', function (req, res) {
 	//TODO: Process registering
+});
+
+router.post('/login', function (req, res) {
+	//TODO: Process registering
+});
+
+router.get('/game', function(req, res){
+	res.render('game', { title: 'game', layout: 'gamelayout' });
 });
 
 router.get('/building', function (req, res) {
