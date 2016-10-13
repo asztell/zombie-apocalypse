@@ -26,6 +26,10 @@ router.post('/login', function (req, res) {
 	//TODO: Process registering
 });
 
+router.get('/game', function(req, res){
+	res.render('game', { title: 'game', layout: 'gamelayout' });
+});
+
 router.get('/building', function (req, res) {
 	//TODO: Return building metadata
 });
