@@ -1,0 +1,27 @@
+<div class="container" id="character-page">
+  <h1 class="text-center">Choose Your Character</h1>
+  <div class="row">
+    <div class="col-md-12">
+      {{#each characters}}
+        <div class="character" data-name="{{this.name}}">
+          <h3>{{this.name}}</h3>
+          <p>
+            {{this.description}}
+          </p>
+          <h5>Attack Points: {{this.attackPoints}}</h5>
+          <h5>Health Points: {{this.healthPoints}}</h5>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<!-- SC sets the chosen character in local storage
+We may want to change this later -->
+<script type="text/javascript">
+  $(document).on('click', '.character', function(){
+    var character = $(this).attr('data-name');
+    localStorage.setItem('character', character);
+    window.location = '/game';
+  });
+</script>
