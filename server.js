@@ -10,6 +10,7 @@ var app = express();
 //sets up express to serve static files
 app.use(express.static(process.cwd() + '/public'));
 
+app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({
 	extended: false
 }));

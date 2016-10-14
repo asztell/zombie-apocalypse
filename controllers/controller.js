@@ -1,19 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var connection = require('../config/connection.js');
+var models = require('../models');
 
 router.get('/', function (req, res) {
 	res.render('index');
 });
 
 router.get('/characters', function(req, res){
-
-	//SC need something like this to display characters
-	//We could probably use Sequelize for this and make a character model
-	var queryString = 'SELECT * FROM characters';
-	connection.query(queryString, function(err, result){
-		if(err) throw err;
-		var hbsObj = {characters: result};
+	models.Character.findAll().then(function(characters){
+		var hbsObj = {characters: characters}
 		res.render('characters', hbsObj);
 	});
 });
@@ -24,6 +19,10 @@ router.post('/signup', function (req, res) {
 
 router.post('/login', function (req, res) {
 	//TODO: Process registering
+});
+
+router.post('/new/game', function(req, res){
+	models.Zombie.bulkCreate(req.body.zombies);
 });
 
 router.get('/game', function(req, res){

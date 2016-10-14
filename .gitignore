@@ -1,6 +1,3 @@
 node_modules
-<<<<<<< HEAD
 config.json
-=======
-/config/config.json
->>>>>>> master
+npm-debug.log

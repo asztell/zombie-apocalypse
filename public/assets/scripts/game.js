@@ -20,7 +20,7 @@ function preload() {
 }
 
 function create() {
-
+    var sqlZombies = [];
     zombies = game.add.group();
 
     for (var i = 0; i < 9; i++) {
@@ -29,10 +29,41 @@ function create() {
       zombie.body.immovable = true;
       zombie.body.collideWorldBounds = true;
       zombie.name = "zom_" + i;
-      // z.body.immovable = true;
+      //random numbers between 20 and 40
+      zombie.hp = Math.floor(Math.random() * 20) + 20
+      zombie.ap = Math.floor(Math.random() * 20) + 20
       zombies.add(zombie);
+      var sqlZombie = {
+        name: zombie.name,
+        hp: zombie.hp,
+        ap: zombie.ap,
+        isAlive: true
+      }
+      sqlZombies.push(sqlZombie);
     }
 
+    var chosenCharacter = localStorage.getItem('character');
+
+    var newGame = {
+      zombies: sqlZombies,
+      character: chosenCharacter
+    }
+    console.log(newGame);
+    $.ajax({
+       type: "post",
+       url: "new/game",
+       dataType:"json",
+       contentType: 'application/json',
+       data: JSON.stringify(newGame),
+       success: function (response) {
+           if(response.status === "success") {
+             //something
+           } else if(response.status === "error") {
+               console.log(response);
+               // TODO: Pop up modal with error message
+           }
+       }
+   });
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
@@ -40,10 +71,6 @@ function create() {
     game.physics.arcade.enable( player );
     player.body.collideWorldBounds = true;
     game.camera.follow( player );
-    //zombie = game.add.sprite( 100, 100, 'zombie' );
-    //game.physics.arcade.enable( zombie );
-    //zombie.body.collideWorldBounds = true;
-    //zombie.body.immovable = true;
     cursors = game.input.keyboard.createCursorKeys();
 }
 
