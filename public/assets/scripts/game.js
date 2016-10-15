@@ -53,7 +53,10 @@ function create() {
     baseLayer.resizeWorld();
     map.setCollisionBetween( 0, 1943, true, collisionLayer, true );
 
-    door = map.objects[ "building_doors" ][ 0 ];
+    // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
+    // door = map.objects[ 'building_doors' ][ 0 ];
+    door = map.objects.map(function(e) { return e.name; }).indexOf('buildDoor');
+    // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     winZone = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
 
     player = game.add.sprite( 0, 0, "playerAnimations" );
