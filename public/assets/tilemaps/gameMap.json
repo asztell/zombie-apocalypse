@@ -44,8 +44,31 @@
          "width":0,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "height":36,
+         "name":"zombie_spawn_points",
+         "objects":[
+                {
+                 "height":150,
+                 "id":9,
+                 "name":"zombieSpawnPoint",
+                 "rotation":0,
+                 "type":"zombieSpawnPoint",
+                 "visible":true,
+                 "width":368,
+                 "x":663,
+                 "y":840
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "width":54,
+         "x":0,
+         "y":0
         }],
- "nextobjectid":6,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tileheight":32,
@@ -53,7 +76,7 @@
         {
          "columns":25,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Street.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Street.png",
          "imageheight":608,
          "imagewidth":800,
          "margin":0,
@@ -67,7 +90,7 @@
         {
          "columns":8,
          "firstgid":476,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Building.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Building.png",
          "imageheight":256,
          "imagewidth":256,
          "margin":0,
@@ -81,7 +104,7 @@
         {
          "columns":12,
          "firstgid":540,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Cars_final.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/Cars_final.png",
          "imageheight":352,
          "imagewidth":384,
          "margin":0,
@@ -95,7 +118,7 @@
         {
          "columns":32,
          "firstgid":672,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/wj2.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/wj2.png",
          "imageheight":768,
          "imagewidth":1024,
          "margin":0,
@@ -109,7 +132,7 @@
         {
          "columns":15,
          "firstgid":1440,
-         "image":"..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/foodfromcts1a.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/Desktop\/game maps\/foodfromcts1a.png",
          "imageheight":272,
          "imagewidth":510,
          "margin":0,
@@ -123,7 +146,7 @@
         {
          "columns":4,
          "firstgid":1560,
-         "image":"..\/..\/..\/..\/..\/..\/..\/..\/zombie_map\/Skorpio's Pack\/Characters\/ch003.png",
+         "image":"..\/..\/..\/..\/..\/..\/..\/..\/..\/zombie_map\/Skorpio's Pack\/Characters\/ch003.png",
          "imageheight":128,
          "imagewidth":128,
          "margin":0,

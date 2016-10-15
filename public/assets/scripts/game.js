@@ -14,7 +14,9 @@ var collisionLayer;
 var door;
 var enteredDoor;
 var zombies;
-var winZone;
+var buildingDoorRectangle;
+var zombieSpawnPoint;
+var zombieSpawnRectangle;
 
 function preload() {
 
@@ -56,9 +58,13 @@ function create() {
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     // door = map.objects[ 'building_doors' ][ 0 ];
-    door = map.objects.map(function(e) { return e.name; }).indexOf('buildDoor');
+    door = map.objects.map( function ( e ) { return e.name; }).indexOf( 'buildDoor' );
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
-    winZone = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
+    buildingDoorRectangle = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
+
+    // this is the zombie spawn point in front of the building, we can have the zombies, say 3, spawn in this area rather than all over the map
+    zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
+    zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
 
     player = game.add.sprite( 0, 0, "playerAnimations" );
     player.frame = 18;
@@ -131,14 +137,13 @@ function update() {
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombie, interactZombie, null, this );
-    // game.physics.arcade.collide( player, zombies, interact );
 
     // TODO: this is a hacky solution to get the building door to work, but it came from a tutorial so perhaps not totally hacky, and it works
-    if ( winZone.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactDoor();
     }
 
-    // reset the player's velocity with each frame update'
+    // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
 
     // check for an arrow key press
@@ -159,11 +164,12 @@ function update() {
         player.animations.play( 'right' );
     }
     else {
+        // when player stops moving maintains last direction and frame
         player.animations.stop();
     }
 
+    //TODO: remove this when going final, just here for code reference in case needed
     // when no cursor is pressed, the player is no longer moving, the player animation is stopped and frame 18 (forward facing) is selected
-    // TODO: find a way to maintain the "direction" frame based on the player's last direciton of movement
     // if ( player.body.velocity.x === 0 && player.body.velocity.y === 0 ) {
     //     player.frame = 18;
     // }
@@ -183,13 +189,17 @@ function interactCollisionLayer( player, layer ) {
 }
 
 function interactZombie( player, zombie ) {
+    //TODO: need a modal/interaction for zombie
     console.log( "Ran into a zombie..." );
     console.log( " x: " + zombie.x + " y: " + zombie.y );
     console.log( zombie.name );
+
+    // this removes the zombie from the map, possibly use when zombie is killed, or cna switch graphic and show the zombie is dead and leave on the map
     // zombie.kill();
 }
 
 function interactDoor() {
+    //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
 
