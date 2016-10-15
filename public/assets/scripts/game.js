@@ -127,7 +127,7 @@ function update() {
     game.physics.arcade.collide( player, zombie, interactZombie, null, this );
     // game.physics.arcade.collide( player, zombies, interact );
 
-    // TODO: this is a hacky solution to get the building door to work
+    // TODO: this is a hacky solution to get the building door to work, but it came from a tutorial so perhaps not totally hacky, and it works
     if ( winZone.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactDoor();
     }
