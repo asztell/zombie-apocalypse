@@ -1,7 +1,8 @@
 var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     preload: preload,
     create: create,
-    update: update
+    update: update,
+    render: render
 });
 
 var map;
@@ -160,6 +161,15 @@ function update() {
     // if ( player.body.velocity.x === 0 && player.body.velocity.y === 0 ) {
     //     player.frame = 18;
     // }
+}
+
+// this is for debugging
+function render() {
+    var textColor = 'rgb(255, 255, 255)';
+
+    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
+    game.debug.text( 'Tile X: ' + baseLayer.getTileX( player.x ), 32, 48, textColor );
+    game.debug.text( 'Tile Y: ' + baseLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 function interactCollisionLayer( player, layer ) {
