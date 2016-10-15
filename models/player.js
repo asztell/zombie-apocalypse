@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        //
+        // Player.hasOne(models.Game, {onDelete: 'cascade', hooks: true});
       }
     }
   });

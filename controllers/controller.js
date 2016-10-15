@@ -42,16 +42,17 @@ router.get('/zombie', function (req, res) {
 
 router.get('/new/game', function(req, res){
   // extract our sequelize connection from the models object, to avoid confusion
+var game;
 var sequelizeConnection = models.sequelize
 
 // We run this query so that we can drop our tables even though they have foreign keys
-// sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
+sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
 // make our tables
 // note: force:true drops the table if it already exists
-// .then(function(){
-sequelizeConnection.sync({force: true})
-// })
+.then(function(){
+	return sequelizeConnection.sync({force: true})
+})
 
 
 
@@ -62,32 +63,48 @@ sequelizeConnection.sync({force: true})
 // SOLUTION FOR THE UNIFORM OBJECT
 .then(function(){
 	// first, we create the uniform
-	return models.Player.create({
-				name: 'Rick Grimes',
-				picture: 'www.google.com',
-        description: 'Bad to the bone.',
-        hp: 10,
-        ap: 10
-			})
-	.then(function(player){
+	return models.Game.create(
+		{
+			jwt: "erfgkmnwerkfghkaewfh;q3ejhkqeyut",
+		},
+		// the second object in our 'create' call: options
+		{
+			// We need to 'include' the uniform and store models.
+			// Otherwise, Sequelize won't know which fields to enter into which tables.
+			include: [models.Player]
+		}
+	)
+	// return models.Player.create({
+	// 			name: 'Rick Grimes',
+	// 			picture: 'www.google.com',
+  //       description: 'Bad to the bone.',
+  //       hp: 10,
+  //       ap: 10
+	// 		})
+	.then(function(game){
 		// then we give it to brad
 		// return newGame.setPlayer(player);
-		return models.Game.create(
-			{
-				jwt: "erfgkmnwerkfghkaewfh;q3ejhkqeyut",
-				PlayerId: player.id
-			},
-			// the second object in our 'create' call: options
-			{
-				// We need to 'include' the uniform and store models.
-				// Otherwise, Sequelize won't know which fields to enter into which tables.
-				include: [models.Player]
-			}
-		)
+		return models.Player.create({
+					name: 'Rick Grimes',
+					picture: 'www.google.com',
+	        description: 'Bad to the bone.',
+	        hp: 10,
+	        ap: 10
+				})
+		// return models.Game.create(
+		// 	{
+		// 		jwt: "erfgkmnwerkfghkaewfh;q3ejhkqeyut",
+		// 	},
+		// 	// the second object in our 'create' call: options
+		// 	{
+		// 		// We need to 'include' the uniform and store models.
+		// 		// Otherwise, Sequelize won't know which fields to enter into which tables.
+		// 		include: [models.Player]
+		// 	}
+		// )
 		// We're going to save the manager to our brad variable, so you can give him a uniform
-		.then(function(game){
-			// return newGame = game;
-			console.log("success");
+		.then(function(player){
+			return game.setPlayer(player)
 
 	})
 })
