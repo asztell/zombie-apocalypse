@@ -57,13 +57,14 @@ function create() {
     map.setCollisionBetween( 0, 1943, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
-    // door = map.objects[ 'building_doors' ][ 0 ];
-    door = map.objects.map( function ( e ) { return e.name; }).indexOf( 'buildDoor' );
+    door = map.objects[ 'building_doors' ][ 0 ];
+    // door = map.objects.map( function ( e ) { return e.name; }).indexOf( 'buildDoor' );
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
 
     // this is the zombie spawn point in front of the building, we can have the zombies, say 3, spawn in this area rather than all over the map
-    zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
+    zombieSpawnPoint = map.objects[ 'zombie_spawn_points' ][ 0 ];
+    // zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
     zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
 
     player = game.add.sprite( 0, 0, "playerAnimations" );
@@ -83,27 +84,27 @@ function create() {
     zombie.body.moves = false;
 
     // TODO: commenting out for now until the simple map works, will need to place the zombies better so that they aren't on top of buildings
-    // var sqlZombies = [];
-    // zombies = game.add.group();
+    var sqlZombies = [];
+    zombies = game.add.group();
 
-    // for (var i = 0; i < 9; i++) {
-    //   zombie = zombies.create(360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie');
-    //   game.physics.enable(zombie, Phaser.Physics.ARCADE);
-    //   zombie.body.immovable = true;
-    //   zombie.body.collideWorldBounds = true;
-    //   zombie.name = "zom_" + i;
-    //   //random numbers between 20 and 40
-    //   zombie.hp = Math.floor(Math.random() * 20) + 20
-    //   zombie.ap = Math.floor(Math.random() * 20) + 20
-    //   zombies.add(zombie);
-    //   var sqlZombie = {
-    //     name: zombie.name,
-    //     hp: zombie.hp,
-    //     ap: zombie.ap,
-    //     isAlive: true
-    //   }
-    //   sqlZombies.push(sqlZombie);
-    // }
+    for (var i = 0; i < 9; i++) {
+      zombie = zombies.create(360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie');
+      game.physics.enable(zombie, Phaser.Physics.ARCADE);
+      zombie.body.immovable = true;
+      zombie.body.collideWorldBounds = true;
+      zombie.name = "zom_" + i;
+      //random numbers between 20 and 40
+      zombie.hp = Math.floor(Math.random() * 20) + 20
+      zombie.ap = Math.floor(Math.random() * 20) + 20
+      zombies.add(zombie);
+      var sqlZombie = {
+        name: zombie.name,
+        hp: zombie.hp,
+        ap: zombie.ap,
+        isAlive: true
+      }
+      sqlZombies.push(sqlZombie);
+    }
 
     var chosenCharacter = localStorage.getItem( "character" );
 
@@ -202,5 +203,3 @@ function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
-
-
