@@ -136,41 +136,30 @@ function update() {
 
     // check for an arrow key press
     if ( cursors.up.isDown ) {
-        if ( player.body.velocity.y == 0 ) {
-            player.animations.play( 'up' );
-            player.body.velocity.y -= 200;
-        }
+        player.body.velocity.y -= playerSpeed;
+        player.animations.play( 'up' );
     }
     else if ( cursors.down.isDown ) {
-        if ( player.body.velocity.y == 0 ) {
-            player.animations.play( 'down' );
-            player.body.velocity.y += 200;
-        }
+        player.body.velocity.y += playerSpeed;
+        player.animations.play( 'down' );
     }
-    else {
-        player.body.velocity.y = 0;
-    }
-
-    if ( cursors.left.isDown ) {
-        if ( player.body.velocity.x == 0 ) {
-            player.animations.play( 'left' );
-            player.body.velocity.x -= 200;
-        }
+    else if ( cursors.left.isDown ) {
+        player.body.velocity.x -= playerSpeed;
+        player.animations.play( 'left' );
     }
     else if ( cursors.right.isDown ) {
-        if ( player.body.velocity.x == 0 ) {
-            player.animations.play( 'right' );
-            player.body.velocity.x += 200;
-        }
-    } else {
-        player.body.velocity.x = 0;
+        player.body.velocity.x += playerSpeed;
+        player.animations.play( 'right' );
+    }
+    else {
+        player.animations.stop();
     }
 
     // when no cursor is pressed, the player is no longer moving, the player animation is stopped and frame 18 (forward facing) is selected
     // TODO: find a way to maintain the "direction" frame based on the player's last direciton of movement
-    if ( player.body.velocity.x === 0 && player.body.velocity.y === 0 ) {
-        player.frame = 18;
-    }
+    // if ( player.body.velocity.x === 0 && player.body.velocity.y === 0 ) {
+    //     player.frame = 18;
+    // }
 }
 
 function interactCollisionLayer( player, layer ) {
