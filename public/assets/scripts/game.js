@@ -14,6 +14,7 @@ var collisionLayer;
 var door;
 var enteredDoor;
 var zombies;
+var winZone;
 
 function preload() {
 
@@ -125,6 +126,8 @@ function create() {
 }
 
 function update() {
+
+    var playerSpeed = 200;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombie, interactZombie, null, this );
