@@ -7,7 +7,9 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 
 var map;
 var player;
-var zombie;
+var zombie1;
+var zombie2;
+var zombie3;
 var cursors;
 var baseLayer;
 var collisionLayer;
@@ -17,6 +19,9 @@ var zombies;
 var buildingDoorRectangle;
 var zombieSpawnPoint;
 var zombieSpawnRectangle;
+var zombie1_tween;
+var zombie2_tween;
+var zombie3_tween;
 
 function preload() {
 
@@ -77,11 +82,45 @@ function create() {
     player.animations.add( "left", [ 9, 10, 11, 12, 13, 14, 15, 16, 17 ], 10, true );
     player.animations.add( "right", [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ], 10, true );
 
+    // x = 21 and y = 26 is the bottom left corner of the building
+    zombie1 = game.add.sprite(( 21 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie2 = game.add.sprite(( 25 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
+    // zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
+
     zombie = game.add.sprite( 100, 100, "zombie" );
     game.physics.arcade.enable( zombie );
     zombie.body.collideWorldBounds = true;
     zombie.immovable = true;
     zombie.body.moves = false;
+
+   //tween move right
+    zombie1_tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    zombie1_tween.onComplete.add( zombie1_tween_left, this );
+    zombie2_tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    zombie2_tween.onComplete.add( zombie2_tween_left, this );
+    zombie3_tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    zombie3_tween.onComplete.add( zombie3_tween_left, this );
+
+    // zombie3_tween_right.onComplete.add(zombie3_tween_left, this);
+    // zombie_tween_right( zombie3 );
+
+        // zombie.scale.x = 1;
+    // zombie.scale.y = 1;
+    game.physics.arcade.enable( zombie1 );
+    game.physics.arcade.enable( zombie2 );
+    game.physics.arcade.enable( zombie3 );
+    zombie1.body.collideWorldBounds = true;
+    zombie1.immovable = true;
+    zombie1.body.moves = false;
+
+    zombie2.body.collideWorldBounds = true;
+    zombie2.immovable = true;
+    zombie2.body.moves = false;
+
+    zombie3.body.collideWorldBounds = true;
+    zombie3.immovable = true;
+    zombie3.body.moves = false;
 
     // TODO: commenting out for now until the simple map works, will need to place the zombies better so that they aren't on top of buildings
     var sqlZombies = [];
@@ -137,6 +176,19 @@ function update() {
     var playerSpeed = 200;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
+    game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
+    game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
+    game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
+
+    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        console.log( "Entering door..." );
+    }
+    
+    if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        console.log( "Entering zombie zone..." );
+    }
+
+    game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombie, interactZombie, null, this );
 
     // TODO: this is a hacky solution to get the building door to work, but it came from a tutorial so perhaps not totally hacky, and it works
@@ -183,6 +235,48 @@ function render() {
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
     game.debug.text( 'Tile X: ' + baseLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + baseLayer.getTileY( player.y ), 32, 64, textColor );
+}
+
+function zombie1_tween_right() {
+
+    var tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie1_tween_left, this );
+    // zombie_tween_left( zombie );
+}
+
+function zombie1_tween_left( ) {
+
+    var tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie1_tween_right, this );
+    // zombie_tween_right( zombie );
+}
+
+function zombie2_tween_right() {
+
+    var tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie2_tween_left, this );
+    // zombie_tween_left( zombie );
+}
+
+function zombie2_tween_left( ) {
+
+    var tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie2_tween_right, this );
+    // zombie_tween_right( zombie );
+}
+
+function zombie3_tween_right() {
+
+    var tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie3_tween_left, this );
+    // zombie_tween_left( zombie );
+}
+
+function zombie3_tween_left( ) {
+
+    var tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    tween.onComplete.add( zombie3_tween_right, this );
+    // zombie_tween_right( zombie );
 }
 
 function interactCollisionLayer( player, layer ) {
