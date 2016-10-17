@@ -310,7 +310,7 @@ function interactZombie( player, zombie ) {
 
     if (zombie.yuck == false) {
         zombie.yuck = true;
-        $('#modal').modal(testCallBack);
+        $('#modal').modal();
     }
     
    // player.destroy();
