@@ -24,6 +24,7 @@ var zombie1_tween;
 var zombie2_tween;
 var zombie3_tween;
 
+
 function preload() {
 
     // put the game "stage" in the middle of the page
@@ -103,7 +104,7 @@ function create() {
     zombie3_tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
-    
+
 
     // zombie3_tween_right.onComplete.add(zombie3_tween_left, this);
     // zombie_tween_right( zombie3 );
@@ -153,20 +154,17 @@ function create() {
       sqlZombies.push(sqlZombie);
     }
 
-    var chosenCharacter = localStorage.getItem( "character" );
+    var chosenCharacter = JSON.parse(localStorage.getItem( "character" ));
+    console.log(chosenCharacter);
 
-    var newGame = {
-        zombies: sqlZombies,
-        character: chosenCharacter
-    };
-    console.log( newGame );
     $.ajax( {
         type: "post",
         url: "new/game",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( newGame ),
-        success: function ( response ) {
+        data: JSON.stringify(chosenCharacter),
+        success: function (response) {
+          console.log(response);
             if ( response.status === "success" ) {
                 //something
             } else if ( response.status === "error" ) {
@@ -194,7 +192,7 @@ function update() {
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering door..." );
     }
-    
+
     if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering zombie zone..." );
     }
@@ -211,7 +209,7 @@ function update() {
     if (player) {
         player.body.velocity.setTo( 0, 0 );
     }
-    
+
 
     // check for an arrow key press
     if ( cursors.up.isDown ) {
@@ -312,10 +310,10 @@ function interactZombie( player, zombie ) {
         zombie.yuck = true;
         $('#modal').modal(testCallBack);
     }
-    
+
    // player.destroy();
 
-    
+
     //call modal with callback
 
     //unpause game
@@ -327,7 +325,7 @@ function interactZombie( player, zombie ) {
 function processCallback( obj1, obj2 ) {
      // game.paused = true;
      return false;
-}      
+}
 
 function interactDoor() {
     //TODO: need a modal/interaction for entering a building
