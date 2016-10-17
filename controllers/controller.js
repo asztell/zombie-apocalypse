@@ -50,12 +50,7 @@ sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 .then(function(){
 	return sequelizeConnection.sync({force: true})
 })
-
-
-
 // only when those tables are made, do we want to run the next set of functions
-
-
 
 // SOLUTION FOR THE UNIFORM OBJECT
 .then(function(){
@@ -106,45 +101,6 @@ sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 	})
 })
 
-})
-
-
-// // Let's create some employees
-// .then(function(){
-//
-// 	// here's mike!
-// 	return models.Employee.create({
-// 		fullName: "Mike Michaels",
-// 		role: "Human Resources",
-// 	})
-// 	// we chain mike's create with .then, pass his name as an arg,
-// 	.then(function(mike){
-// 		// then call our manager's addAssociation method.
-// 		// sequelize gives him addEmployee (since he hasMany employees)
-// 		return brad.addEmployee(mike);
-// 	})
-// })
-//
-// // now let's add one more employee, to show that we can associate more than one with brad
-// .then(function(){
-//
-// 	// now, let's create some employees
-// 	// here's mike!
-// 	return models.Employee.create({
-// 		fullName: "Michelle Shelly",
-// 		role: "Community Relations",
-// 	})
-// 	// like last time, we chain a then with michelle passed as the arg
-// 	.then(function(michelle){
-// 		return brad.addEmployee(michelle);
-// 	})
-// })
-
-
 });
-
-
-
-
 
 module.exports = router;

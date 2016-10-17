@@ -193,12 +193,15 @@ function create() {
         success: function ( response ) {
             if ( response.status === "success" ) {
                 //something
+                $.ajax({
+
+                });
             } else if ( response.status === "error" ) {
                 console.log( response );
                 // TODO: Pop up modal with error message
             }
         }
-    } );
+    });
 
     cursors = game.input.keyboard.createCursorKeys();
     spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
