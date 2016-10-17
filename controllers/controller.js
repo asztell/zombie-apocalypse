@@ -37,9 +37,6 @@ router.get('/zombie', function (req, res) {
 	//TODO: Return zombie metadata
 });
 
-
-
-
 router.get('/new/game', function(req, res){
   // extract our sequelize connection from the models object, to avoid confusion
 var game;
