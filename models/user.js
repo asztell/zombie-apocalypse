@@ -1,10 +1,7 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var Zombie = sequelize.define('Zombie', {
-    name: DataTypes.STRING,
-    hp: DataTypes.INTEGER,
-    ap: DataTypes.INTEGER,
-    isAlive: DataTypes.BOOLEAN
+  var User = sequelize.define('User', {
+    name: DataTypes.STRING
   }, {
     classMethods: {
       associate: function(models) {
@@ -12,5 +9,5 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  return Zombie;
+  return User;
 };
