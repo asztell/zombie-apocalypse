@@ -194,7 +194,8 @@ function create() {
             if ( response.status === "success" ) {
                 //something
                 $.ajax({
-
+                    type: "get",
+                    url: ""
                 });
             } else if ( response.status === "error" ) {
                 console.log( response );
