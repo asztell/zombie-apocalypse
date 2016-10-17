@@ -11,6 +11,7 @@ var zombie1;
 var zombie2;
 var zombie3;
 var cursors;
+var spacebar;
 var baseLayer;
 var collisionLayer;
 var door;
@@ -102,6 +103,8 @@ function create() {
     zombie3_tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
+    
+
     // zombie3_tween_right.onComplete.add(zombie3_tween_left, this);
     // zombie_tween_right( zombie3 );
 
@@ -122,6 +125,10 @@ function create() {
     zombie3.immovable = true;
     zombie3.body.moves = false;
 
+    zombie1.yuck = false;
+    zombie2.yuck = false;
+    zombie3.yuck = false;
+
     // TODO: commenting out for now until the simple map works, will need to place the zombies better so that they aren't on top of buildings
     var sqlZombies = [];
     zombies = game.add.group();
@@ -132,6 +139,7 @@ function create() {
       zombie.body.immovable = true;
       zombie.body.collideWorldBounds = true;
       zombie.name = "zom_" + i;
+      zombie.yuck = false;
       //random numbers between 20 and 40
       zombie.hp = Math.floor(Math.random() * 20) + 20
       zombie.ap = Math.floor(Math.random() * 20) + 20
@@ -169,6 +177,7 @@ function create() {
     });
 
     cursors = game.input.keyboard.createCursorKeys();
+    spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
 function update() {
@@ -176,6 +185,8 @@ function update() {
     var playerSpeed = 200;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
+    game.physics.arcade.collide( player, zombie, interactZombie, null, this );
+    game.physics.arcade.collide( player, zombies, interactZombie, processCallback, this );
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
@@ -197,7 +208,10 @@ function update() {
     }
 
     // reset the player's velocity with each frame update
-    player.body.velocity.setTo( 0, 0 );
+    if (player) {
+        player.body.velocity.setTo( 0, 0 );
+    }
+    
 
     // check for an arrow key press
     if ( cursors.up.isDown ) {
@@ -219,6 +233,10 @@ function update() {
     else {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
+    }
+
+    if ( spacebar.isDown) {
+        attack();
     }
 
     //TODO: remove this when going final, just here for code reference in case needed
@@ -288,12 +306,60 @@ function interactZombie( player, zombie ) {
     console.log( "Ran into a zombie..." );
     console.log( " x: " + zombie.x + " y: " + zombie.y );
     console.log( zombie.name );
+    console.log(zombie.yuck);
+
+    if (zombie.yuck == false) {
+        zombie.yuck = true;
+        $('#modal').modal(testCallBack);
+    }
+    
+   // player.destroy();
+
+    
+    //call modal with callback
+
+    //unpause game
 
     // this removes the zombie from the map, possibly use when zombie is killed, or cna switch graphic and show the zombie is dead and leave on the map
     // zombie.kill();
 }
 
+function processCallback( obj1, obj2 ) {
+     // game.paused = true;
+     return false;
+}      
+
 function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
+}
+
+$('#modal').on('shown.bs.modal', function (e) {
+ game.paused = true;
+ //Ajax call
+ //player.attack("zombie name");
+
+})
+
+$('#modal').on('hidden.bs.modal', function (e) {
+  // do something...
+  game.paused = false;
+})
+
+function attack (player, zombie) {
+    //Player attacks zombie first
+    console.log("space bar pressed for attack");
+    // zombie.hp -= player.ap;
+    // if(zombie.hp <= 0) {
+    //     //Ajax call to say zombie is dead
+    //     //zombie.destroy();
+    // } else {
+    //     player.hp -= zombie.ap;
+    //     if (player.hp <= 0) {
+    //         //Game over!
+    //         //Show stats view
+    //     } else {
+    //         attack(player, zombie);
+    //     }
+    // }
 }
