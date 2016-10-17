@@ -3,8 +3,9 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     create: create,
     update: update,
     render: render
-});
+} );
 
+var zombieToKill;
 var map;
 var player;
 var zombie1;
@@ -73,7 +74,9 @@ function create() {
     // zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
     zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
 
-    player = game.add.sprite( 0, 0, "playerAnimations" );
+    //TODO: player needs to be an "object" created from our constructor so that it has methods        
+    player = game.add.sprite( 0, 800, "playerAnimations" );
+    console.log( player );
     player.frame = 18;
     game.physics.arcade.enable( player );
     player.body.collideWorldBounds = true;
@@ -82,11 +85,13 @@ function create() {
     player.animations.add( "down", [ 18, 19, 20, 21, 22, 23, 24, 25, 26 ], 10, true );
     player.animations.add( "left", [ 9, 10, 11, 12, 13, 14, 15, 16, 17 ], 10, true );
     player.animations.add( "right", [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ], 10, true );
+    player.hp = 100;
+    player.ap = 25;
 
     // x = 21 and y = 26 is the bottom left corner of the building
-    zombie1 = game.add.sprite(( 21 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie2 = game.add.sprite(( 25 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie1 = game.add.sprite( ( 21 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie2 = game.add.sprite( ( 25 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie3 = game.add.sprite( ( 30 * 32 ), ( 26 * 32 ), 'zombie' );
     // zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
 
     zombie = game.add.sprite( 100, 100, "zombie" );
@@ -95,20 +100,26 @@ function create() {
     zombie.immovable = true;
     zombie.body.moves = false;
 
-   //tween move right
-    zombie1_tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    //tween move right
+    zombie1_tween = game.add.tween( zombie1 ).to( {
+        x: zombie1.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     zombie1_tween.onComplete.add( zombie1_tween_left, this );
-    zombie2_tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    zombie2_tween = game.add.tween( zombie2 ).to( {
+        x: zombie2.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     zombie2_tween.onComplete.add( zombie2_tween_left, this );
-    zombie3_tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    zombie3_tween = game.add.tween( zombie3 ).to( {
+        x: zombie3.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
-    
+
 
     // zombie3_tween_right.onComplete.add(zombie3_tween_left, this);
     // zombie_tween_right( zombie3 );
 
-        // zombie.scale.x = 1;
+    // zombie.scale.x = 1;
     // zombie.scale.y = 1;
     game.physics.arcade.enable( zombie1 );
     game.physics.arcade.enable( zombie2 );
@@ -116,14 +127,23 @@ function create() {
     zombie1.body.collideWorldBounds = true;
     zombie1.immovable = true;
     zombie1.body.moves = false;
+    zombie1.name = "Zom_1";
+    zombie1.hp = 100;
+    zombie1.ap = 10;
 
     zombie2.body.collideWorldBounds = true;
     zombie2.immovable = true;
     zombie2.body.moves = false;
+    zombie2.name = "Zom_2";
+    zombie2.hp = 100;
+    zombie2.ap = 10;
 
     zombie3.body.collideWorldBounds = true;
     zombie3.immovable = true;
     zombie3.body.moves = false;
+    zombie3.name = "Zom_3";
+    zombie3.hp = 100;
+    zombie3.ap = 10;
 
     zombie1.yuck = false;
     zombie2.yuck = false;
@@ -133,25 +153,29 @@ function create() {
     var sqlZombies = [];
     zombies = game.add.group();
 
-    for (var i = 0; i < 9; i++) {
-      zombie = zombies.create(360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie');
-      game.physics.enable(zombie, Phaser.Physics.ARCADE);
-      zombie.body.immovable = true;
-      zombie.body.collideWorldBounds = true;
-      zombie.name = "zom_" + i;
-      zombie.yuck = false;
-      //random numbers between 20 and 40
-      zombie.hp = Math.floor(Math.random() * 20) + 20
-      zombie.ap = Math.floor(Math.random() * 20) + 20
-      zombies.add(zombie);
-      var sqlZombie = {
-        name: zombie.name,
-        hp: zombie.hp,
-        ap: zombie.ap,
-        isAlive: true
-      }
-      sqlZombies.push(sqlZombie);
+    // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
+    for ( var i = 0; i < 10; i++ ) {
+        var zombie = zombies.create( 360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie' );
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.immovable = true;
+        zombie.body.collideWorldBounds = true;
+        zombie.name = "zom_" + i;
+        zombie.yuck = false;
+        //random numbers between 20 and 40
+        zombie.hp = Math.floor( Math.random() * 20 ) + 20
+        zombie.ap = Math.floor( Math.random() * 20 ) + 20
+            // zombies.add( zombie ); // don't need this line'
+            // var sqlZombie = { // don't need the SQL stuff if we're just doing locally
+            //     name: zombie.name,
+            //     hp: zombie.hp,
+            //     ap: zombie.ap,
+            //     isAlive: true
+            // }
+            // sqlZombies.push( sqlZombie );
     }
+
+    console.log( zombies );
+    console.log( "Zombie HP: " + zombies.children[ 0 ].hp );
 
     var chosenCharacter = localStorage.getItem( "character" );
 
@@ -174,18 +198,18 @@ function create() {
                 // TODO: Pop up modal with error message
             }
         }
-    });
+    } );
 
     cursors = game.input.keyboard.createCursorKeys();
-    spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
 }
 
 function update() {
 
-    var playerSpeed = 200;
+    var playerSpeed = 300;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    game.physics.arcade.collide( player, zombie, interactZombie, null, this );
+    // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
     game.physics.arcade.collide( player, zombies, interactZombie, processCallback, this );
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
@@ -194,13 +218,13 @@ function update() {
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering door..." );
     }
-    
+
     if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering zombie zone..." );
     }
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    game.physics.arcade.collide( player, zombie, interactZombie, null, this );
+    // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
 
     // TODO: this is a hacky solution to get the building door to work, but it came from a tutorial so perhaps not totally hacky, and it works
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
@@ -208,34 +232,29 @@ function update() {
     }
 
     // reset the player's velocity with each frame update
-    if (player) {
+    if ( player ) {
         player.body.velocity.setTo( 0, 0 );
     }
-    
 
     // check for an arrow key press
     if ( cursors.up.isDown ) {
         player.body.velocity.y -= playerSpeed;
         player.animations.play( 'up' );
-    }
-    else if ( cursors.down.isDown ) {
+    } else if ( cursors.down.isDown ) {
         player.body.velocity.y += playerSpeed;
         player.animations.play( 'down' );
-    }
-    else if ( cursors.left.isDown ) {
+    } else if ( cursors.left.isDown ) {
         player.body.velocity.x -= playerSpeed;
         player.animations.play( 'left' );
-    }
-    else if ( cursors.right.isDown ) {
+    } else if ( cursors.right.isDown ) {
         player.body.velocity.x += playerSpeed;
         player.animations.play( 'right' );
-    }
-    else {
+    } else {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
     }
 
-    if ( spacebar.isDown) {
+    if ( spacebar.isDown ) {
         attack();
     }
 
@@ -257,42 +276,54 @@ function render() {
 
 function zombie1_tween_right() {
 
-    var tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie1 ).to( {
+        x: zombie1.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_left, this );
     // zombie_tween_left( zombie );
 }
 
-function zombie1_tween_left( ) {
+function zombie1_tween_left() {
 
-    var tween = game.add.tween( zombie1 ).to( { x: zombie1.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie1 ).to( {
+        x: zombie1.x + ( 3 * -32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_right, this );
     // zombie_tween_right( zombie );
 }
 
 function zombie2_tween_right() {
 
-    var tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie2 ).to( {
+        x: zombie2.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_left, this );
     // zombie_tween_left( zombie );
 }
 
-function zombie2_tween_left( ) {
+function zombie2_tween_left() {
 
-    var tween = game.add.tween( zombie2 ).to( { x: zombie2.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie2 ).to( {
+        x: zombie2.x + ( 3 * -32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_right, this );
     // zombie_tween_right( zombie );
 }
 
 function zombie3_tween_right() {
 
-    var tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * 32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie3 ).to( {
+        x: zombie3.x + ( 3 * 32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_left, this );
     // zombie_tween_left( zombie );
 }
 
-function zombie3_tween_left( ) {
+function zombie3_tween_left() {
 
-    var tween = game.add.tween( zombie3 ).to( { x: zombie3.x + ( 3 * -32 ) }, 5000, 'Linear', true, 0 );
+    var tween = game.add.tween( zombie3 ).to( {
+        x: zombie3.x + ( 3 * -32 )
+    }, 5000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_right, this );
     // zombie_tween_right( zombie );
 }
@@ -306,16 +337,20 @@ function interactZombie( player, zombie ) {
     console.log( "Ran into a zombie..." );
     console.log( " x: " + zombie.x + " y: " + zombie.y );
     console.log( zombie.name );
-    console.log(zombie.yuck);
+    console.log( zombie.yuck );
 
-    if (zombie.yuck == false) {
+    if ( zombie.yuck == false ) {
         zombie.yuck = true;
-        $('#modal').modal();
+        zombieToKill = zombie;
+        $( '#modal' ).modal();
+        // $('#modal').modal(testCallBack);        
+        // zombie.yuck = false;
+        // zombie.destroy();
     }
-    
-   // player.destroy();
 
-    
+    // player.destroy();
+
+
     //call modal with callback
 
     //unpause game
@@ -325,41 +360,68 @@ function interactZombie( player, zombie ) {
 }
 
 function processCallback( obj1, obj2 ) {
-     // game.paused = true;
-     return false;
-}      
+    // game.paused = true;
+    return false;
+}
 
 function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
 
-$('#modal').on('shown.bs.modal', function (e) {
- game.paused = true;
- //Ajax call
- //player.attack("zombie name");
+$( '#modal' ).on( 'shown.bs.modal', function ( e ) {
+    game.paused = true;
+    $( '#attack-button').show();
 
-})
+    // need to be able to render text in the modal
+    $( '#modal #message' ).html(        
+        "Player HP: " + player.hp + "\n" +
+        "Zombie name: " + zombieToKill.name + "\n" +
+        "Zombie HP: " + zombieToKill.hp );
 
-$('#modal').on('hidden.bs.modal', function (e) {
-  // do something...
-  game.paused = false;
-})
+    $( '#attack-button' ).on( 'click', function () {
+        player.hp -= zombieToKill.ap;
+        zombieToKill.hp -= player.ap;        
+        console.log("Player AP " + player.ap);
 
-function attack (player, zombie) {
-    //Player attacks zombie first
-    console.log("space bar pressed for attack");
-    // zombie.hp -= player.ap;
-    // if(zombie.hp <= 0) {
-    //     //Ajax call to say zombie is dead
-    //     //zombie.destroy();
-    // } else {
-    //     player.hp -= zombie.ap;
-    //     if (player.hp <= 0) {
-    //         //Game over!
-    //         //Show stats view
-    //     } else {
-    //         attack(player, zombie);
-    //     }
-    // }
-}
+        if ( zombieToKill.hp > 0 ) {
+            $( '#modal #message' ).html(
+                "Player HP: " + player.hp + "\n" +
+                "Zombie name: " + zombieToKill.name + "\n" +
+                "Zombie HP: " + zombieToKill.hp );
+        } else {
+            $( '#modal #message' ).html(
+                "Player HP: " + player.hp + "\n" +
+                "Zombie name: " + zombieToKill.name + "\n" +
+                "Zombie HP: " + 0 );
+
+            zombieToKill.destroy();
+            $( '#attack-button' ).hide();
+            $( '#close-button' ).html( "RESUME GAME" );
+        }
+    } );
+} )
+
+$( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
+    // do something...  
+    // zombieToKill.destroy();
+    game.paused = false;
+} );
+
+// function attack( player, zombie ) {
+//     //Player attacks zombie first
+//     console.log( "space bar pressed for attack" );
+//     // zombie.hp -= player.ap;
+//     // if(zombie.hp <= 0) {
+//     //     //Ajax call to say zombie is dead
+//     //     //zombie.destroy();
+//     // } else {
+//     //     player.hp -= zombie.ap;
+//     //     if (player.hp <= 0) {
+//     //         //Game over!
+//     //         //Show stats view
+//     //     } else {
+//     //         attack(player, zombie);
+//     //     }
+//     // }
+// }
