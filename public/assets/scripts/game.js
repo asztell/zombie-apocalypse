@@ -58,7 +58,7 @@ function create() {
       contentType: "application/json",
       data: JSON.stringify(chosenCharacter),
       success: function (response) {
-        console.log(response.status);
+        console.log(response.gameID);
           if ( response.status === "success" ) {
               //do something
           } else if ( response.status === "error" ) {
