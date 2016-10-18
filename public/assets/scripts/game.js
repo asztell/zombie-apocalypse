@@ -31,6 +31,7 @@ var zombie1_tween;
 var zombie2_tween;
 var zombie3_tween;
 var healthPack;
+var gameID;
 
 function preload() {
 
@@ -70,7 +71,7 @@ function create() {
         contentType: "application/json",
         data: JSON.stringify( chosenCharacter ),
         success: function ( response ) {
-            console.log( response.gameID );
+            gameID = response.gameID;
             if ( response.status === "success" ) {
                 //do something
             } else if ( response.status === "error" ) {
@@ -98,7 +99,7 @@ function create() {
 
     // setup layers and collision layer
     grassLayer = map.createLayer( "grass_layer" );
-    baseLayer = map.createLayer( "base_layer" );    
+    baseLayer = map.createLayer( "base_layer" );
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
     grassLayer.resizeWorld();
@@ -295,7 +296,7 @@ function interactCollisionLayer( player, layer ) {
 
 function interactZombie( player, zombie ) {
     //TODO: need a modal/interaction for zombie
-    
+
     console.log( "Ran into a zombie..." );
     console.log( " x: " + zombie.x + " y: " + zombie.y );
     console.log( zombie.name );
@@ -308,16 +309,16 @@ function interactZombie( player, zombie ) {
         zombieToKill = zombie;
         game.paused = true;
 
-        $( '#modal' ).modal( 'show' );        
+        $( '#modal' ).modal( 'show' );
     }
 }
 
 // when modal is triggered, populate with current health stats for player and zombie
 $('#modal').on('shown.bs.modal', function (e) {
-    
+
     $( '#attack-button' ).show();
     $( '#close-button' ).html( "RETREAT!" );
-    
+
     $( '#modal #message' ).html(
         "Player HP: " + player.hp + "\n" +
         "Zombie name: " + zombieToKill.name + "\n" +
@@ -347,12 +348,25 @@ $( '#attack-button' ).on( 'click', function () {
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
 
+            var updateObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp
+            }
+            $.ajax( {
+                type: "put",
+                url: "game/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( updateObj )
+            } );
+
             zombieToKill.destroy();
-            dropHealthPack();    
+            dropHealthPack();
         }
 
-        if ( player.hp <= 0 ) {                        
-            //TODO: save game length(time), save zombie kills
+        if ( player.hp <= 0 ) {
+
             gameEndTime = Date.now();
 
             $( '#modal #message' ).html(
@@ -360,11 +374,30 @@ $( '#attack-button' ).on( 'click', function () {
             "Zombie name: " + zombieToKill.name + "\n" +
             "Zombie HP: " + zombieToKill.hp );
 
-            console.log( gameStartTime );
-            console.log( gameEndTime );
-            console.log( "Game over..." );
+            var gameObj = {
+              gameID: gameID,
+              zombiesKilled: player.zombieKills,
+              timeAlive: gameEndTime - gameStartTime
+            }
 
-            $( '#modal').modal( 'toggle' );            
+            $.ajax( {
+                type: "put",
+                url: "game/over",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( gameObj ),
+                success: function ( response ) {
+                  console.log(response);
+                    if ( response.status === 200 ) {
+                        // window.location = '/game/stats';
+                    } else if ( response.status === "error" ) {
+                        console.log( response );
+                        // do something
+                    }
+                }
+            } );
+
+            $( '#modal').modal( 'toggle' );
             player.destroy();
             // window.location = "/game/over";
         }
@@ -391,6 +424,18 @@ function collectHealth( player, healthPack ) {
     player.hp += 10;
     console.log( "After: " + player.hp );
     healthPack.destroy();
+    var updateObj = {
+      gameID: gameID,
+      ap: player.ap,
+      hp: player.hp
+    }
+    $.ajax( {
+        type: "put",
+        url: "game/update",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( updateObj )
+    } );
 }
 
 // function processCallback( obj1, obj2 ) {

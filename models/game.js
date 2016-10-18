@@ -1,7 +1,8 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var Game = sequelize.define('Game', {
-    jwt: DataTypes.STRING
+    zombiesKilled: DataTypes.STRING,
+    timeAlive: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {
