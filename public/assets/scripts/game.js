@@ -245,9 +245,10 @@ function update() {
         console.log( "Entering door..." );
     }
 
-    if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        console.log( "Entering zombie zone..." );
-    }
+    //TODO: not going to use this, but leave it here for now for reference
+    // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    //     console.log( "Entering zombie zone..." );
+    // }
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
@@ -426,7 +427,12 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
         }
-    } );
+    });
+
+    $( '#close-button').on( 'click', function() {
+        //TODO: move player out of zombie range and/or disable collision so that the modal doesn't keep popping up
+        zombieToKill.yuck = false;
+    });
 } )
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
