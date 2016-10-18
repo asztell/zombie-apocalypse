@@ -237,6 +237,7 @@ function update() {
         console.log( "Entering door..." );
     }
 
+    //TODO: not going to use this, but leave it here for now for reference
     // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
     //     console.log( "Entering zombie zone..." );
     // }
@@ -448,7 +449,6 @@ function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
-
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     // player.body.enable = false;
     player.y += 100;
