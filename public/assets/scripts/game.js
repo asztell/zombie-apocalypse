@@ -95,8 +95,8 @@ function create() {
     player.animations.add( "right", [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ], 10, true );
 
     // these are our custom properties and methods added to the Phaser sprite object
-    player.hp = player.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : 100;
-    player.ap = player.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : 25;
+    player.hp = player.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : chosenCharacter.hp;
+    player.ap = player.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : chosenCharacter.ap;
     player.isAlive = player.hasOwnProperty( 'isAlive' ) ? logError( 'isAlive' ) : true;
     player.weaponInventory = player.hasOwnProperty( 'weaponInventory' ) ? logError( 'weaponInventory' ) : [];
     player.itemInventory = player.hasOwnProperty( 'itemInventory' ) ? logError( 'itemInventory' ) : [];
@@ -203,29 +203,21 @@ function create() {
     console.log( zombies );
     console.log( "Zombie HP: " + zombies.children[ 0 ].hp );
 
-    var chosenCharacter = localStorage.getItem( "character" );
+    var chosenCharacter = JSON.parse(localStorage.getItem( "character" ));
 
-    var newGame = {
-        zombies: sqlZombies,
-        character: chosenCharacter
-    };
-    console.log( newGame );
     $.ajax( {
         type: "post",
         url: "new/game",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( newGame ),
-        success: function ( response ) {
+        data: JSON.stringify(chosenCharacter),
+        success: function (response) {
+          console.log(response);
             if ( response.status === "success" ) {
-                //something
-                $.ajax({
-                    type: "get",
-                    url: ""
-                });
+                //do something
             } else if ( response.status === "error" ) {
                 console.log( response );
-                // TODO: Pop up modal with error message
+                // do something
             }
         }
     });
@@ -373,7 +365,7 @@ function interactZombie( player, zombie ) {
         zombie.yuck = true;
         zombieToKill = zombie;
         $( '#modal' ).modal();
-        // $('#modal').modal(testCallBack);        
+        // $('#modal').modal(testCallBack);
         // zombie.yuck = false;
         // zombie.destroy();
     }

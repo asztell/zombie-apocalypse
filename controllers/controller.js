@@ -38,52 +38,51 @@ router.get('/zombie', function(req, res) {
 });
 
 
-router.get('/new/game', function(req, res){
-  // extract our sequelize connection from the models object, to avoid confusion
-	var game;
-	var sequelizeConnection = models.sequelize
 
-	sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
-	.then(function(){
-		return sequelizeConnection.sync({force: true});
-	})
-	// only when those tables are made, do we want to run the next set of functions
+router.post('/new/game', function(req, res) {
+    var game;
+    var character = req.body;
+    var sequelizeConnection = models.sequelize
+    sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
-	// SOLUTION FOR THE UNIFORM OBJECT
-	.then(function(){
-		// first, we create the uniform
-		return models.Game.create(
-			{
-				jwt: "erfgkmnwerkfghkaewfh;q3ejhkqeyut",
-			},
-			{
-				include: [models.Player]
-			}
-		)
+    .then(function() {
+        return sequelizeConnection.sync({
+            force: true
+        })
+    })
 
-		.then(function(game){
-			return game = game;
-		});
 
-	})
+    .then(function() {
 
-	.then(function(){
-		// then we give it to brad
-		// return newGame.setPlayer(player);
-		return models.Player.create({
-			name: 'Rick Grimes',
-			picture: 'www.google.com',
-	        description: 'Bad to the bone.',
-	        hp: 10,
-	        ap: 10
-		})
-		.then(function(player){
-			return game.setPlayer(player);
+        return models.Game.create({
+                jwt: "filler",
+            },
 
-		});
+            {
+                include: [models.Player]
+            }
+        )
 
-	});
+        .then(function(game) {
+
+            return models.Player.create(character)
+
+            .then(function(player) {
+                return game.setPlayer(player)
+
+            }).then(function(){
+							res.send('Test');
+						})
+        })
+
+    })
+
+
 });
+
+
+
+
 
 module.exports = router;
