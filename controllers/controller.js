@@ -38,7 +38,7 @@ router.get('/zombie', function(req, res) {
 });
 
 
-router.get('/new/game', function(req, res){
+router.put('/game/new', function(req, res){
   // extract our sequelize connection from the models object, to avoid confusion
 	var game;
 	var sequelizeConnection = models.sequelize
@@ -62,9 +62,14 @@ router.get('/new/game', function(req, res){
 			}
 		)
 
+		// .success(function(){
+
+		// })
+
 		.then(function(game){
 			return game = game;
-		});
+			console.log(game);
+		})
 
 	})
 
@@ -84,6 +89,10 @@ router.get('/new/game', function(req, res){
 		});
 
 	});
+});
+
+router.put('/game/update', function(req, res) {
+
 });
 
 module.exports = router;

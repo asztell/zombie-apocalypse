@@ -186,7 +186,7 @@ function create() {
     console.log( newGame );
     $.ajax( {
         type: "post",
-        url: "new/game",
+        url: "/game/new",
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify( newGame ),
@@ -195,7 +195,7 @@ function create() {
                 //something
                 $.ajax({
                     type: "get",
-                    url: ""
+                    url: "/game/update"
                 });
             } else if ( response.status === "error" ) {
                 console.log( response );
