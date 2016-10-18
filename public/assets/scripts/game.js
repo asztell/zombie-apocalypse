@@ -311,11 +311,12 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
-
             var updateObj = {
               gameID: gameID,
               ap: player.ap,
-              hp: player.hp
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: Date.now() - gameStartTime
             }
             $.ajax( {
                 type: "put",
@@ -337,10 +338,11 @@ $( '#attack-button' ).on( 'click', function () {
             "Player HP: 0" +
             "Zombie name: " + zombieToKill.name + "\n" +
             "Zombie HP: " + zombieToKill.hp );
-
             var gameObj = {
               gameID: gameID,
-              zombiesKilled: player.zombieKills,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
               timeAlive: gameEndTime - gameStartTime
             }
 
@@ -351,19 +353,11 @@ $( '#attack-button' ).on( 'click', function () {
                 contentType: "application/json",
                 data: JSON.stringify( gameObj ),
                 success: function ( response ) {
-                  console.log(response);
-                    if ( response.status === 200 ) {
-                        // window.location = '/game/stats';
-                    } else if ( response.status === "error" ) {
-                        console.log( response );
-                        // do something
-                    }
+                  window.location = '/stats/' + gameID;
                 }
             } );
 
             $( '#modal').modal( 'toggle' );
-            player.destroy();
-            // window.location = "/game/over";
         }
     }
 });
@@ -387,7 +381,9 @@ function collectHealth( player, healthPack ) {
     var updateObj = {
       gameID: gameID,
       ap: player.ap,
-      hp: player.hp
+      hp: player.hp,
+      zombieKills: player.zombieKills,
+      timeAlive: Date.now() - gameStartTime
     }
     $.ajax( {
         type: "put",

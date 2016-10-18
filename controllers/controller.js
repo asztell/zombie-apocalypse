@@ -33,8 +33,14 @@ router.get('/building', function(req, res) {
     //TODO: Return building metadata
 });
 
-router.get('/zombie', function(req, res) {
-    //TODO: Return zombie metadata
+router.get('/stats/:id', function(req, res) {
+    var gameID = req.params.id;
+    models.Player.findOne({
+      where: {GameId: gameID}
+    }).then(function(result) {
+      console.log(result.name, result.timeAlive);
+      res.render('index');
+    })
 });
 
 
@@ -55,8 +61,7 @@ router.post('/game/new', function(req, res) {
     .then(function() {
 
         return models.Game.create({
-            zombiesKilled: 0,
-            timeAlive: 0
+            isGameOver: 0
         }, {
             include: [models.Player]
         })
@@ -85,28 +90,30 @@ router.post('/game/new', function(req, res) {
 })
 
 router.put('/game/update', function(req, res) {
+    console.log(req.body);
     models.Player.update({
-            ap: req.body.ap,
-            hp: req.body.hp
-        }, {
-            where: {
-                GameId: req.body.gameID
-            }
-        })
-        // connect it to this .then.
-        .then(function(result) {
-            var sendObj = {
-                success: 'Updated Successfully',
-                status: 200
-            }
-            res.end(JSON.stringify(sendObj));
-        });
+        ap: req.body.ap,
+        hp: req.body.hp,
+        zombieKills: req.body.zombieKills,
+        timeAlive: req.body.timeAlive
+    }, {
+        where: {
+            GameId: req.body.gameID
+        }
+    })
+
+    .then(function(result) {
+        var sendObj = {
+            success: 'Updated Successfully',
+            status: 200
+        }
+        res.end(JSON.stringify(sendObj));
+    });
 });
 
 router.put('/game/over', function(req, res) {
     models.Game.update({
-        zombiesKilled: req.body.zombiesKilled,
-        timeAlive: req.body.timeAlive
+        isGameOver: 1
     }, {
         where: {
             id: req.body.gameID
@@ -114,7 +121,9 @@ router.put('/game/over', function(req, res) {
     }).then(function() {
         models.Player.update({
             ap: req.body.ap,
-            hp: 0
+            hp: req.body.hp,
+            zombieKills: req.body.zombieKills,
+            timeAlive: req.body.timeAlive
         }, {
             where: {
                 GameId: req.body.gameID
@@ -127,7 +136,7 @@ router.put('/game/over', function(req, res) {
         }
         res.end(JSON.stringify(sendObj));
     });
-    // connect it to this .then.
+
 });
 
 
