@@ -61,6 +61,8 @@ function preload() {
 
 function create() {
 
+    game.physics.startSystem( Phaser.Physics.ARCADE );
+
     chosenCharacter = JSON.parse( localStorage.getItem( "character" ) );
     console.log( chosenCharacter );
     $.ajax( {
@@ -80,7 +82,6 @@ function create() {
         }
     } );
 
-    game.physics.startSystem( Phaser.Physics.ARCADE );
 
     // setup map images
     map = game.add.tilemap( "map" );
@@ -205,10 +206,6 @@ function create() {
     zombie3.hp = 100;
     zombie3.ap = 10;
 
-    zombie1.yuck = false;
-    zombie2.yuck = false;
-    zombie3.yuck = false;
-
     zombies = game.add.group();
 
     // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
@@ -219,7 +216,7 @@ function create() {
         zombie.body.collideWorldBounds = true;
         zombie.anchor.setTo( 0.5, 0.5 );
         zombie.name = "zom_" + i;
-        zombie.yuck = false;
+
         //random numbers between 20 and 40
         zombie.hp = Math.floor( Math.random() * 20 ) + 20
         zombie.ap = Math.floor( Math.random() * 20 ) + 20
@@ -236,8 +233,9 @@ function update() {
 
     var playerSpeed = 400;
 
-    game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    game.physics.arcade.collide( player, zombies, interactZombie, null, this );
+    game.physics.arcade.collide( player, collisionLayer );
+    // game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
+    game.physics.arcade.collide( player, zombies, interactZombie, null, this );   
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
@@ -245,25 +243,11 @@ function update() {
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering door..." );
-    }
-
-    //TODO: not going to use this, but leave it here for now for reference
-    // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-    //     console.log( "Entering zombie zone..." );
-    // }
-
-    game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
-
-    // TODO: this is a hacky solution to get the building door to work, but it came from a tutorial so perhaps not totally hacky, and it works
-    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactDoor();
     }
 
     // reset the player's velocity with each frame update
-    if ( player ) {
-        player.body.velocity.setTo( 0, 0 );
-    }
+    player.body.velocity.setTo( 0, 0 );
 
     // check for an arrow key press
     if ( cursors.up.isDown ) {
@@ -284,32 +268,11 @@ function update() {
     }
 }
 
-
-function interactCollisionLayer( player, layer ) {
-    console.log( "Ran into the collision layer..." );
-}
-
-// function myHandler() {
-//     $( '#modal' ).off( 'show', myHandler );
-// }
-
 function interactZombie( player, zombie ) {
-    //TODO: need a modal/interaction for zombie
-    
-    console.log( "Ran into a zombie..." );
-    console.log( " x: " + zombie.x + " y: " + zombie.y );
-    console.log( zombie.name );
-    console.log( zombie.yuck );
 
-    player.body.enable = false;
-
-    if ( zombie.yuck == false ) {
-        zombie.yuck = true;
-        zombieToKill = zombie;
-        game.paused = true;
-
-        $( '#modal' ).modal( 'show' );        
-    }
+    zombieToKill = zombie;
+    game.paused = true;
+    $( '#modal' ).modal( 'show' );        
 }
 
 // when modal is triggered, populate with current health stats for player and zombie
@@ -374,7 +337,6 @@ $( '#attack-button' ).on( 'click', function () {
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.enable = true;
     player.y += 100;
-    zombieToKill.yuck = false;
     game.paused = false;
 });
 
@@ -386,23 +348,14 @@ function dropHealthPack() {
 }
 
 function collectHealth( player, healthPack ) {
-    console.log( "Before: " +  player.hp );
-    console.log( isNaN(player.hp));
     player.hp += 10;
-    console.log( "After: " + player.hp );
     healthPack.destroy();
 }
-
-// function processCallback( obj1, obj2 ) {
-//     // game.paused = true;
-//     return false;
-// }
 
 function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
-
 
 function zombie1_tween_right() {
 
