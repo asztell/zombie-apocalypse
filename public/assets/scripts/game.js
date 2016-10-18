@@ -5,6 +5,9 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     update: update,
     render: render
 } );
+
+var gameStartTime = Date.now();
+var gameEndTime;
 var chosenCharacter;
 var zombieToKill;
 var map;
@@ -25,6 +28,7 @@ var zombieSpawnRectangle;
 var zombie1_tween;
 var zombie2_tween;
 var zombie3_tween;
+var healthPack;
 
 function preload() {
 
@@ -37,6 +41,7 @@ function preload() {
     // load map and other images needed
     game.load.tilemap( "map", "assets/tilemaps/gameMap.json", null, Phaser.Tilemap.TILED_JSON );
     game.load.spritesheet( "playerAnimations", "assets/images/Character1Walk.png", 64, 64 );
+    game.load.spritesheet( "healthPack", "assets/images/foodfromcts1a.png", 34, 34 );
     game.load.image( "building", "assets/images/Building.png" );
     game.load.image( "cars", "assets/images/Cars_final.png" );
     game.load.image( "food", "assets/images/foodfromcts1a.png" );
@@ -49,24 +54,24 @@ function preload() {
 
 function create() {
 
-  chosenCharacter = JSON.parse(localStorage.getItem("character"));
-  console.log(chosenCharacter);
-  $.ajax( {
-      type: "post",
-      url: "game/new",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify(chosenCharacter),
-      success: function (response) {
-        console.log(response.gameID);
-          if ( response.status === "success" ) {
-              //do something
-          } else if ( response.status === "error" ) {
-              console.log( response );
-              // do something
-          }
-      }
-  });
+    chosenCharacter = JSON.parse( localStorage.getItem( "character" ) );
+    console.log( chosenCharacter );
+    $.ajax( {
+        type: "post",
+        url: "game/new",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( chosenCharacter ),
+        success: function ( response ) {
+            console.log( response.gameID );
+            if ( response.status === "success" ) {
+                //do something
+            } else if ( response.status === "error" ) {
+                console.log( response );
+                // do something
+            }
+        }
+    } );
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
@@ -90,6 +95,10 @@ function create() {
     // door = map.objects.map( function ( e ) { return e.name; }).indexOf( 'buildDoor' );
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
+
+    healthPack = game.add.sprite(100, 100, 'healthPack' );
+    healthPack.frame = 95;
+    game.physics.arcade.enable( healthPack );
 
     //TODO: keep for now for reference, but likely will end up deleting it
     // this is the zombie spawn point in front of the building, we can have the zombies, say 3, spawn in this area rather than all over the map
@@ -115,8 +124,10 @@ function create() {
     player.animations.add( "right", [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ], 10, true );
 
     // these are our custom properties and methods added to the Phaser sprite object
-    player.hp = player.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : chosenCharacter.hp;
-    player.ap = player.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : chosenCharacter.ap;
+    player.hp = player.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : parseInt(chosenCharacter.hp);
+    player.ap = player.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : parseInt(chosenCharacter.ap);
+    player.zombieKills = player.hasOwnProperty( 'zombieKills' ) ? logError( 'zombieKills' ) : 0;
+    player.gameLength = player.hasOwnProperty( 'gameLength' ) ? logError( 'gameLength' ) : 10;
     player.isAlive = player.hasOwnProperty( 'isAlive' ) ? logError( 'isAlive' ) : true;
     player.weaponInventory = player.hasOwnProperty( 'weaponInventory' ) ? logError( 'weaponInventory' ) : [];
     player.itemInventory = player.hasOwnProperty( 'itemInventory' ) ? logError( 'itemInventory' ) : [];
@@ -135,29 +146,23 @@ function create() {
         }
 
     // x = 21 and y = 26 is the bottom left corner of the building
-    zombie1 = game.add.sprite( ( 21 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie2 = game.add.sprite( ( 25 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie3 = game.add.sprite( ( 30 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie1 = game.add.sprite( ( 24 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie2 = game.add.sprite( ( 25 * 32 ), ( 27 * 32 ), 'zombie' );
+    zombie3 = game.add.sprite( ( 26 * 32 ), ( 26 * 32 ), 'zombie' );
     // zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
-
-    zombie = game.add.sprite( 100, 100, "zombie" );
-    game.physics.arcade.enable( zombie );
-    zombie.body.collideWorldBounds = true;
-    zombie.immovable = true;
-    zombie.body.moves = false;
 
     //tween move right
     zombie1_tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie1.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     zombie1_tween.onComplete.add( zombie1_tween_left, this );
     zombie2_tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie2.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     zombie2_tween.onComplete.add( zombie2_tween_left, this );
     zombie3_tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie3.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
 
@@ -195,8 +200,6 @@ function create() {
     zombie2.yuck = false;
     zombie3.yuck = false;
 
-    // TODO: commenting out for now until the simple map works, will need to place the zombies better so that they aren't on top of buildings
-    var sqlZombies = [];
     zombies = game.add.group();
 
     // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
@@ -210,14 +213,6 @@ function create() {
         //random numbers between 20 and 40
         zombie.hp = Math.floor( Math.random() * 20 ) + 20
         zombie.ap = Math.floor( Math.random() * 20 ) + 20
-            // zombies.add( zombie ); // don't need this line'
-            // var sqlZombie = { // don't need the SQL stuff if we're just doing locally
-            //     name: zombie.name,
-            //     hp: zombie.hp,
-            //     ap: zombie.ap,
-            //     isAlive: true
-            // }
-            // sqlZombies.push( sqlZombie );
     }
 
     console.log( zombies );
@@ -232,16 +227,17 @@ function update() {
     var playerSpeed = 300;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
-    game.physics.arcade.collide( player, zombies, interactZombie, processCallback, this );
+    game.physics.arcade.collide( player, zombies, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
+    game.physics.arcade.collide( player, healthPack, collectHealth, null, this );
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering door..." );
     }
 
+    //TODO: not going to use this, but leave it here for now for reference
     // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
     //     console.log( "Entering zombie zone..." );
     // }
@@ -300,8 +296,8 @@ function render() {
 function zombie1_tween_right() {
 
     var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie1.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_left, this );
     // zombie_tween_left( zombie );
 }
@@ -309,8 +305,8 @@ function zombie1_tween_right() {
 function zombie1_tween_left() {
 
     var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 3 * -32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie1.x + ( 1 * -32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_right, this );
     // zombie_tween_right( zombie );
 }
@@ -318,8 +314,8 @@ function zombie1_tween_left() {
 function zombie2_tween_right() {
 
     var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie2.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_left, this );
     // zombie_tween_left( zombie );
 }
@@ -327,8 +323,8 @@ function zombie2_tween_right() {
 function zombie2_tween_left() {
 
     var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 3 * -32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie2.x + ( 1 * -32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_right, this );
     // zombie_tween_right( zombie );
 }
@@ -336,8 +332,8 @@ function zombie2_tween_left() {
 function zombie3_tween_right() {
 
     var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 3 * 32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie3.x + ( 1 * 32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_left, this );
     // zombie_tween_left( zombie );
 }
@@ -345,8 +341,8 @@ function zombie3_tween_right() {
 function zombie3_tween_left() {
 
     var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 3 * -32 )
-    }, 5000, 'Linear', true, 0 );
+        x: zombie3.x + ( 1 * -32 )
+    }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_right, this );
     // zombie_tween_right( zombie );
 }
@@ -366,6 +362,60 @@ function interactZombie( player, zombie ) {
         zombie.yuck = true;
         zombieToKill = zombie;
         $( '#modal' ).modal();
+        game.paused = true;
+        $( '#attack-button' ).show();
+
+        // need to be able to render text in the modal
+        $( '#modal #message' ).html(
+            "Player HP: " + player.hp + "\n" +
+            "Zombie name: " + zombie.name + "\n" +
+            "Zombie HP: " + zombie.hp );
+
+        $( '#attack-button' ).on( 'click', function () {
+            player.attack( zombie );
+            // player.hp -= zombieToKill.ap;
+            // zombieToKill.hp -= player.ap;
+            // console.log( "Player AP " + player.ap );
+
+            // as long as the zombie is alive keep attacking
+            if ( player.hp > 0 && zombie.hp > 0 ) {
+                $( '#modal #message' ).html(
+                    "Player HP: " + player.hp + "\n" +
+                    "Zombie name: " + zombie.name + "\n" +
+                    "Zombie HP: " + zombie.hp );
+            } else {
+                if ( zombie.hp <= 0 ) {
+                    // if the zombie is killed do all this
+                    player.zombieKills++;
+                    $( '#modal #message' ).html(
+                        "Player HP: " + player.hp + "\n" +
+                        "Zombie name: " + zombie.name + "\n" +
+                        "Zombie HP: " + 0 );
+
+                    zombie.destroy();
+
+                    healthPack = game.add.sprite(( 25 * 32 ), ( 30 * 32 ), 'healthPack' );
+                    healthPack.frame = 95;
+                    game.physics.arcade.enable( healthPack );
+
+                    $( '#attack-button' ).hide();
+                    $( '#close-button' ).html( "RESUME GAME" );
+                    return;
+                }
+                if ( player.hp <= 0 ) {
+                    
+                    //TODO: save game length(time), save zombie kills
+                    gameEndTime = Date.now();
+                    console.log( gameStartTime );
+                    console.log( gameEndTime );
+                    console.log( "Game over..." );
+                    player.destroy();
+                    // window.location = "/game/over";
+                    return;
+                }
+            }
+        } );
+
         // $('#modal').modal(testCallBack);
         // zombie.yuck = false;
         // zombie.destroy();
@@ -382,6 +432,14 @@ function interactZombie( player, zombie ) {
     // zombie.kill();
 }
 
+function collectHealth( player, healthPack ) {
+    console.log( "Before: " +  player.hp );
+    console.log( isNaN(player.hp));
+    player.hp += 10;
+    console.log( "After: " + player.hp );
+    healthPack.destroy();
+}
+
 function processCallback( obj1, obj2 ) {
     // game.paused = true;
     return false;
@@ -391,43 +449,12 @@ function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
-
-$( '#modal' ).on( 'shown.bs.modal', function ( e ) {
-    game.paused = true;
-    $( '#attack-button' ).show();
-
-    // need to be able to render text in the modal
-    $( '#modal #message' ).html(
-        "Player HP: " + player.hp + "\n" +
-        "Zombie name: " + zombieToKill.name + "\n" +
-        "Zombie HP: " + zombieToKill.hp );
-
-    $( '#attack-button' ).on( 'click', function () {
-        player.attack( zombieToKill );
-        // player.hp -= zombieToKill.ap;
-        // zombieToKill.hp -= player.ap;
-        // console.log( "Player AP " + player.ap );
-
-        if ( zombieToKill.hp > 0 ) {
-            $( '#modal #message' ).html(
-                "Player HP: " + player.hp + "\n" +
-                "Zombie name: " + zombieToKill.name + "\n" +
-                "Zombie HP: " + zombieToKill.hp );
-        } else {
-            $( '#modal #message' ).html(
-                "Player HP: " + player.hp + "\n" +
-                "Zombie name: " + zombieToKill.name + "\n" +
-                "Zombie HP: " + 0 );
-
-            zombieToKill.destroy();
-            $( '#attack-button' ).hide();
-            $( '#close-button' ).html( "RESUME GAME" );
-        }
-    } );
-} )
-
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
+    // player.body.enable = false;
+    player.y += 100;
+    zombieToKill.yuck = false;
     game.paused = false;
+    // player.body.enable = true;
 } );
 
 // function attack( player, zombie ) {
