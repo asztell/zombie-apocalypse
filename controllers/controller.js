@@ -40,10 +40,10 @@ router.get('/zombie', function(req, res) {
 
 
 
-router.post('/new/game', function(req, res) {
+router.post('/game/new', function(req, res) {
     var game;
     var character = req.body;
-    var sequelizeConnection = models.sequelize
+    var sequelizeConnection = models.sequelize;
     sequelizeConnection.query('SET FOREIGN_KEY_CHECKS = 0')
 
     .then(function() {
@@ -52,37 +52,38 @@ router.post('/new/game', function(req, res) {
         })
     })
 
-
     .then(function() {
 
-        return models.Game.create({
-                jwt: "filler",
-            },
+      return models.Game.create(
+          {
+            jwt: "filler",
+          },
+          {
+            include: [models.Player]
+          }
+      )
 
-            {
-                include: [models.Player]
+      .then(function(game) {
+
+        return models.Player.create(character)
+
+        .then(function(player) {
+            game.setPlayer(player);
+            var sendObj = {
+              success: 'Updated Successfully',
+              status: 200,
+              gameID: game.id
             }
-        )
-
-        .then(function(game) {
-
-            return models.Player.create(character)
-
-            .then(function(player) {
-                return game.setPlayer(player)
-
-            }).then(function(){
-							res.send('Test');
-						})
+            res.end(sendObj);
+            // res.end('{"success" : "Updated Successfully", "status" : 200}');
         })
+      })
+
+
 
     })
 
 
-});
-
-
-
-
+})
 
 module.exports = router;

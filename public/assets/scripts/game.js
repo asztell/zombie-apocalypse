@@ -53,12 +53,12 @@ function create() {
   console.log(chosenCharacter);
   $.ajax( {
       type: "post",
-      url: "new/game",
+      url: "game/new",
       dataType: "json",
       contentType: "application/json",
       data: JSON.stringify(chosenCharacter),
       success: function (response) {
-        console.log(response);
+        console.log(response.status);
           if ( response.status === "success" ) {
               //do something
           } else if ( response.status === "error" ) {
