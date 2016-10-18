@@ -2,7 +2,15 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
+var passport = require('passport');
 var methodOverride = require('method-override');
+var session = require('express-session');
+var exphbs = require('express-handlebars');
+
+var routes = require('./routes/routes.js');
+var auth = require('./routes/auth.js');
+var signup = require('./routes/signup.js');
+var users = require('./routes/users.js');
 
 //express setup
 var app = express();
@@ -16,14 +24,24 @@ app.use(bodyParser.urlencoded({
 }));
 // override with POST having ?_method=DELETE
 app.use(methodOverride('_method'));
-var exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs({
 	defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
 
-var routes = require('./controllers/controller.js');
+app.use(session({
+  secret: 'anything',
+  resave: false,
+  saveUninitialized: false
+}));
+
+require('./config/passport')(app);
+
+
 app.use('/', routes);
+app.use('/auth', auth);
+app.use('/signup', signup);
+app.use('/users', users)
 
 var port = 3000;
 app.listen(port);

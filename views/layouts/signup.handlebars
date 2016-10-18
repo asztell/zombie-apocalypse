@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading" id="panel-heading"> Sign Up</div>
+            <div class="panel-body">
+                <form id="signup-form" action="/signup">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="first-name-group" class="form-group">
+                                <label for="name" class="control-label">First Name</label>
+                                <input type="text" class="form-control" id="first-name" name="full_name" placeholder="John">
+                                <span id="first-name-span" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="last-name-group" class="form-group">
+                                <label for="name" class="control-label">Last Name</label>
+                                <input type="text" class="form-control" id="last-name" name="full_name" placeholder="Smith">
+                                <span id="last-name-span" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="email-group" class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter email">
+                        <span id="email-span" aria-hidden="true"></span>
+                    </div>
+
+                    <div id="password-group" class="form-group">
+                        <label for="pwd">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter password">
+                        <span id="password-span" aria-hidden="true"></span>
+                        <p>Must contain one number and one non-alphanunmeric character.</p>
+                    </div>
+
+                    <div id="confirm-password-group" class="form-group">
+                        <label for="pwd">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm-password" placeholder="Confirm password">
+                        <span id="confirm-password-span" aria-hidden="true"></span>
+                    </div>
+
+
+                    <div class="form-group">
+                        <button id="signup-button" disabled="true" type="submit" class="btn btn-primary has-spinner"><span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Sign Up</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+</div>

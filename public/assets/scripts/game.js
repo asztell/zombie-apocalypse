@@ -1,10 +1,11 @@
+//test comment for commit
 var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     preload: preload,
     create: create,
     update: update,
     render: render
 } );
-
+var chosenCharacter;
 var zombieToKill;
 var map;
 var player;
@@ -48,8 +49,28 @@ function preload() {
 
 function create() {
 
+  chosenCharacter = JSON.parse(localStorage.getItem("character"));
+  console.log(chosenCharacter);
+  $.ajax( {
+      type: "post",
+      url: "game/new",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(chosenCharacter),
+      success: function (response) {
+        console.log(response.gameID);
+          if ( response.status === "success" ) {
+              //do something
+          } else if ( response.status === "error" ) {
+              console.log( response );
+              // do something
+          }
+      }
+  });
+
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
+    // setup map images
     map = game.add.tilemap( "map" );
     map.addTilesetImage( "level1", "street" );
     map.addTilesetImage( "buildings", "building" );
@@ -58,6 +79,7 @@ function create() {
     map.addTilesetImage( "food1", "food" );
     map.addTilesetImage( "player1", "player" );
 
+    // setup layers and collision layer
     baseLayer = map.createLayer( "base_layer" );
     collisionLayer = map.createLayer( "collision_layer" );
     baseLayer.resizeWorld();
@@ -69,24 +91,48 @@ function create() {
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
 
+    //TODO: keep for now for reference, but likely will end up deleting it
     // this is the zombie spawn point in front of the building, we can have the zombies, say 3, spawn in this area rather than all over the map
-    zombieSpawnPoint = map.objects[ 'zombie_spawn_points' ][ 0 ];
+    // zombieSpawnPoint = map.objects[ 'zombie_spawn_points' ][ 0 ];
     // zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
-    zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
+    // zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
 
-    //TODO: player needs to be an "object" created from our constructor so that it has methods        
+    // ======================================================
+    // PLAYER CONSTRUCTOR
+    // This is a Phaser sprite object extended by us with our own properties and methods
+    // TODO: refactor this into its own module or elsewhere in the code to clean things up
+    // ======================================================
     player = game.add.sprite( 0, 800, "playerAnimations" );
-    console.log( player );
     player.frame = 18;
     game.physics.arcade.enable( player );
     player.body.collideWorldBounds = true;
     game.camera.follow( player );
+
+    // these are the animations as the player walks around
     player.animations.add( "up", [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ], 10, true );
     player.animations.add( "down", [ 18, 19, 20, 21, 22, 23, 24, 25, 26 ], 10, true );
     player.animations.add( "left", [ 9, 10, 11, 12, 13, 14, 15, 16, 17 ], 10, true );
     player.animations.add( "right", [ 27, 28, 29, 30, 31, 32, 33, 34, 35 ], 10, true );
-    player.hp = 100;
-    player.ap = 25;
+
+    // these are our custom properties and methods added to the Phaser sprite object
+    player.hp = player.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : chosenCharacter.hp;
+    player.ap = player.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : chosenCharacter.ap;
+    player.isAlive = player.hasOwnProperty( 'isAlive' ) ? logError( 'isAlive' ) : true;
+    player.weaponInventory = player.hasOwnProperty( 'weaponInventory' ) ? logError( 'weaponInventory' ) : [];
+    player.itemInventory = player.hasOwnProperty( 'itemInventory' ) ? logError( 'itemInventory' ) : [];
+    player.attack = player.hasOwnProperty( 'attack' ) ? logError( 'attack' ) :
+        function ( opponent ) {
+            opponent.hp -= player.ap;
+            player.hp -= opponent.ap;
+        }
+    player.collectWeapon = player.hasOwnProperty( 'collectWeapon' ) ? logError( 'collectWeapon' ) :
+        function ( weapon ) {
+            player.weaponInventory.push( weapon );
+        }
+    player.collectItem = player.hasOwnProperty( 'collectItem' ) ? logError( 'collectItem' ) :
+        function ( item ) {
+            player.itemInventory.push( item );
+        }
 
     // x = 21 and y = 26 is the bottom left corner of the building
     zombie1 = game.add.sprite( ( 21 * 32 ), ( 26 * 32 ), 'zombie' );
@@ -177,33 +223,6 @@ function create() {
     console.log( zombies );
     console.log( "Zombie HP: " + zombies.children[ 0 ].hp );
 
-    var chosenCharacter = localStorage.getItem( "character" );
-
-    var newGame = {
-        zombies: sqlZombies,
-        character: chosenCharacter
-    };
-    console.log( newGame );
-    $.ajax( {
-        type: "post",
-        url: "/game/new",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify( newGame ),
-        success: function ( response ) {
-            if ( response.status === "success" ) {
-                //something
-                $.ajax({
-                    type: "get",
-                    url: "/game/update"
-                });
-            } else if ( response.status === "error" ) {
-                console.log( response );
-                // TODO: Pop up modal with error message
-            }
-        }
-    });
-
     cursors = game.input.keyboard.createCursorKeys();
     spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
 }
@@ -223,9 +242,9 @@ function update() {
         console.log( "Entering door..." );
     }
 
-    if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        console.log( "Entering zombie zone..." );
-    }
+    // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    //     console.log( "Entering zombie zone..." );
+    // }
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
@@ -347,7 +366,7 @@ function interactZombie( player, zombie ) {
         zombie.yuck = true;
         zombieToKill = zombie;
         $( '#modal' ).modal();
-        // $('#modal').modal(testCallBack);        
+        // $('#modal').modal(testCallBack);
         // zombie.yuck = false;
         // zombie.destroy();
     }
@@ -375,18 +394,19 @@ function interactDoor() {
 
 $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
     game.paused = true;
-    $( '#attack-button').show();
+    $( '#attack-button' ).show();
 
     // need to be able to render text in the modal
-    $( '#modal #message' ).html(        
+    $( '#modal #message' ).html(
         "Player HP: " + player.hp + "\n" +
         "Zombie name: " + zombieToKill.name + "\n" +
         "Zombie HP: " + zombieToKill.hp );
 
     $( '#attack-button' ).on( 'click', function () {
-        player.hp -= zombieToKill.ap;
-        zombieToKill.hp -= player.ap;        
-        console.log("Player AP " + player.ap);
+        player.attack( zombieToKill );
+        // player.hp -= zombieToKill.ap;
+        // zombieToKill.hp -= player.ap;
+        // console.log( "Player AP " + player.ap );
 
         if ( zombieToKill.hp > 0 ) {
             $( '#modal #message' ).html(
@@ -407,8 +427,6 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 } )
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
-    // do something...  
-    // zombieToKill.destroy();
     game.paused = false;
 } );
 
@@ -429,3 +447,7 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
 //     //     }
 //     // }
 // }
+
+function logError( prop ) {
+    console.error( prop + " already exists, please change the name to avoid conflicts with the Phaser engine!" );
+}
