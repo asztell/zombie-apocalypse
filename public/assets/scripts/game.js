@@ -17,8 +17,10 @@ var zombie2;
 var zombie3;
 var cursors;
 var spacebar;
+var grassLayer;
 var baseLayer;
 var collisionLayer;
+var randomItemsLayer;
 var door;
 var enteredDoor;
 var zombies;
@@ -50,6 +52,11 @@ function preload() {
     game.load.image( "jeep", "assets/images/wj2.png" );
     game.load.image( "player", "assets/images/player.png" );
     game.load.image( "zombie", "assets/images/zombie.png" );
+    game.load.image( "dirt", "assets/images/dirt.png" );
+    game.load.image( "grass", "assets/images/grass.png" );
+    game.load.image( "logos", "assets/images/Logos.png" );
+    game.load.image( "objects", "assets/images/Objects.png" );
+    game.load.image( "trees", "assets/images/treetop.png" );
 }
 
 function create() {
@@ -83,11 +90,18 @@ function create() {
     map.addTilesetImage( "cars2", "jeep" );
     map.addTilesetImage( "food1", "food" );
     map.addTilesetImage( "player1", "player" );
+    map.addTilesetImage( "side_objects", "objects" );
+    map.addTilesetImage( "grass", "grass" );
+    map.addTilesetImage( "logos", "logos" );
+    map.addTilesetImage( "dirt", "dirt" );
+    map.addTilesetImage( "trees", "trees" );
 
     // setup layers and collision layer
-    baseLayer = map.createLayer( "base_layer" );
+    grassLayer = map.createLayer( "grass_layer" );
+    baseLayer = map.createLayer( "base_layer" );    
     collisionLayer = map.createLayer( "collision_layer" );
-    baseLayer.resizeWorld();
+    randomItemsLayer = map.createLayer( "random_items_layer" );
+    grassLayer.resizeWorld();
     map.setCollisionBetween( 0, 1943, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
@@ -146,22 +160,22 @@ function create() {
         }
 
     // x = 21 and y = 26 is the bottom left corner of the building
-    zombie1 = game.add.sprite( ( 24 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie2 = game.add.sprite( ( 25 * 32 ), ( 27 * 32 ), 'zombie' );
-    zombie3 = game.add.sprite( ( 26 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie1 = game.add.sprite( ( 22 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie2 = game.add.sprite( ( 23 * 32 ), ( 27 * 32 ), 'zombie' );
+    zombie3 = game.add.sprite( ( 24 * 32 ), ( 26 * 32 ), 'zombie' );
     // zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
 
     //tween move right
     zombie1_tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 1 * 32 )
+        x: zombie1.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     zombie1_tween.onComplete.add( zombie1_tween_left, this );
     zombie2_tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 1 * 32 )
+        x: zombie2.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     zombie2_tween.onComplete.add( zombie2_tween_left, this );
     zombie3_tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 1 * 32 )
+        x: zombie3.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
@@ -224,7 +238,7 @@ function create() {
 
 function update() {
 
-    var playerSpeed = 300;
+    var playerSpeed = 400;
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombies, interactZombie, null, this );
@@ -289,14 +303,14 @@ function render() {
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
-    game.debug.text( 'Tile X: ' + baseLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + baseLayer.getTileY( player.y ), 32, 64, textColor );
+    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 function zombie1_tween_right() {
 
     var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 1 * 32 )
+        x: zombie1.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_left, this );
     // zombie_tween_left( zombie );
@@ -305,7 +319,7 @@ function zombie1_tween_right() {
 function zombie1_tween_left() {
 
     var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 1 * -32 )
+        x: zombie1.x + ( 2 * -32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie1_tween_right, this );
     // zombie_tween_right( zombie );
@@ -314,7 +328,7 @@ function zombie1_tween_left() {
 function zombie2_tween_right() {
 
     var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 1 * 32 )
+        x: zombie2.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_left, this );
     // zombie_tween_left( zombie );
@@ -323,7 +337,7 @@ function zombie2_tween_right() {
 function zombie2_tween_left() {
 
     var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 1 * -32 )
+        x: zombie2.x + ( 2 * -32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie2_tween_right, this );
     // zombie_tween_right( zombie );
@@ -332,7 +346,7 @@ function zombie2_tween_left() {
 function zombie3_tween_right() {
 
     var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 1 * 32 )
+        x: zombie3.x + ( 2 * 32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_left, this );
     // zombie_tween_left( zombie );
@@ -341,7 +355,7 @@ function zombie3_tween_right() {
 function zombie3_tween_left() {
 
     var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 1 * -32 )
+        x: zombie3.x + ( 2 * -32 )
     }, 2000, 'Linear', true, 0 );
     tween.onComplete.add( zombie3_tween_right, this );
     // zombie_tween_right( zombie );
