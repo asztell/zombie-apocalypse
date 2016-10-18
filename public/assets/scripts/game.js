@@ -129,6 +129,7 @@ function create() {
     player.frame = 18;
     game.physics.arcade.enable( player );
     player.body.collideWorldBounds = true;
+    player.anchor.setTo( 0.5, 0.5 );
     game.camera.follow( player );
 
     // these are the animations as the player walks around
@@ -159,11 +160,12 @@ function create() {
             player.itemInventory.push( item );
         }
 
-    // x = 21 and y = 26 is the bottom left corner of the building
     zombie1 = game.add.sprite( ( 22 * 32 ), ( 26 * 32 ), 'zombie' );
     zombie2 = game.add.sprite( ( 23 * 32 ), ( 27 * 32 ), 'zombie' );
     zombie3 = game.add.sprite( ( 24 * 32 ), ( 26 * 32 ), 'zombie' );
-    // zombie3 = game.add.sprite(( 30 * 32 ), ( 26 * 32 ), 'zombie' );
+    zombie1.anchor.setTo( 0.5, 0.5 );
+    zombie2.anchor.setTo( 0.5, 0.5 );
+    zombie3.anchor.setTo( 0.5, 0.5 );
 
     //tween move right
     zombie1_tween = game.add.tween( zombie1 ).to( {
@@ -179,13 +181,6 @@ function create() {
     }, 2000, 'Linear', true, 0 );
     zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
-
-
-    // zombie3_tween_right.onComplete.add(zombie3_tween_left, this);
-    // zombie_tween_right( zombie3 );
-
-    // zombie.scale.x = 1;
-    // zombie.scale.y = 1;
     game.physics.arcade.enable( zombie1 );
     game.physics.arcade.enable( zombie2 );
     game.physics.arcade.enable( zombie3 );
@@ -222,6 +217,7 @@ function create() {
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.immovable = true;
         zombie.body.collideWorldBounds = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
         zombie.name = "zom_" + i;
         zombie.yuck = false;
         //random numbers between 20 and 40
@@ -245,7 +241,7 @@ function update() {
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
-    game.physics.arcade.collide( player, healthPack, collectHealth, null, this );
+    game.physics.arcade.overlap( player, healthPack, collectHealth, null, this );
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         console.log( "Entering door..." );
@@ -286,26 +282,127 @@ function update() {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
     }
+}
 
-    if ( spacebar.isDown ) {
-        attack();
+
+function interactCollisionLayer( player, layer ) {
+    console.log( "Ran into the collision layer..." );
+}
+
+// function myHandler() {
+//     $( '#modal' ).off( 'show', myHandler );
+// }
+
+function interactZombie( player, zombie ) {
+    //TODO: need a modal/interaction for zombie
+    
+    console.log( "Ran into a zombie..." );
+    console.log( " x: " + zombie.x + " y: " + zombie.y );
+    console.log( zombie.name );
+    console.log( zombie.yuck );
+
+    player.body.enable = false;
+
+    if ( zombie.yuck == false ) {
+        zombie.yuck = true;
+        zombieToKill = zombie;
+        game.paused = true;
+
+        $( '#modal' ).modal( 'show' );        
     }
-
-    //TODO: remove this when going final, just here for code reference in case needed
-    // when no cursor is pressed, the player is no longer moving, the player animation is stopped and frame 18 (forward facing) is selected
-    // if ( player.body.velocity.x === 0 && player.body.velocity.y === 0 ) {
-    //     player.frame = 18;
-    // }
 }
 
-// this is for debugging
-function render() {
-    var textColor = 'rgb(255, 255, 255)';
+// when modal is triggered, populate with current health stats for player and zombie
+$('#modal').on('shown.bs.modal', function (e) {
+    
+    $( '#attack-button' ).show();
+    $( '#close-button' ).html( "RETREAT!" );
+    
+    $( '#modal #message' ).html(
+        "Player HP: " + player.hp + "\n" +
+        "Zombie name: " + zombieToKill.name + "\n" +
+        "Zombie HP: " + zombieToKill.hp );
+});
 
-    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
-    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+// do a bunch of stuff each time the attack button is clicked when inside the modal
+$( '#attack-button' ).on( 'click', function () {
+    player.attack( zombieToKill );
+
+    // as long as the zombie is alive keep attacking
+    if ( player.hp > 0 && zombieToKill.hp > 0 ) {
+        $( '#modal #message' ).html(
+            "Player HP: " + player.hp + "\n" +
+            "Zombie name: " + zombieToKill.name + "\n" +
+            "Zombie HP: " + zombieToKill.hp );
+    } else {
+
+        if ( zombieToKill.hp <= 0 ) {
+            // if the zombie is killed do all this
+            player.zombieKills++;
+            $( '#modal #message' ).html(
+                "Player HP: " + player.hp + "\n" +
+                "Zombie name: " + zombieToKill.name + "\n" +
+                "Zombie HP: 0" );
+
+            $( '#attack-button' ).hide();
+            $( '#close-button' ).html( "RESUME GAME" );
+
+            zombieToKill.destroy();
+            dropHealthPack();    
+        }
+
+        if ( player.hp <= 0 ) {                        
+            //TODO: save game length(time), save zombie kills
+            gameEndTime = Date.now();
+
+            $( '#modal #message' ).html(
+            "Player HP: 0" +
+            "Zombie name: " + zombieToKill.name + "\n" +
+            "Zombie HP: " + zombieToKill.hp );
+
+            console.log( gameStartTime );
+            console.log( gameEndTime );
+            console.log( "Game over..." );
+
+            $( '#modal').modal( 'toggle' );            
+            player.destroy();
+            // window.location = "/game/over";
+        }
+    }
+});
+
+$( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
+    player.body.enable = true;
+    player.y += 100;
+    zombieToKill.yuck = false;
+    game.paused = false;
+});
+
+function dropHealthPack() {
+    healthPack = game.add.sprite( player.x, player.y + 100, 'healthPack' );
+    healthPack.frame = 95;
+    game.physics.arcade.enable( healthPack );
+    healthPack.body.enable = true;
 }
+
+function collectHealth( player, healthPack ) {
+    console.log( "Before: " +  player.hp );
+    console.log( isNaN(player.hp));
+    player.hp += 10;
+    console.log( "After: " + player.hp );
+    healthPack.destroy();
+}
+
+// function processCallback( obj1, obj2 ) {
+//     // game.paused = true;
+//     return false;
+// }
+
+function interactDoor() {
+    //TODO: need a modal/interaction for entering a building
+    console.log( "Entered a door..." );
+}
+
 
 function zombie1_tween_right() {
 
@@ -361,112 +458,16 @@ function zombie3_tween_left() {
     // zombie_tween_right( zombie );
 }
 
-function interactCollisionLayer( player, layer ) {
-    console.log( "Ran into the collision layer..." );
-}
-
-// function myHandler() {
-//     $( '#modal' ).off( 'show', myHandler );
-// }
-
-function interactZombie( player, zombie ) {
-    //TODO: need a modal/interaction for zombie
-    console.log( "Ran into a zombie..." );
-    console.log( " x: " + zombie.x + " y: " + zombie.y );
-    console.log( zombie.name );
-    console.log( zombie.yuck );
-
-    if ( zombie.yuck == false ) {
-        zombie.yuck = true;
-        zombieToKill = zombie;
-        game.paused = true;
-
-        $( '#modal' ).modal( 'show' );        
-    }
-}
-
-// no longer nested
-$('#modal').on('shown.bs.modal', function (e) {
-    $( '#attack-button' ).show();
-
-    // need to be able to render text in the modal
-    $( '#modal #message' ).html(
-        "Player HP: " + player.hp + "\n" +
-        "Zombie name: " + zombieToKill.name + "\n" +
-        "Zombie HP: " + zombieToKill.hp );
-
-    // $( '#modal' ).off('shown.bs.modal');
-});
-
-// no longer nested
-$( '#attack-button' ).on( 'click', function () {
-    player.attack( zombieToKill );
-
-    // as long as the zombie is alive keep attacking
-    if ( player.hp > 0 && zombieToKill.hp > 0 ) {
-        $( '#modal #message' ).html(
-            "Player HP: " + player.hp + "\n" +
-            "Zombie name: " + zombieToKill.name + "\n" +
-            "Zombie HP: " + zombieToKill.hp );
-    } else {
-
-        if ( zombieToKill.hp <= 0 ) {
-            // if the zombie is killed do all this
-            player.zombieKills++;
-            $( '#modal #message' ).html(
-                "Player HP: " + player.hp + "\n" +
-                "Zombie name: " + zombieToKill.name + "\n" +
-                "Zombie HP: " + 0 );
-
-            zombieToKill.destroy();
-
-            healthPack = game.add.sprite(( 25 * 32 ), ( 30 * 32 ), 'healthPack' );
-            healthPack.frame = 95;
-            game.physics.arcade.enable( healthPack );
-
-            $( '#attack-button' ).hide();
-            $( '#close-button' ).html( "RESUME GAME" );
-        }
-
-        // this probably doesn't work right now, but can fix
-        if ( player.hp <= 0 ) {                        
-            //TODO: save game length(time), save zombie kills
-            gameEndTime = Date.now();
-            console.log( gameStartTime );
-            console.log( gameEndTime );
-            console.log( "Game over..." );
-            player.destroy();
-            // window.location = "/game/over";
-        }
-    }
-});
-
-function collectHealth( player, healthPack ) {
-    console.log( "Before: " +  player.hp );
-    console.log( isNaN(player.hp));
-    player.hp += 10;
-    console.log( "After: " + player.hp );
-    healthPack.destroy();
-}
-
-// function processCallback( obj1, obj2 ) {
-//     // game.paused = true;
-//     return false;
-// }
-
-function interactDoor() {
-    //TODO: need a modal/interaction for entering a building
-    console.log( "Entered a door..." );
-}
-
-$( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
-    // player.body.enable = false;
-    player.y += 100;
-    zombieToKill.yuck = false;
-    game.paused = false;
-    // player.body.enable = true;
-});
-
+// logs an error if a properly already exists on the player or zombie, this is to handle customer properties and functions we add
 function logError( prop ) {
     console.error( prop + " already exists, please change the name to avoid conflicts with the Phaser engine!" );
+}
+
+// this is for debugging
+function render() {
+    var textColor = 'rgb(255, 255, 255)';
+
+    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
+    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
