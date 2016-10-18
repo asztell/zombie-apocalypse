@@ -365,6 +365,10 @@ function interactCollisionLayer( player, layer ) {
     console.log( "Ran into the collision layer..." );
 }
 
+// function myHandler() {
+//     $( '#modal' ).off( 'show', myHandler );
+// }
+
 function interactZombie( player, zombie ) {
     //TODO: need a modal/interaction for zombie
     console.log( "Ran into a zombie..." );
@@ -375,76 +379,67 @@ function interactZombie( player, zombie ) {
     if ( zombie.yuck == false ) {
         zombie.yuck = true;
         zombieToKill = zombie;
-        $( '#modal' ).modal();
         game.paused = true;
-        $( '#attack-button' ).show();
 
-        // need to be able to render text in the modal
+        $( '#modal' ).modal( 'show' );        
+    }
+}
+
+// no longer nested
+$('#modal').on('shown.bs.modal', function (e) {
+    $( '#attack-button' ).show();
+
+    // need to be able to render text in the modal
+    $( '#modal #message' ).html(
+        "Player HP: " + player.hp + "\n" +
+        "Zombie name: " + zombieToKill.name + "\n" +
+        "Zombie HP: " + zombieToKill.hp );
+
+    // $( '#modal' ).off('shown.bs.modal');
+});
+
+// no longer nested
+$( '#attack-button' ).on( 'click', function () {
+    player.attack( zombieToKill );
+
+    // as long as the zombie is alive keep attacking
+    if ( player.hp > 0 && zombieToKill.hp > 0 ) {
         $( '#modal #message' ).html(
             "Player HP: " + player.hp + "\n" +
-            "Zombie name: " + zombie.name + "\n" +
-            "Zombie HP: " + zombie.hp );
+            "Zombie name: " + zombieToKill.name + "\n" +
+            "Zombie HP: " + zombieToKill.hp );
+    } else {
 
-        $( '#attack-button' ).on( 'click', function () {
-            player.attack( zombie );
-            // player.hp -= zombieToKill.ap;
-            // zombieToKill.hp -= player.ap;
-            // console.log( "Player AP " + player.ap );
+        if ( zombieToKill.hp <= 0 ) {
+            // if the zombie is killed do all this
+            player.zombieKills++;
+            $( '#modal #message' ).html(
+                "Player HP: " + player.hp + "\n" +
+                "Zombie name: " + zombieToKill.name + "\n" +
+                "Zombie HP: " + 0 );
 
-            // as long as the zombie is alive keep attacking
-            if ( player.hp > 0 && zombie.hp > 0 ) {
-                $( '#modal #message' ).html(
-                    "Player HP: " + player.hp + "\n" +
-                    "Zombie name: " + zombie.name + "\n" +
-                    "Zombie HP: " + zombie.hp );
-            } else {
-                if ( zombie.hp <= 0 ) {
-                    // if the zombie is killed do all this
-                    player.zombieKills++;
-                    $( '#modal #message' ).html(
-                        "Player HP: " + player.hp + "\n" +
-                        "Zombie name: " + zombie.name + "\n" +
-                        "Zombie HP: " + 0 );
+            zombieToKill.destroy();
 
-                    zombie.destroy();
+            healthPack = game.add.sprite(( 25 * 32 ), ( 30 * 32 ), 'healthPack' );
+            healthPack.frame = 95;
+            game.physics.arcade.enable( healthPack );
 
-                    healthPack = game.add.sprite(( 25 * 32 ), ( 30 * 32 ), 'healthPack' );
-                    healthPack.frame = 95;
-                    game.physics.arcade.enable( healthPack );
+            $( '#attack-button' ).hide();
+            $( '#close-button' ).html( "RESUME GAME" );
+        }
 
-                    $( '#attack-button' ).hide();
-                    $( '#close-button' ).html( "RESUME GAME" );
-                    return;
-                }
-                if ( player.hp <= 0 ) {
-                    
-                    //TODO: save game length(time), save zombie kills
-                    gameEndTime = Date.now();
-                    console.log( gameStartTime );
-                    console.log( gameEndTime );
-                    console.log( "Game over..." );
-                    player.destroy();
-                    // window.location = "/game/over";
-                    return;
-                }
-            }
-        } );
-
-        // $('#modal').modal(testCallBack);
-        // zombie.yuck = false;
-        // zombie.destroy();
+        // this probably doesn't work right now, but can fix
+        if ( player.hp <= 0 ) {                        
+            //TODO: save game length(time), save zombie kills
+            gameEndTime = Date.now();
+            console.log( gameStartTime );
+            console.log( gameEndTime );
+            console.log( "Game over..." );
+            player.destroy();
+            // window.location = "/game/over";
+        }
     }
-
-    // player.destroy();
-
-
-    //call modal with callback
-
-    //unpause game
-
-    // this removes the zombie from the map, possibly use when zombie is killed, or cna switch graphic and show the zombie is dead and leave on the map
-    // zombie.kill();
-}
+});
 
 function collectHealth( player, healthPack ) {
     console.log( "Before: " +  player.hp );
@@ -454,40 +449,23 @@ function collectHealth( player, healthPack ) {
     healthPack.destroy();
 }
 
-function processCallback( obj1, obj2 ) {
-    // game.paused = true;
-    return false;
-}
+// function processCallback( obj1, obj2 ) {
+//     // game.paused = true;
+//     return false;
+// }
 
 function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
+
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     // player.body.enable = false;
     player.y += 100;
     zombieToKill.yuck = false;
     game.paused = false;
     // player.body.enable = true;
-} );
-
-// function attack( player, zombie ) {
-//     //Player attacks zombie first
-//     console.log( "space bar pressed for attack" );
-//     // zombie.hp -= player.ap;
-//     // if(zombie.hp <= 0) {
-//     //     //Ajax call to say zombie is dead
-//     //     //zombie.destroy();
-//     // } else {
-//     //     player.hp -= zombie.ap;
-//     //     if (player.hp <= 0) {
-//     //         //Game over!
-//     //         //Show stats view
-//     //     } else {
-//     //         attack(player, zombie);
-//     //     }
-//     // }
-// }
+});
 
 function logError( prop ) {
     console.error( prop + " already exists, please change the name to avoid conflicts with the Phaser engine!" );
