@@ -4,7 +4,7 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     update: update,
     render: render
 } );
-
+var chosenCharacter;
 var zombieToKill;
 var map;
 var player;
@@ -47,6 +47,25 @@ function preload() {
 }
 
 function create() {
+
+  chosenCharacter = JSON.parse(localStorage.getItem("character"));
+  console.log(chosenCharacter);
+  $.ajax( {
+      type: "post",
+      url: "new/game",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(chosenCharacter),
+      success: function (response) {
+        console.log(response);
+          if ( response.status === "success" ) {
+              //do something
+          } else if ( response.status === "error" ) {
+              console.log( response );
+              // do something
+          }
+      }
+  });
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
@@ -203,25 +222,6 @@ function create() {
     console.log( zombies );
     console.log( "Zombie HP: " + zombies.children[ 0 ].hp );
 
-    var chosenCharacter = JSON.parse(localStorage.getItem( "character" ));
-
-    $.ajax( {
-        type: "post",
-        url: "new/game",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify(chosenCharacter),
-        success: function (response) {
-          console.log(response);
-            if ( response.status === "success" ) {
-                //do something
-            } else if ( response.status === "error" ) {
-                console.log( response );
-                // do something
-            }
-        }
-    });
-
     cursors = game.input.keyboard.createCursorKeys();
     spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
 }
@@ -241,9 +241,9 @@ function update() {
         console.log( "Entering door..." );
     }
 
-    if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        console.log( "Entering zombie zone..." );
-    }
+    // if ( zombieSpawnRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    //     console.log( "Entering zombie zone..." );
+    // }
 
     game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     // game.physics.arcade.collide( player, zombie, interactZombie, null, this );
