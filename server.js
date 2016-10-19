@@ -11,6 +11,7 @@ var routes = require('./routes/routes.js');
 var auth = require('./routes/auth.js');
 var signup = require('./routes/signup.js');
 var users = require('./routes/users.js');
+var controller = require('./controllers/controller.js');
 
 //express setup
 var app = express();
@@ -41,7 +42,8 @@ require('./config/passport')(app);
 app.use('/', routes);
 app.use('/auth', auth);
 app.use('/signup', signup);
-app.use('/users', users)
+app.use('/users', users);
+app.use('/controller', controller)
 
 var port = 3000;
 app.listen(port);
