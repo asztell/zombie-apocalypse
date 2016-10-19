@@ -217,14 +217,32 @@ function create() {
     // game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
     // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
 
-    for ( var i = 0; i < 10; i ++ ) {
-        var randomX = game.rnd.integerInRange(1750, 2000);
-        var randomY = game.rnd.integerInRange(6100, 6200);
+    // zombies by lower left building
+    for ( var i = 0; i < 3; i ++ ) {
+        var randomX = game.rnd.integerInRange(1800, 2000);
+        var randomY = game.rnd.integerInRange(6100, 6300);
         var randomMove = game.rnd.integerInRange( 100, 300 );
-        var randomSpeed = game.rnd.integerInRange( 3000, 5000 );
+        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
 
         var zombie = zombies.create( randomX, randomY, 'zombie' );
         game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.immovable = true;
+        zombie.body.collideWorldBounds = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
+    }
+
+    for ( var i = 0; i < 3; i ++ ) {
+        var randomX = game.rnd.integerInRange(1900, 2100);
+        var randomY = game.rnd.integerInRange(6100, 6200);
+        var randomMove = game.rnd.integerInRange( 100, 150 );
+        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {y: zombie.y + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.immovable = true;
         zombie.body.collideWorldBounds = true;
@@ -427,60 +445,6 @@ function interactDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
-
-// function zombie1_tween_right() {
-
-//     var tween = game.add.tween( zombie1 ).to( {
-//         x: zombie1.x + ( 2 * 32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie1_tween_left, this );
-//     // zombie_tween_left( zombie );
-// }
-
-// function zombie1_tween_left() {
-
-//     var tween = game.add.tween( zombie1 ).to( {
-//         x: zombie1.x + ( 2 * -32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie1_tween_right, this );
-//     // zombie_tween_right( zombie );
-// }
-
-// function zombie2_tween_right() {
-
-//     var tween = game.add.tween( zombie2 ).to( {
-//         x: zombie2.x + ( 2 * 32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie2_tween_left, this );
-//     // zombie_tween_left( zombie );
-// }
-
-// function zombie2_tween_left() {
-
-//     var tween = game.add.tween( zombie2 ).to( {
-//         x: zombie2.x + ( 2 * -32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie2_tween_right, this );
-//     // zombie_tween_right( zombie );
-// }
-
-// function zombie3_tween_right() {
-
-//     var tween = game.add.tween( zombie3 ).to( {
-//         x: zombie3.x + ( 2 * 32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie3_tween_left, this );
-//     // zombie_tween_left( zombie );
-// }
-
-// function zombie3_tween_left() {
-
-//     var tween = game.add.tween( zombie3 ).to( {
-//         x: zombie3.x + ( 2 * -32 )
-//     }, 2000, 'Linear', true, 0 );
-//     tween.onComplete.add( zombie3_tween_right, this );
-//     // zombie_tween_right( zombie );
-// }
 
 // logs an error if a properly already exists on the player or zombie, this is to handle customer properties and functions we add
 function logError( prop ) {
