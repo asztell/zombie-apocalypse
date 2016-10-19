@@ -8,27 +8,32 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading" id="login-panel-heading"> Login</div>
-            <div class="panel-body">
+        
+            
+            
 {{!--                 <form id="signup-form" action="/auth/signup" method="GET">
- --}}
-                 <form id="signup-form" action="/signup" method="GET">
+ --}}           <div class="row text-center">
+                    <div class="col-lg-6">
+                         <form id="signup-form" action="/signup" method="GET">
 
-                    <div class="form-group">
-                        <button id="login-button" type="submit" class="btn btn-primary has-spinner"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Sign Up</button>
+                            <div class="form-group">
+                                <button id="login-button" type="submit" class="btn btn-primary very-large"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Sign Up</button>
+                            </div>
+
+                        </form>
                     </div>
+                    <div class="col-lg-6">
+                        <form id="login-form" action="/auth/login" method="GET">
 
-                </form>
-                <form id="login-form" action="/auth/login" method="GET">
+                            <div class="form-group">
+                                <button id="login-button" type="submit" class="btn btn-primary very-large"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Log In</button>
+                            </div>
 
-                    <div class="form-group">
-                        <button id="login-button" type="submit" class="btn btn-primary has-spinner"> <span class="spinner"><i class="fa fa-refresh fa-spin"></i></span>Log In</button>
+                        </form>
                     </div>
-
-                </form>
-            </div>
-        </div>
+                </div>
+           
+        
     </div>
     <div class="col-md-3"></div>
 </div>

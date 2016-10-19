@@ -62,8 +62,10 @@ body{
 }
 
 .jumbotron {
-  background-color: rgba(81,92,67, .8);
-  color: #D7FF47;
+  background-color: rgba(81,92,67, .2);
+  /*color: #D7FF47;*/
+  color: #D4EB51;
+
 }
 
 .panel {
@@ -86,6 +88,11 @@ body{
     background-color: #6C0000;
     border-color: #6C0000;
   }
+
+.very-large {
+  font-size: 2em;
+  padding: 50px;
+}
 
 .modal-content {
     position: relative;
