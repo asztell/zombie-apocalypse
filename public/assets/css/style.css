@@ -61,6 +61,10 @@ body{
   border: #D4EB51 2px solid;
 }
 
+.jumbotron {
+  background-color: rgba(81,92,67, .8);
+  color: #D7FF47;
+}
 
 .panel {
     margin-bottom: 20px;
@@ -81,6 +85,7 @@ body{
     color: #fff;
     background-color: #6C0000;
     border-color: #6C0000;
+  }
 
 .modal-content {
     position: relative;
@@ -102,6 +107,6 @@ body{
 }
 
 #zombie-attack-modal-image {
-  max-width: 50%;
+  max-width: 100%;
   height: auto;
 }
