@@ -39,7 +39,7 @@ var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
 var zombiesBottomRightBuilding;
 
-
+var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 // ======================================================
 // PHASER FUNCTION
 // 
@@ -352,6 +352,7 @@ $( '#attack-button' ).on( 'click', function () {
 } );
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
+    audio.pause();
     player.body.enable = true;
     player.y += 100;
     game.paused = false;

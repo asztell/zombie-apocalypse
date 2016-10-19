@@ -1,13 +1,13 @@
 var express 	= require('express'),
 	router 		= express.Router();
 
-router.get('/signup', function(req, res) {
+router.get('/', function(req, res) {
     //TODO: Process registering
-    res.render('/signup');
+    res.render('signup');
 });
 
 
-router.post('/signup', function(req, res) {
+router.post('/', function(req, res) {
 	res.redirect('/characters');
 });
 
