@@ -419,3 +419,6 @@ function render() {
     game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
     game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
 }
+
+var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
+audio.play();

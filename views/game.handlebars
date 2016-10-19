@@ -10,9 +10,17 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h1 id="error" class="modal-title text-center"></h1>
+                <h4 id="message" class="text-center">{{this.message}}</h4>
             </div>
             <div class="modal-body">
-                <h4 id="message" class="text-center">{{this.message}}</h4>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <img src="/assets/images/zombie-attack-modal.jpg"  id="zombie-attack-modal-image" alt="dayz by patrickbrown d5d5uvf - deviantart.net">
+                    </div>
+                    {{!-- <div class="col-lg-6"></div> --}}
+
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button id="attack-button" type="button" class="btn btn-default">ATTACK</button>
