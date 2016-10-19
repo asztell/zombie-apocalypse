@@ -38,4 +38,10 @@ router.get('/game', function(req, res) {
     });
 });
 
+
+router.get('/game/over', function(req, res){
+    res.render('gameover');
+});
+
+
 module.exports = router;
