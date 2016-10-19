@@ -36,7 +36,7 @@ var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
 var zombiesBottomRightBuilding;
 
-
+var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 // ======================================================
 // PHASER FUNCTION
 // 
@@ -269,6 +269,7 @@ function interactWithZombie( player, zombie ) {
 
 // when modal is triggered, populate with current health stats for player and zombie
 $('#modal').on('shown.bs.modal', function (e) {
+    audio.play();
     
     $( '#attack-button' ).show();
     $( '#close-button' ).html( "RETREAT!" );
@@ -327,6 +328,7 @@ $( '#attack-button' ).on( 'click', function () {
 });
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
+    audio.pause();
     player.body.enable = true;
     player.y += 100;
     game.paused = false;
@@ -404,5 +406,5 @@ game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor
 game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
 game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
 
-var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
-audio.play();
+
+
