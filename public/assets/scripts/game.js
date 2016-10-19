@@ -184,20 +184,20 @@ function create() {
     // MAKE ZOMBIES
     // ======================================================
     zombiesTopLeftBuilding = game.add.group();
-    makeZombiesXaxis( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 3, 4 );
-    makeZombiesYaxis( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 3, 4 );
+    makeZombiesXaxis( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7 );
+    makeZombiesYaxis( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7 );
 
     zombiesLowerLeftBuilding = game.add.group();
-    makeZombiesXaxis( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 5, 6 );
-    makeZombiesYaxis( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 5, 6 );
+    makeZombiesXaxis( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 6, 7 );
+    makeZombiesYaxis( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7 );
 
     zombiesCenterOfMap = game.add.group();
-    makeZombiesXaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 4, 5 );
-    makeZombiesYaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 4, 5 );
+    makeZombiesXaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7 );
+    makeZombiesYaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7 );
 
     zombiesBottomRightBuilding = game.add.group();
-    makeZombiesXaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 4, 5 );
-    makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 4, 5 );
+    makeZombiesXaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
+    makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
 
 
     // key inputs
@@ -231,6 +231,7 @@ function update() {
     player.body.velocity.setTo( 0, 0 );
 
     // check for an arrow key press
+    // TODO: the current code doesn't allow for diagonal movement, but can be added in if we want
     if ( cursors.up.isDown ) {
         player.body.velocity.y -= playerSpeed;
         player.animations.play( 'up' );
@@ -276,7 +277,7 @@ function interactWithZombie( player, zombie ) {
     audio.play();
     // zombieRoar.play();
 
-    zombieToKill = zombie;
+    zombieToKill = zombie;    
     game.paused = true;
     $( '#modal' ).modal( 'show' );
 }
@@ -373,15 +374,13 @@ $( '#attack-button' ).on( 'click', function () {
 } );
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
-    audio.pause();
-    player.body.enable = true;
-    player.y += 100;
+    player.body.velocity.setTo( 0, 0 );
     game.paused = false;
 } );
 
 function createHealthPack() {
     healthPack = game.add.sprite( player.x, player.y + 100, 'healthPack' );
-    healthPack.frame = 95;
+    healthPack.frame = 95; // pizza
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
 }
@@ -420,8 +419,8 @@ function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMove
 
         var zombie = group.create( randomX, randomY, 'zombieSpriteSheet' );
         zombie.frame = 2;
-        zombie.scale.x = 1.2;
-        zombie.scale.y = 1.2;
+        zombie.scale.x = 1.2; // resize zombie, make a little bigger
+        zombie.scale.y = 1.2; // resize zombie, make a little bigger
 
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.collideWorldBounds = true;
@@ -447,8 +446,8 @@ function makeZombiesYaxis( group, howMany, startX, endX, startY, endY, pixelMove
 
         var zombie = group.create( randomX, randomY, 'zombieSpriteSheet' );
         zombie.frame = 2;
-        zombie.scale.x = 1.2;
-        zombie.scale.y = 1.2;
+        zombie.scale.x = 1.2; // resize zombie, make a little bigger
+        zombie.scale.y = 1.2; // resize zombie, make a little bigger
 
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.collideWorldBounds = true;
