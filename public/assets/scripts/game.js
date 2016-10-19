@@ -389,6 +389,13 @@ function createHealthPack() {
 function collectHealth( player, healthPack ) {
     player.hp += 10;
     healthPack.destroy();
+    // var gameObj = {
+    //   gameID: gameID,
+    //   ap: player.ap,
+    //   hp: player.hp,
+    //   zombieKills: player.zombieKills,
+    //   timeAlive: gameEndTime - gameStartTime
+    // }
     // $.ajax( {
     //   type: "put",
     //   url: "game/update",
