@@ -1,2 +1,5 @@
 node_modules
-/config/config.json
+config.json
+npm-debug.log
+jsconfig.json
+.eslintrc.json
