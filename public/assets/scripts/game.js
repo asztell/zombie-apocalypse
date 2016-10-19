@@ -8,30 +8,40 @@ var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.AUTO, 
 
 var gameStartTime = Date.now();
 var gameEndTime;
+var gameID;
+
 var chosenCharacter;
-var zombieToKill;
-var map;
 var player;
-var zombie1;
-var zombie2;
-var zombie3;
-var cursors;
-var spacebar;
+
+var map;
+var mapPixelSize = 32; // pixels square
 var grassLayer;
 var baseLayer;
 var collisionLayer;
 var randomItemsLayer;
 var door;
 var enteredDoor;
-var zombies;
 var buildingDoorRectangle;
-var zombieSpawnPoint;
-var zombieSpawnRectangle;
-var zombie1_tween;
-var zombie2_tween;
-var zombie3_tween;
 var healthPack;
+var cursors;
+// var spacebar;
 
+var zombieToKill;
+var minZombieHP = 30;
+var maxZombieHP = 70;
+var minZombieAP = 15;
+var maxZombieAP = 25;
+var zombiesTopLeftBuilding;
+var zombiesLowerLeftBuilding;
+var zombiesCenterOfMap;
+var zombiesBottomRightBuilding;
+
+
+// ======================================================
+// PHASER FUNCTION
+// 
+// load assets into memory
+// ======================================================
 function preload() {
 
     // put the game "stage" in the middle of the page
@@ -59,6 +69,12 @@ function preload() {
     game.load.image( "trees", "assets/images/treetop.png" );
 }
 
+
+// ======================================================
+// PHASER FUNCTION
+// 
+// create the map, player, zombies, NPCs, etc.
+// ======================================================
 function create() {
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
@@ -102,7 +118,7 @@ function create() {
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
     grassLayer.resizeWorld();
-    map.setCollisionBetween( 0, 1943, true, collisionLayer, true );
+    map.setCollisionBetween( 0, 39999, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     door = map.objects[ 'building_doors' ][ 0 ];
@@ -114,11 +130,6 @@ function create() {
     healthPack.frame = 95;
     game.physics.arcade.enable( healthPack );
 
-    //TODO: keep for now for reference, but likely will end up deleting it
-    // this is the zombie spawn point in front of the building, we can have the zombies, say 3, spawn in this area rather than all over the map
-    // zombieSpawnPoint = map.objects[ 'zombie_spawn_points' ][ 0 ];
-    // zombieSpawnPoint = map.objects.map( function ( e ) { return e.name; }).indexOf( 'zombieSpawnPoint' );
-    // zombieSpawnRectangle = new Phaser.Rectangle( zombieSpawnPoint.x, zombieSpawnPoint.y, zombieSpawnPoint.width, zombieSpawnPoint.height );
 
     // ======================================================
     // PLAYER CONSTRUCTOR
@@ -160,137 +171,52 @@ function create() {
             player.itemInventory.push( item );
         }
 
-    zombie1 = game.add.sprite( ( 22 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie2 = game.add.sprite( ( 23 * 32 ), ( 27 * 32 ), 'zombie' );
-    zombie3 = game.add.sprite( ( 24 * 32 ), ( 26 * 32 ), 'zombie' );
-    zombie1.anchor.setTo( 0.5, 0.5 );
-    zombie2.anchor.setTo( 0.5, 0.5 );
-    zombie3.anchor.setTo( 0.5, 0.5 );
+
+    // ======================================================
+    // MAKE ZOMBIES
+    // ======================================================
+    zombiesTopLeftBuilding = game.add.group();
+    makeZombiesXaxis( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 3, 4 );
+    makeZombiesYaxis( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 3, 4 );
+
+    zombiesLowerLeftBuilding = game.add.group();
+    makeZombiesXaxis( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 5, 6 );
+    makeZombiesYaxis( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 5, 6 );
+ 
+    zombiesCenterOfMap = game.add.group();
+    makeZombiesXaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 4, 5 );
+    makeZombiesYaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 4, 5 );
+
+    zombiesBottomRightBuilding = game.add.group();
+    makeZombiesXaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 4, 5 );
+    makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 4, 5 );
 
 
-
-    game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
-    // game.add.tween(zombie1).to( { x: (24 * 32) }, 2000, Phaser.Easing.Cubic.InOut, true, 0, Number.MAX_VALUE, true);
-
-    //tween move right
-    // zombie1_tween = game.add.tween( zombie1 ).to( {
-    //     x: zombie1.x + ( 2 * 32 )
-    // }, 2000, 'Linear', true, 0 );
-    // zombie1_tween.onComplete.add( zombie1_tween_left, this );
-    // zombie2_tween = game.add.tween( zombie2 ).to( {
-    //     x: zombie2.x + ( 2 * 32 )
-    // }, 2000, 'Linear', true, 0 );
-    // zombie2_tween.onComplete.add( zombie2_tween_left, this );
-    // zombie3_tween = game.add.tween( zombie3 ).to( {
-    //     x: zombie3.x + ( 2 * 32 )
-    // }, 2000, 'Linear', true, 0 );
-    // zombie3_tween.onComplete.add( zombie3_tween_left, this );
-
-    game.physics.arcade.enable( zombie1 );
-    game.physics.arcade.enable( zombie2 );
-    game.physics.arcade.enable( zombie3 );
-    zombie1.body.collideWorldBounds = true;
-    zombie1.immovable = true;
-    zombie1.body.moves = false;
-    zombie1.name = "Zom_1";
-    zombie1.hp = 100;
-    zombie1.ap = 10;
-
-    zombie2.body.collideWorldBounds = true;
-    zombie2.immovable = true;
-    zombie2.body.moves = false;
-    zombie2.name = "Zom_2";
-    zombie2.hp = 100;
-    zombie2.ap = 10;
-
-    zombie3.body.collideWorldBounds = true;
-    zombie3.immovable = true;
-    zombie3.body.moves = false;
-    zombie3.name = "Zom_3";
-    zombie3.hp = 100;
-    zombie3.ap = 10;
-
-    zombies = game.add.group();
-
-
-    // game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
-    // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
-
-    // zombies by lower left building
-    for ( var i = 0; i < 3; i ++ ) {
-        var randomX = game.rnd.integerInRange(1800, 2000);
-        var randomY = game.rnd.integerInRange(6100, 6300);
-        var randomMove = game.rnd.integerInRange( 100, 300 );
-        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
-
-        var zombie = zombies.create( randomX, randomY, 'zombie' );
-        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
-        game.physics.enable( zombie, Phaser.Physics.ARCADE );
-        zombie.body.immovable = true;
-        zombie.body.collideWorldBounds = true;
-        zombie.anchor.setTo( 0.5, 0.5 );
-        // zombie.name = "zom_" + i;
-        zombie.hp = game.rnd.integerInRange( 30, 80 );
-        zombie.ap = game.rnd.integerInRange( 10, 20 );
-    }
-
-    for ( var i = 0; i < 3; i ++ ) {
-        var randomX = game.rnd.integerInRange(1900, 2100);
-        var randomY = game.rnd.integerInRange(6100, 6200);
-        var randomMove = game.rnd.integerInRange( 100, 150 );
-        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
-
-        var zombie = zombies.create( randomX, randomY, 'zombie' );
-        game.add.tween(zombie).to( {y: zombie.y + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
-        game.physics.enable( zombie, Phaser.Physics.ARCADE );
-        zombie.body.immovable = true;
-        zombie.body.collideWorldBounds = true;
-        zombie.anchor.setTo( 0.5, 0.5 );
-        // zombie.name = "zom_" + i;
-        zombie.hp = game.rnd.integerInRange( 30, 80 );
-        zombie.ap = game.rnd.integerInRange( 10, 20 );
-    }
-
-
-    for ( var i = 0; i < 10; i++ ) {
-        var randomX = game.rnd.integerInRange(2000, 4000);
-        var randomY = game.rnd.integerInRange(2000, 4000);
-        var randomMove = game.rnd.integerInRange( 100, 300 );
-        var randomSpeed = game.rnd.integerInRange( 4000, 10000 );
-
-        var zombie = zombies.create( randomX, randomY, 'zombie' );
-        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
-        game.physics.enable( zombie, Phaser.Physics.ARCADE );
-        zombie.body.immovable = true;
-        zombie.body.collideWorldBounds = true;
-        zombie.anchor.setTo( 0.5, 0.5 );
-        // zombie.name = "zom_" + i;
-        zombie.hp = game.rnd.integerInRange( 30, 80 );
-        zombie.ap = game.rnd.integerInRange( 10, 20 );
-    }
-
-    console.log( zombies );
-    console.log( "Zombie HP: " + zombies.children[ 0 ].hp );
-
+    // key inputs
     cursors = game.input.keyboard.createCursorKeys();
-    spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
+    // spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
 }
 
+
+// ======================================================
+// PHASER FUNCTION
+// 
+// updates with each screen cycle
+// ======================================================
 function update() {
 
     var playerSpeed = 400;
 
     game.physics.arcade.collide( player, collisionLayer );
     // game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    game.physics.arcade.collide( player, zombies, interactZombie, null, this );   
-    game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
-    game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
-    game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
+    game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
     game.physics.arcade.overlap( player, healthPack, collectHealth, null, this );
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        console.log( "Entering door..." );
-        interactDoor();
+        interactWithDoor();
     }
 
     // reset the player's velocity with each frame update
@@ -315,11 +241,30 @@ function update() {
     }
 }
 
-function interactZombie( player, zombie ) {
 
+// ======================================================
+// PHASER FUNCTION
+// 
+// this is for debugging
+// ======================================================
+function render() {
+    var textColor = 'rgb(255, 255, 255)';
+
+    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
+    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+}
+
+
+// ======================================================
+// SAJE GAMES FUNCTIONS
+// 
+// 
+// ======================================================
+function interactWithZombie( player, zombie ) {
     zombieToKill = zombie;
     game.paused = true;
-    $( '#modal' ).modal( 'show' );        
+    $( '#modal' ).modal( 'show' );
 }
 
 // when modal is triggered, populate with current health stats for player and zombie
@@ -358,7 +303,7 @@ $( '#attack-button' ).on( 'click', function () {
             $( '#close-button' ).html( "RESUME GAME" );
 
             zombieToKill.destroy();
-            dropHealthPack();    
+            createHealthPack();
         }
 
         if ( player.hp <= 0 ) {                        
@@ -387,7 +332,7 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 });
 
-function dropHealthPack() {
+function createHealthPack() {
     healthPack = game.add.sprite( player.x, player.y + 100, 'healthPack' );
     healthPack.frame = 95;
     game.physics.arcade.enable( healthPack );
@@ -399,26 +344,65 @@ function collectHealth( player, healthPack ) {
     healthPack.destroy();
 }
 
-function interactDoor() {
+function interactWithDoor() {
     //TODO: need a modal/interaction for entering a building
     console.log( "Entered a door..." );
 }
 
-// logs an error if a properly already exists on the player or zombie, this is to handle customer properties and functions we add
+function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {
+
+      for ( var i = 0; i < howMany; i ++ ) {
+        var randomX = game.rnd.integerInRange( ( startX * mapPixelSize ), ( endX * mapPixelSize ) );
+        var randomY = game.rnd.integerInRange( ( startY * mapPixelSize ), ( endY * mapPixelSize ) );
+        var randomMove = game.rnd.integerInRange( pixelMoveMin, pixelMoveMax );
+        var randomSpeed = game.rnd.integerInRange( ( secondsMin * 1000 ), ( secondsMax * 1000 ) );
+
+        var zombie = group.create( randomX, randomY, 'zombie' );
+        
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.collideWorldBounds = true;
+        zombie.body.immovable = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+
+        zombie.hp = zombie.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : game.rnd.integerInRange( minZombieHP, maxZombieHP );
+        zombie.ap = zombie.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : game.rnd.integerInRange( minZombieAP, maxZombieAP );
+
+        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+    }
+}
+
+function makeZombiesYaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {
+
+      for ( var i = 0; i < howMany; i ++ ) {
+        var randomX = game.rnd.integerInRange( ( startX * mapPixelSize ), ( endX * mapPixelSize ) );
+        var randomY = game.rnd.integerInRange( ( startY * mapPixelSize ), ( endY * mapPixelSize ) );
+        var randomMove = game.rnd.integerInRange( pixelMoveMin, pixelMoveMax );
+        var randomSpeed = game.rnd.integerInRange( ( secondsMin * 1000 ), ( secondsMax * 1000 ) );
+
+        var zombie = group.create( randomX, randomY, 'zombie' );
+        
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.collideWorldBounds = true;
+        zombie.body.immovable = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+
+        zombie.hp = zombie.hasOwnProperty( 'hp' ) ? logError( 'hp' ) : game.rnd.integerInRange( minZombieHP, maxZombieHP );
+        zombie.ap = zombie.hasOwnProperty( 'ap' ) ? logError( 'ap' ) : game.rnd.integerInRange( minZombieAP, maxZombieAP );
+
+        game.add.tween(zombie).to( {y: zombie.y + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+    }
+}
+
+// logs an error if a property already exists on the player or zombie, this is to handle custom properties and functions we add
 function logError( prop ) {
     console.error( prop + " already exists, please change the name to avoid conflicts with the Phaser engine!" );
 }
 
-// this is for debugging
-function render() {
-    var textColor = 'rgb(255, 255, 255)';
-
-    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
-    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
-    game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
-    game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
-}
+//TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
+game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
+game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
 
 var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 audio.play();
