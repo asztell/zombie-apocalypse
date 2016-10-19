@@ -82,7 +82,6 @@ function create() {
         }
     } );
 
-
     // setup map images
     map = game.add.tilemap( "map" );
     map.addTilesetImage( "level1", "street" );
@@ -168,19 +167,24 @@ function create() {
     zombie2.anchor.setTo( 0.5, 0.5 );
     zombie3.anchor.setTo( 0.5, 0.5 );
 
+
+
+    game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
+    // game.add.tween(zombie1).to( { x: (24 * 32) }, 2000, Phaser.Easing.Cubic.InOut, true, 0, Number.MAX_VALUE, true);
+
     //tween move right
-    zombie1_tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie1_tween.onComplete.add( zombie1_tween_left, this );
-    zombie2_tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie2_tween.onComplete.add( zombie2_tween_left, this );
-    zombie3_tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie3_tween.onComplete.add( zombie3_tween_left, this );
+    // zombie1_tween = game.add.tween( zombie1 ).to( {
+    //     x: zombie1.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie1_tween.onComplete.add( zombie1_tween_left, this );
+    // zombie2_tween = game.add.tween( zombie2 ).to( {
+    //     x: zombie2.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie2_tween.onComplete.add( zombie2_tween_left, this );
+    // zombie3_tween = game.add.tween( zombie3 ).to( {
+    //     x: zombie3.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
     game.physics.arcade.enable( zombie1 );
     game.physics.arcade.enable( zombie2 );
@@ -208,18 +212,43 @@ function create() {
 
     zombies = game.add.group();
 
+
+    // game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
     // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
-    for ( var i = 0; i < 10; i++ ) {
-        var zombie = zombies.create( 360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie' );
+
+    for ( var i = 0; i < 10; i ++ ) {
+        var randomX = game.rnd.integerInRange(1750, 2000);
+        var randomY = game.rnd.integerInRange(6100, 6200);
+        var randomMove = game.rnd.integerInRange( 100, 300 );
+        var randomSpeed = game.rnd.integerInRange( 3000, 5000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.immovable = true;
         zombie.body.collideWorldBounds = true;
         zombie.anchor.setTo( 0.5, 0.5 );
-        zombie.name = "zom_" + i;
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
+    }
 
-        //random numbers between 20 and 40
-        zombie.hp = Math.floor( Math.random() * 20 ) + 20
-        zombie.ap = Math.floor( Math.random() * 20 ) + 20
+
+    for ( var i = 0; i < 10; i++ ) {
+        var randomX = game.rnd.integerInRange(2000, 4000);
+        var randomY = game.rnd.integerInRange(2000, 4000);
+        var randomMove = game.rnd.integerInRange( 100, 300 );
+        var randomSpeed = game.rnd.integerInRange( 4000, 10000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.immovable = true;
+        zombie.body.collideWorldBounds = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
     }
 
     console.log( zombies );
@@ -357,59 +386,59 @@ function interactDoor() {
     console.log( "Entered a door..." );
 }
 
-function zombie1_tween_right() {
+// function zombie1_tween_right() {
 
-    var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie1_tween_left, this );
-    // zombie_tween_left( zombie );
-}
+//     var tween = game.add.tween( zombie1 ).to( {
+//         x: zombie1.x + ( 2 * 32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie1_tween_left, this );
+//     // zombie_tween_left( zombie );
+// }
 
-function zombie1_tween_left() {
+// function zombie1_tween_left() {
 
-    var tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 2 * -32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie1_tween_right, this );
-    // zombie_tween_right( zombie );
-}
+//     var tween = game.add.tween( zombie1 ).to( {
+//         x: zombie1.x + ( 2 * -32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie1_tween_right, this );
+//     // zombie_tween_right( zombie );
+// }
 
-function zombie2_tween_right() {
+// function zombie2_tween_right() {
 
-    var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie2_tween_left, this );
-    // zombie_tween_left( zombie );
-}
+//     var tween = game.add.tween( zombie2 ).to( {
+//         x: zombie2.x + ( 2 * 32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie2_tween_left, this );
+//     // zombie_tween_left( zombie );
+// }
 
-function zombie2_tween_left() {
+// function zombie2_tween_left() {
 
-    var tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 2 * -32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie2_tween_right, this );
-    // zombie_tween_right( zombie );
-}
+//     var tween = game.add.tween( zombie2 ).to( {
+//         x: zombie2.x + ( 2 * -32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie2_tween_right, this );
+//     // zombie_tween_right( zombie );
+// }
 
-function zombie3_tween_right() {
+// function zombie3_tween_right() {
 
-    var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie3_tween_left, this );
-    // zombie_tween_left( zombie );
-}
+//     var tween = game.add.tween( zombie3 ).to( {
+//         x: zombie3.x + ( 2 * 32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie3_tween_left, this );
+//     // zombie_tween_left( zombie );
+// }
 
-function zombie3_tween_left() {
+// function zombie3_tween_left() {
 
-    var tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 2 * -32 )
-    }, 2000, 'Linear', true, 0 );
-    tween.onComplete.add( zombie3_tween_right, this );
-    // zombie_tween_right( zombie );
-}
+//     var tween = game.add.tween( zombie3 ).to( {
+//         x: zombie3.x + ( 2 * -32 )
+//     }, 2000, 'Linear', true, 0 );
+//     tween.onComplete.add( zombie3_tween_right, this );
+//     // zombie_tween_right( zombie );
+// }
 
 // logs an error if a properly already exists on the player or zombie, this is to handle customer properties and functions we add
 function logError( prop ) {
