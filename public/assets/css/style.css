@@ -5,6 +5,7 @@
 
 * {
   font-family: "Creepster", sans-serif;
+  font-size: 24px;
 }
 
 body{
@@ -117,4 +118,7 @@ body{
 #zombie-attack-modal-image {
   max-width: 100%;
   height: auto;
+}
+.character-name{
+  text-decoration: underline;
 }
