@@ -416,4 +416,6 @@ function render() {
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
     game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+    game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
+    game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
 }
