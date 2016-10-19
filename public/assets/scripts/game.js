@@ -24,7 +24,7 @@ var baseLayer;
 var collisionLayer;
 var randomItemsLayer;
 var door;
-var enteredDoor;
+var doorEntered;
 var buildingDoorRectangle;
 var buildingDoor_TopLeft;
 var healthPack;
@@ -215,9 +215,7 @@ function create() {
     makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
 
     healthPacks = game.add.group();
-    // createHealthPack(); 
-    
-
+    // createHealthPack();    
 
 
     // key inputs
@@ -433,12 +431,122 @@ $( '#attack-button' ).on( 'click', function () {
             player.destroy();
         }
     }
-} );
+});
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
-} );
+});
+
+function interactWithDoor( player, door ) {
+//     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+//     // audio.play();
+    console.log("Entered door...");
+
+//     // doorEntered = door;
+//     // game.paused = true;
+//     // $( '#modal-door' ).modal( 'show' );
+}
+
+// // when modal is triggered, populate with current health stats for player and zombie
+// $( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {
+
+//     $( '#collect-button' ).show();
+//     $( '#close-button' ).html( "RETREAT!" );
+
+//     $( '#modal-door #message' ).html(
+//         "Player HP: " + player.hp + "\n" +
+//         "Zombie name: " + zombieToKill.name + "\n" +
+//         "Zombie HP: " + zombieToKill.hp );
+// } );
+
+// // do a bunch of stuff each time the attack button is clicked when inside the modal
+// $( '#collect-button' ).on( 'click', function () {
+//     // itemClickedOn
+//     player.collectItem( itemClickedOn );
+
+//     // if player has room in inventory, then allow them to collect item, otherwise, no
+//     if ( player.hp > 0 && zombieToKill.hp > 0 ) {
+//         $( '#modal #message' ).html(
+//             "Player HP: " + player.hp + "\n" +
+//             "Zombie name: " + zombieToKill.name + "\n" +
+//             "Zombie HP: " + zombieToKill.hp );
+//     } else {
+
+//         if ( zombieToKill.hp <= 0 ) {
+//             // if the zombie is killed do all this
+//             player.zombieKills++;
+//             $( '#modal #message' ).html(
+//                 "Player HP: " + player.hp + "\n" +
+//                 "Zombie name: " + zombieToKill.name + "\n" +
+//                 "Zombie HP: 0" );
+
+//             $( '#attack-button' ).hide();
+//             $( '#close-button' ).html( "RESUME GAME" );
+//             // var updateObj = {
+//             //   gameID: gameID,
+//             //   ap: player.ap,
+//             //   hp: player.hp,
+//             //   zombieKills: player.zombieKills,
+//             //   timeAlive: Date.now() - gameStartTime
+//             // }
+//             // $.ajax( {
+//             //     type: "put",
+//             //     url: "game/update",
+//             //     dataType: "json",
+//             //     contentType: "application/json",
+//             //     data: JSON.stringify( updateObj )
+//             // } );
+
+//             console.log(zombiesTopLeftBuilding.countLiving());
+//             zombieToKill.kill();
+//             console.log(zombiesTopLeftBuilding.countLiving());
+                
+//             createHealthPackZombieKill();
+//         }
+
+//         if ( player.hp <= 0 ) {
+//             //TODO: save game length(time), save zombie kills
+//             gameEndTime = Date.now();
+
+//             $( '#modal #message' ).html(
+//                 "Player HP: 0" +
+//                 "Zombie name: " + zombieToKill.name + "\n" +
+//                 "Zombie HP: " + zombieToKill.hp );
+
+//             console.log( gameStartTime );
+//             console.log( gameEndTime );
+//             console.log( "Game over..." );
+
+//             // var gameObj = {
+//             //   gameID: gameID,
+//             //   ap: player.ap,
+//             //   hp: player.hp,
+//             //   zombieKills: player.zombieKills,
+//             //   timeAlive: gameEndTime - gameStartTime
+//             // }
+//             //
+//             // $.ajax( {
+//             //     type: "put",
+//             //     url: "game/over",
+//             //     dataType: "json",
+//             //     contentType: "application/json",
+//             //     data: JSON.stringify( gameObj ),
+//             //     success: function ( response ) {
+//             //       window.location = "/game/over";
+//             //     }
+//             // } );
+
+//             $( '#modal' ).modal( 'toggle' );
+//             player.destroy();
+//         }
+//     }
+// });
+
+// $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
+//     player.body.velocity.setTo( 0, 0 );
+//     game.paused = false;
+// });
 
 function createHealthPackZombieKill() {
     var randomX = game.rnd.integerInRange( 300, 300 );
@@ -481,11 +589,6 @@ function collectHealth( player, healthPack ) {
     //   contentType: "application/json",
     //   data: JSON.stringify( updateObj )
     // } );
-}
-
-function interactWithDoor() {
-    //TODO: need a modal/interaction for entering a building
-    console.log( "Entered a door..." );
 }
 
 function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {
