@@ -4,12 +4,12 @@
     <div class="col-md-12">
       {{#each characters}}
         <div class="character" data-name="{{this.name}}" data-ap={{this.ap}} data-hp={{this.hp}}>
-          <h3>{{this.name}}</h3>
+          <h1 class="character-name">{{this.name}}</h1>
           <p>
             {{this.description}}
           </p>
-          <h5>Attack Points: {{this.ap}}</h5>
-          <h5>Health Points: {{this.hp}}</h5>
+          <h3>Attack Points: {{this.ap}}</h3>
+          <h3>Health Points: {{this.hp}}</h3>
         </div>
       {{/each}}
     </div>
