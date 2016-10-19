@@ -1,5 +1,5 @@
 //test comment for commit
-var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
+var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.AUTO, "", {
     preload: preload,
     create: create,
     update: update,
@@ -88,7 +88,7 @@ function create() {
         contentType: "application/json",
         data: JSON.stringify( chosenCharacter ),
         success: function ( response ) {
-            gameID = response.gameID;
+            console.log( response.gameID );
             if ( response.status === "success" ) {
                 //do something
             } else if ( response.status === "error" ) {
@@ -114,7 +114,7 @@ function create() {
 
     // setup layers and collision layer
     grassLayer = map.createLayer( "grass_layer" );
-    baseLayer = map.createLayer( "base_layer" );
+    baseLayer = map.createLayer( "base_layer" );    
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
     grassLayer.resizeWorld();
@@ -269,10 +269,10 @@ function interactWithZombie( player, zombie ) {
 
 // when modal is triggered, populate with current health stats for player and zombie
 $('#modal').on('shown.bs.modal', function (e) {
-
+    
     $( '#attack-button' ).show();
     $( '#close-button' ).html( "RETREAT!" );
-
+    
     $( '#modal #message' ).html(
         "Player HP: " + player.hp + "\n" +
         "Zombie name: " + zombieToKill.name + "\n" +
@@ -301,53 +301,27 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
-            var updateObj = {
-              gameID: gameID,
-              ap: player.ap,
-              hp: player.hp,
-              zombieKills: player.zombieKills,
-              timeAlive: Date.now() - gameStartTime
-            }
-            $.ajax( {
-                type: "put",
-                url: "game/update",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( updateObj )
-            } );
 
             zombieToKill.destroy();
             createHealthPack();
         }
 
-        if ( player.hp <= 0 ) {
-
+        if ( player.hp <= 0 ) {                        
+            //TODO: save game length(time), save zombie kills
             gameEndTime = Date.now();
 
             $( '#modal #message' ).html(
             "Player HP: 0" +
             "Zombie name: " + zombieToKill.name + "\n" +
             "Zombie HP: " + zombieToKill.hp );
-            var gameObj = {
-              gameID: gameID,
-              ap: player.ap,
-              hp: player.hp,
-              zombieKills: player.zombieKills,
-              timeAlive: gameEndTime - gameStartTime
-            }
 
-            $.ajax( {
-                type: "put",
-                url: "game/over",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( gameObj ),
-                success: function ( response ) {
-                  window.location = '/stats/' + gameID;
-                }
-            } );
+            console.log( gameStartTime );
+            console.log( gameEndTime );
+            console.log( "Game over..." );
 
-            $( '#modal').modal( 'toggle' );
+            $( '#modal').modal( 'toggle' );            
+            player.destroy();
+            // window.location = "/game/over";
         }
     }
 });
@@ -368,20 +342,6 @@ function createHealthPack() {
 function collectHealth( player, healthPack ) {
     player.hp += 10;
     healthPack.destroy();
-    var updateObj = {
-      gameID: gameID,
-      ap: player.ap,
-      hp: player.hp,
-      zombieKills: player.zombieKills,
-      timeAlive: Date.now() - gameStartTime
-    }
-    $.ajax( {
-        type: "put",
-        url: "game/update",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify( updateObj )
-    } );
 }
 
 function interactWithDoor() {
@@ -437,3 +397,12 @@ function makeZombiesYaxis( group, howMany, startX, endX, startY, endY, pixelMove
 function logError( prop ) {
     console.error( prop + " already exists, please change the name to avoid conflicts with the Phaser engine!" );
 }
+
+//TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
+game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
+game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
+
+var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
+audio.play();

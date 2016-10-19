@@ -3,35 +3,23 @@ var router = express.Router();
 var models = require('../models');
 var characters = require('../data/characters.js')
 
-router.get('/', function(req, res) {
-    res.render('index');
-});
+// router.get('/', function(req, res) {
+//     res.render('index');
+// });
 
-router.get('/characters', function(req, res) {
-    var hbsObj = {
-        characters: characters
-    };
-    res.render('characters', hbsObj);
-});
+// router.get('/characters', function(req, res) {
+//     var hbsObj = {
+//         characters: characters
+//     };
+//     res.render('characters', hbsObj);
+// });
 
-router.post('/signup', function(req, res) {
-    //TODO: Process registering
-});
-
-router.post('/login', function(req, res) {
-    //TODO: Process registering
-});
-
-router.get('/game', function(req, res) {
-    res.render('game', {
-        title: 'game',
-        layout: 'gamelayout'
-    });
-});
-
-router.get('/building', function(req, res) {
-    //TODO: Return building metadata
-});
+// router.get('/game', function(req, res) {
+//     res.render('game', {
+//         title: 'game',
+//         layout: 'gamelayout'
+//     });
+// });
 
 router.get('/stats/:id', function(req, res) {
     var gameID = req.params.id;
@@ -42,8 +30,6 @@ router.get('/stats/:id', function(req, res) {
       res.render('index');
     })
 });
-
-
 
 
 router.post('/game/new', function(req, res) {
@@ -81,12 +67,7 @@ router.post('/game/new', function(req, res) {
                 // res.end('{"success" : "Updated Successfully", "status" : 200}');
             })
         })
-
-
-
     })
-
-
 })
 
 router.put('/game/update', function(req, res) {
@@ -136,7 +117,6 @@ router.put('/game/over', function(req, res) {
         }
         res.end(JSON.stringify(sendObj));
     });
-
 });
 
 
