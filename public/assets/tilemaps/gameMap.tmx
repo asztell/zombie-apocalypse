@@ -862,6 +862,6 @@
 </data>
  </layer>
  <objectgroup name="building_doors">
-  <object id="4" name="buildingDoor" type="door" x="800" y="851" width="96" height="32"/>
+  <object id="4" name="buildingDoor_TopLeft" type="door" x="738.727" y="831.727" width="123" height="50"/>
  </objectgroup>
 </map>

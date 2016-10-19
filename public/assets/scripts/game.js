@@ -1,5 +1,6 @@
 // new up a Phaser game
-var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.AUTO, "", {
+var game = new Phaser.Game( 800, 600, Phaser.CANVAS, "", {
+// var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.CANVAS, "", {
     preload: preload,
     create: create,
     update: update,
@@ -23,21 +24,26 @@ var baseLayer;
 var collisionLayer;
 var randomItemsLayer;
 var door;
-var enteredDoor;
+var doorEntered;
 var buildingDoorRectangle;
+var buildingDoor_TopLeft;
 var healthPack;
 var cursors;
 // var spacebar;
 
+var healthPacks;
+
 var zombieToKill;
-var minZombieHP = 30;
-var maxZombieHP = 70;
-var minZombieAP = 15;
-var maxZombieAP = 25;
+var minZombieHP = 10;
+var maxZombieHP = 20;
+var minZombieAP = 10;
+var maxZombieAP = 15;
 var zombiesTopLeftBuilding;
 var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
 var zombiesBottomRightBuilding;
+var zombieDistancetoPlayer = 400;
+var zombieChaseSpeed = 200;
 
 var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 // ======================================================
@@ -48,10 +54,14 @@ var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 function preload() {
 
     // put the game "stage" in the middle of the page
+    // TODO: change scale to zoom in map, but still keep it full size on the screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignHorizontally = true;
     // game.scale.pageAlignVertically = true;
     // game.stage.backgroundColor = '#eee';
+    // game.world.scale.x = 1.5;
+    // game.world.scale.y = 1.5;
+    // game.world.scale.y = 2;
 
     // load map and other images needed
     game.load.tilemap( "map", "assets/tilemaps/gameMap.json", null, Phaser.Tilemap.TILED_JSON );
@@ -125,19 +135,16 @@ function create() {
     baseLayer = map.createLayer( "base_layer" );
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
+
     grassLayer.resizeWorld();
     map.setCollisionBetween( 0, 2000, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
-    door = map.objects[ 'building_doors' ][ 0 ];
-    // door = map.objects.map( function ( e ) { return e.name; }).indexOf( 'buildDoor' );
+    buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
+    
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
-    buildingDoorRectangle = new Phaser.Rectangle( door.x, door.y, door.width, door.height );
-
-    healthPack = game.add.sprite( 100, 100, 'healthPack' );
-    healthPack.frame = 95;
-    game.physics.arcade.enable( healthPack );
-
+    buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
+        
 
     // ======================================================
     // PLAYER CONSTRUCTOR
@@ -145,11 +152,15 @@ function create() {
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
     player = game.add.sprite( 0, 800, "playerAnimations" );
-    player.frame = 18;
-    game.physics.arcade.enable( player );
+    player.frame = 18;    
+    // game.physics.arcade.enable( player );
+    game.physics.enable( player, Phaser.Physics.ARCADE);
     player.body.collideWorldBounds = true;
     player.anchor.setTo( 0.5, 0.5 );
     game.camera.follow( player );
+
+    // TODO: check the zombie size as well
+    player.body.setSize(18, 35, 0, 5); // woohoo!
 
     // these are the animations as the player walks around
     player.animations.add( "up", [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ], 10, true );
@@ -183,21 +194,28 @@ function create() {
     // ======================================================
     // MAKE ZOMBIES
     // ======================================================
+    var zombiesTopLeftBuildingTotal = 4;
     zombiesTopLeftBuilding = game.add.group();
     makeZombiesXaxis( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7 );
     makeZombiesYaxis( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7 );
 
+    var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
     makeZombiesXaxis( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 6, 7 );
     makeZombiesYaxis( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7 );
 
+    var zombiesCenterOfMapTotal = 10;
     zombiesCenterOfMap = game.add.group();
     makeZombiesXaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7 );
     makeZombiesYaxis( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7 );
 
+    var zombiesBottomRightBuildingTotal = 6;
     zombiesBottomRightBuilding = game.add.group();
     makeZombiesXaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
     makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
+
+    healthPacks = game.add.group();
+    // createHealthPack();    
 
 
     // key inputs
@@ -216,16 +234,53 @@ function update() {
     var playerSpeed = 400;
 
     game.physics.arcade.collide( player, collisionLayer );
+    game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
+    game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
     // game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
-    game.physics.arcade.overlap( player, healthPack, collectHealth, null, this );
+    game.physics.arcade.overlap( player, healthPacks, collectHealth, null, this );
 
-    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    if ( buildingDoorRectangle.contains( player.x + player.width/2, player.y + player.height/2)) {
         interactWithDoor();
     }
+
+    if (game.physics.arcade.distanceBetween(zombiesTopLeftBuilding.children[0],player) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[0], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesTopLeftBuilding.children[2],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[2], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesLowerLeftBuilding.children[0],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[0], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesLowerLeftBuilding.children[3],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[3], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesCenterOfMap.children[0],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[0], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesCenterOfMap.children[5],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[5], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesBottomRightBuilding.children[0],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[0], player, zombieChaseSpeed, this);
+    }
+
+    if (game.physics.arcade.distanceBetween(zombiesBottomRightBuilding.children[3],player) < zombieDistancetoPlayer) {
+        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[3], player, zombieChaseSpeed, this);
+    }
+    
 
     // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
@@ -247,7 +302,7 @@ function update() {
     } else {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
-    }
+    } 
 }
 
 
@@ -257,13 +312,15 @@ function update() {
 // this is for debugging
 // ======================================================
 function render() {
+    
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
     game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
-    game.debug.text( 'Health: ' + player.hp, 232, 48, textColor );
-    game.debug.text( 'Health: ' + player.ap, 432, 48, textColor );
+    game.debug.text( 'HP: ' + player.hp, 232, 48, textColor );
+    game.debug.text( 'AP: ' + player.ap, 432, 48, textColor );
+    game.debug.geom(buildingDoor_TopLeft,'#0fffff');
 }
 
 
@@ -331,8 +388,11 @@ $( '#attack-button' ).on( 'click', function () {
             //     data: JSON.stringify( updateObj )
             // } );
 
-            zombieToKill.destroy();
-            createHealthPack();
+            console.log(zombiesTopLeftBuilding.countLiving());
+            zombieToKill.kill();
+            console.log(zombiesTopLeftBuilding.countLiving());
+                
+            createHealthPackZombieKill();
         }
 
         if ( player.hp <= 0 ) {
@@ -371,18 +431,145 @@ $( '#attack-button' ).on( 'click', function () {
             player.destroy();
         }
     }
-} );
+});
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
-} );
+});
 
-function createHealthPack() {
-    healthPack = game.add.sprite( player.x, player.y + 100, 'healthPack' );
+function interactWithDoor( player, door ) {
+//     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+//     // audio.play();
+    console.log("Entered door...");
+
+//     // doorEntered = door;
+//     // game.paused = true;
+//     // $( '#modal-door' ).modal( 'show' );
+}
+
+// // when modal is triggered, populate with current health stats for player and zombie
+// $( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {
+
+//     $( '#collect-button' ).show();
+//     $( '#close-button' ).html( "RETREAT!" );
+
+//     $( '#modal-door #message' ).html(
+//         "Player HP: " + player.hp + "\n" +
+//         "Zombie name: " + zombieToKill.name + "\n" +
+//         "Zombie HP: " + zombieToKill.hp );
+// } );
+
+// // do a bunch of stuff each time the attack button is clicked when inside the modal
+// $( '#collect-button' ).on( 'click', function () {
+//     // itemClickedOn
+//     player.collectItem( itemClickedOn );
+
+//     // if player has room in inventory, then allow them to collect item, otherwise, no
+//     if ( player.hp > 0 && zombieToKill.hp > 0 ) {
+//         $( '#modal #message' ).html(
+//             "Player HP: " + player.hp + "\n" +
+//             "Zombie name: " + zombieToKill.name + "\n" +
+//             "Zombie HP: " + zombieToKill.hp );
+//     } else {
+
+//         if ( zombieToKill.hp <= 0 ) {
+//             // if the zombie is killed do all this
+//             player.zombieKills++;
+//             $( '#modal #message' ).html(
+//                 "Player HP: " + player.hp + "\n" +
+//                 "Zombie name: " + zombieToKill.name + "\n" +
+//                 "Zombie HP: 0" );
+
+//             $( '#attack-button' ).hide();
+//             $( '#close-button' ).html( "RESUME GAME" );
+//             // var updateObj = {
+//             //   gameID: gameID,
+//             //   ap: player.ap,
+//             //   hp: player.hp,
+//             //   zombieKills: player.zombieKills,
+//             //   timeAlive: Date.now() - gameStartTime
+//             // }
+//             // $.ajax( {
+//             //     type: "put",
+//             //     url: "game/update",
+//             //     dataType: "json",
+//             //     contentType: "application/json",
+//             //     data: JSON.stringify( updateObj )
+//             // } );
+
+//             console.log(zombiesTopLeftBuilding.countLiving());
+//             zombieToKill.kill();
+//             console.log(zombiesTopLeftBuilding.countLiving());
+                
+//             createHealthPackZombieKill();
+//         }
+
+//         if ( player.hp <= 0 ) {
+//             //TODO: save game length(time), save zombie kills
+//             gameEndTime = Date.now();
+
+//             $( '#modal #message' ).html(
+//                 "Player HP: 0" +
+//                 "Zombie name: " + zombieToKill.name + "\n" +
+//                 "Zombie HP: " + zombieToKill.hp );
+
+//             console.log( gameStartTime );
+//             console.log( gameEndTime );
+//             console.log( "Game over..." );
+
+//             // var gameObj = {
+//             //   gameID: gameID,
+//             //   ap: player.ap,
+//             //   hp: player.hp,
+//             //   zombieKills: player.zombieKills,
+//             //   timeAlive: gameEndTime - gameStartTime
+//             // }
+//             //
+//             // $.ajax( {
+//             //     type: "put",
+//             //     url: "game/over",
+//             //     dataType: "json",
+//             //     contentType: "application/json",
+//             //     data: JSON.stringify( gameObj ),
+//             //     success: function ( response ) {
+//             //       window.location = "/game/over";
+//             //     }
+//             // } );
+
+//             $( '#modal' ).modal( 'toggle' );
+//             player.destroy();
+//         }
+//     }
+// });
+
+// $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
+//     player.body.velocity.setTo( 0, 0 );
+//     game.paused = false;
+// });
+
+function createHealthPackZombieKill() {
+    var randomX = game.rnd.integerInRange( 300, 300 );
+    var randomY = game.rnd.integerInRange( 300, 300 );
+
+    var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
     healthPack.frame = 95; // pizza
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
+    healthPack.body.immovable = true;
+    healthPack.anchor.setTo( 0.5, 0.5 );
+}
+
+function createHealthPackRandom() {
+    var randomX = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+    var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+
+    var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
+    healthPack.frame = 95; // pizza
+    game.physics.arcade.enable( healthPack );
+    healthPack.body.enable = true;
+    healthPack.body.immovable = true;
+    healthPack.anchor.setTo( 0.5, 0.5 );
 }
 
 function collectHealth( player, healthPack ) {
@@ -402,11 +589,6 @@ function collectHealth( player, healthPack ) {
     //   contentType: "application/json",
     //   data: JSON.stringify( updateObj )
     // } );
-}
-
-function interactWithDoor() {
-    //TODO: need a modal/interaction for entering a building
-    console.log( "Entered a door..." );
 }
 
 function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {

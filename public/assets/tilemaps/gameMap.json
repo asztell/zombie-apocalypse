@@ -50,15 +50,15 @@
          "name":"building_doors",
          "objects":[
                 {
-                 "height":32,
+                 "height":50,
                  "id":4,
-                 "name":"buildingDoor",
+                 "name":"buildingDoor_TopLeft",
                  "rotation":0,
                  "type":"door",
                  "visible":true,
-                 "width":96,
-                 "x":800,
-                 "y":851
+                 "width":123,
+                 "x":738.727,
+                 "y":831.727
                 }],
          "opacity":1,
          "type":"objectgroup",
