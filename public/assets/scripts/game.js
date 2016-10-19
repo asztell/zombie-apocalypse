@@ -42,7 +42,7 @@ var zombiesBottomRightBuilding;
 var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
 // ======================================================
 // PHASER FUNCTION
-// 
+//
 // load assets into memory
 // ======================================================
 function preload() {
@@ -84,7 +84,7 @@ function preload() {
 
 // ======================================================
 // PHASER FUNCTION
-// 
+//
 // create the map, player, zombies, NPCs, etc.
 // ======================================================
 function create() {
@@ -103,16 +103,7 @@ function create() {
         url: "game/new",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( chosenCharacter ),
-        success: function ( response ) {
-            console.log( response.gameID );
-            if ( response.status === "success" ) {
-                //do something
-            } else if ( response.status === "error" ) {
-                console.log( response );
-                // do something
-            }
-        }
+        data: JSON.stringify( chosenCharacter )
     } );
 
     // setup map images
@@ -217,7 +208,7 @@ function create() {
 
 // ======================================================
 // PHASER FUNCTION
-// 
+//
 // updates with each screen cycle
 // ======================================================
 function update() {
@@ -261,7 +252,7 @@ function update() {
 
 // ======================================================
 // PHASER FUNCTION
-// 
+//
 // this is for debugging
 // ======================================================
 function render() {
@@ -277,14 +268,14 @@ function render() {
 
 // ======================================================
 // SAJE GAMES FUNCTIONS
-// 
-// 
+//
+//
 // ======================================================
-function interactWithZombie( player, zombie ) { 
+function interactWithZombie( player, zombie ) {
     var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    audio.play();   
+    audio.play();
     // zombieRoar.play();
-    
+
     zombieToKill = zombie;
     game.paused = true;
     $( '#modal' ).modal( 'show' );
@@ -324,6 +315,20 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
+            var updateObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: Date.now() - gameStartTime
+            }
+            $.ajax( {
+                type: "put",
+                url: "game/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( updateObj )
+            } );
 
             zombieToKill.destroy();
             createHealthPack();
@@ -342,11 +347,27 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( gameEndTime );
             console.log( "Game over..." );
 
+            var gameObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: gameEndTime - gameStartTime
+            }
+
+            $.ajax( {
+                type: "put",
+                url: "game/over",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( gameObj ),
+                success: function ( response ) {
+                  window.location = "/game/over";
+                }
+            } );
+
             $( '#modal' ).modal( 'toggle' );
             player.destroy();
-
-            // TODO: need a route here to game over
-            window.location = "/game/over";
         }
     }
 } );
@@ -368,6 +389,13 @@ function createHealthPack() {
 function collectHealth( player, healthPack ) {
     player.hp += 10;
     healthPack.destroy();
+    $.ajax( {
+      type: "put",
+      url: "game/update",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify( updateObj )
+    } );
 }
 
 function interactWithDoor() {

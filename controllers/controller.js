@@ -26,7 +26,6 @@ router.get('/stats/:id', function(req, res) {
     models.Player.findOne({
       where: {GameId: gameID}
     }).then(function(result) {
-      console.log(result.name, result.timeAlive);
       res.render('index');
     })
 });
@@ -71,7 +70,6 @@ router.post('/game/new', function(req, res) {
 })
 
 router.put('/game/update', function(req, res) {
-    console.log(req.body);
     models.Player.update({
         ap: req.body.ap,
         hp: req.body.hp,
