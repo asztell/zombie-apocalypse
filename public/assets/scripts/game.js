@@ -1,5 +1,5 @@
 //test comment for commit
-var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
+var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.AUTO, "", {
     preload: preload,
     create: create,
     update: update,
@@ -31,7 +31,6 @@ var zombie1_tween;
 var zombie2_tween;
 var zombie3_tween;
 var healthPack;
-var gameID;
 
 function preload() {
 
@@ -73,7 +72,7 @@ function create() {
         contentType: "application/json",
         data: JSON.stringify( chosenCharacter ),
         success: function ( response ) {
-            gameID = response.gameID;
+            console.log( response.gameID );
             if ( response.status === "success" ) {
                 //do something
             } else if ( response.status === "error" ) {
@@ -82,7 +81,6 @@ function create() {
             }
         }
     } );
-
 
     // setup map images
     map = game.add.tilemap( "map" );
@@ -100,7 +98,7 @@ function create() {
 
     // setup layers and collision layer
     grassLayer = map.createLayer( "grass_layer" );
-    baseLayer = map.createLayer( "base_layer" );
+    baseLayer = map.createLayer( "base_layer" );    
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
     grassLayer.resizeWorld();
@@ -169,19 +167,24 @@ function create() {
     zombie2.anchor.setTo( 0.5, 0.5 );
     zombie3.anchor.setTo( 0.5, 0.5 );
 
+
+
+    game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
+    // game.add.tween(zombie1).to( { x: (24 * 32) }, 2000, Phaser.Easing.Cubic.InOut, true, 0, Number.MAX_VALUE, true);
+
     //tween move right
-    zombie1_tween = game.add.tween( zombie1 ).to( {
-        x: zombie1.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie1_tween.onComplete.add( zombie1_tween_left, this );
-    zombie2_tween = game.add.tween( zombie2 ).to( {
-        x: zombie2.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie2_tween.onComplete.add( zombie2_tween_left, this );
-    zombie3_tween = game.add.tween( zombie3 ).to( {
-        x: zombie3.x + ( 2 * 32 )
-    }, 2000, 'Linear', true, 0 );
-    zombie3_tween.onComplete.add( zombie3_tween_left, this );
+    // zombie1_tween = game.add.tween( zombie1 ).to( {
+    //     x: zombie1.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie1_tween.onComplete.add( zombie1_tween_left, this );
+    // zombie2_tween = game.add.tween( zombie2 ).to( {
+    //     x: zombie2.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie2_tween.onComplete.add( zombie2_tween_left, this );
+    // zombie3_tween = game.add.tween( zombie3 ).to( {
+    //     x: zombie3.x + ( 2 * 32 )
+    // }, 2000, 'Linear', true, 0 );
+    // zombie3_tween.onComplete.add( zombie3_tween_left, this );
 
     game.physics.arcade.enable( zombie1 );
     game.physics.arcade.enable( zombie2 );
@@ -209,18 +212,61 @@ function create() {
 
     zombies = game.add.group();
 
+
+    // game.add.tween(zombie1).to( { x: (zombie1.x + 200) }, 4000, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
     // this creates 10 zombies and randomly places them on the map along with currently randomly generated hp and ap points
-    for ( var i = 0; i < 10; i++ ) {
-        var zombie = zombies.create( 360 + Math.random() * 200, 160 + Math.random() * 200, 'zombie' );
+
+    // zombies by lower left building
+    for ( var i = 0; i < 3; i ++ ) {
+        var randomX = game.rnd.integerInRange(1800, 2000);
+        var randomY = game.rnd.integerInRange(6100, 6300);
+        var randomMove = game.rnd.integerInRange( 100, 300 );
+        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
         game.physics.enable( zombie, Phaser.Physics.ARCADE );
         zombie.body.immovable = true;
         zombie.body.collideWorldBounds = true;
         zombie.anchor.setTo( 0.5, 0.5 );
-        zombie.name = "zom_" + i;
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
+    }
 
-        //random numbers between 20 and 40
-        zombie.hp = Math.floor( Math.random() * 20 ) + 20
-        zombie.ap = Math.floor( Math.random() * 20 ) + 20
+    for ( var i = 0; i < 3; i ++ ) {
+        var randomX = game.rnd.integerInRange(1900, 2100);
+        var randomY = game.rnd.integerInRange(6100, 6200);
+        var randomMove = game.rnd.integerInRange( 100, 150 );
+        var randomSpeed = game.rnd.integerInRange( 5000, 6000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {y: zombie.y + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.immovable = true;
+        zombie.body.collideWorldBounds = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
+    }
+
+
+    for ( var i = 0; i < 10; i++ ) {
+        var randomX = game.rnd.integerInRange(2000, 4000);
+        var randomY = game.rnd.integerInRange(2000, 4000);
+        var randomMove = game.rnd.integerInRange( 100, 300 );
+        var randomSpeed = game.rnd.integerInRange( 4000, 10000 );
+
+        var zombie = zombies.create( randomX, randomY, 'zombie' );
+        game.add.tween(zombie).to( {x: zombie.x + randomMove }, randomSpeed, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true );
+        game.physics.enable( zombie, Phaser.Physics.ARCADE );
+        zombie.body.immovable = true;
+        zombie.body.collideWorldBounds = true;
+        zombie.anchor.setTo( 0.5, 0.5 );
+        // zombie.name = "zom_" + i;
+        zombie.hp = game.rnd.integerInRange( 30, 80 );
+        zombie.ap = game.rnd.integerInRange( 10, 20 );
     }
 
     console.log( zombies );
@@ -236,7 +282,7 @@ function update() {
 
     game.physics.arcade.collide( player, collisionLayer );
     // game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
-    game.physics.arcade.collide( player, zombies, interactZombie, null, this );
+    game.physics.arcade.collide( player, zombies, interactZombie, null, this );   
     game.physics.arcade.collide( player, zombie1, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie2, interactZombie, null, this );
     game.physics.arcade.collide( player, zombie3, interactZombie, null, this );
@@ -371,4 +417,3 @@ function render() {
     game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
-
