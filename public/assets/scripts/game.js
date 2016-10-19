@@ -315,20 +315,20 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
-            var updateObj = {
-              gameID: gameID,
-              ap: player.ap,
-              hp: player.hp,
-              zombieKills: player.zombieKills,
-              timeAlive: Date.now() - gameStartTime
-            }
-            $.ajax( {
-                type: "put",
-                url: "game/update",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( updateObj )
-            } );
+            // var updateObj = {
+            //   gameID: gameID,
+            //   ap: player.ap,
+            //   hp: player.hp,
+            //   zombieKills: player.zombieKills,
+            //   timeAlive: Date.now() - gameStartTime
+            // }
+            // $.ajax( {
+            //     type: "put",
+            //     url: "game/update",
+            //     dataType: "json",
+            //     contentType: "application/json",
+            //     data: JSON.stringify( updateObj )
+            // } );
 
             zombieToKill.destroy();
             createHealthPack();
@@ -347,24 +347,24 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( gameEndTime );
             console.log( "Game over..." );
 
-            var gameObj = {
-              gameID: gameID,
-              ap: player.ap,
-              hp: player.hp,
-              zombieKills: player.zombieKills,
-              timeAlive: gameEndTime - gameStartTime
-            }
-
-            $.ajax( {
-                type: "put",
-                url: "game/over",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( gameObj ),
-                success: function ( response ) {
-                  window.location = "/game/over";
-                }
-            } );
+            // var gameObj = {
+            //   gameID: gameID,
+            //   ap: player.ap,
+            //   hp: player.hp,
+            //   zombieKills: player.zombieKills,
+            //   timeAlive: gameEndTime - gameStartTime
+            // }
+            //
+            // $.ajax( {
+            //     type: "put",
+            //     url: "game/over",
+            //     dataType: "json",
+            //     contentType: "application/json",
+            //     data: JSON.stringify( gameObj ),
+            //     success: function ( response ) {
+            //       window.location = "/game/over";
+            //     }
+            // } );
 
             $( '#modal' ).modal( 'toggle' );
             player.destroy();
@@ -389,13 +389,13 @@ function createHealthPack() {
 function collectHealth( player, healthPack ) {
     player.hp += 10;
     healthPack.destroy();
-    $.ajax( {
-      type: "put",
-      url: "game/update",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify( updateObj )
-    } );
+    // $.ajax( {
+    //   type: "put",
+    //   url: "game/update",
+    //   dataType: "json",
+    //   contentType: "application/json",
+    //   data: JSON.stringify( updateObj )
+    // } );
 }
 
 function interactWithDoor() {
