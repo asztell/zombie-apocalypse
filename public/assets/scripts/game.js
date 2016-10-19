@@ -135,7 +135,7 @@ function create() {
     collisionLayer = map.createLayer( "collision_layer" );
     randomItemsLayer = map.createLayer( "random_items_layer" );
     grassLayer.resizeWorld();
-    map.setCollisionBetween( 0, 39999, true, collisionLayer, true );
+    map.setCollisionBetween( 0, 2000, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     door = map.objects[ 'building_doors' ][ 0 ];
