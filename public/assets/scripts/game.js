@@ -1,5 +1,5 @@
 // new up a Phaser game
-var game = new Phaser.Game( 800, 600, Phaser.CANVAS, "", {
+var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 // var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.CANVAS, "", {
     preload: preload,
     create: create,
@@ -234,16 +234,16 @@ function update() {
     var playerSpeed = 400;
 
     game.physics.arcade.collide( player, collisionLayer );
-    game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
-    game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
-    game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
-    game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
-    // game.physics.arcade.collide( player, collisionLayer, interactCollisionLayer, null, this );
     game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
     game.physics.arcade.overlap( player, healthPacks, collectHealth, null, this );
+    game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
+    game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
+    game.physics.arcade.collide( healthPacks, collisionLayer );
 
     if ( buildingDoorRectangle.contains( player.x + player.width/2, player.y + player.height/2)) {
         interactWithDoor();
@@ -549,8 +549,8 @@ function interactWithDoor( player, door ) {
 // });
 
 function createHealthPackZombieKill() {
-    var randomX = game.rnd.integerInRange( 300, 300 );
-    var randomY = game.rnd.integerInRange( 300, 300 );
+    var randomX = game.rnd.integerInRange( -300, 300 );
+    var randomY = game.rnd.integerInRange( -300, 300 );
 
     var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
     healthPack.frame = 95; // pizza
