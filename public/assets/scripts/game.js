@@ -44,6 +44,8 @@ var zombiesCenterOfMap;
 var zombiesBottomRightBuilding;
 var zombieDistancetoPlayer = 400;
 var zombieChaseSpeed = 200;
+var bottomlessHole;
+var bottomlessHoleRectangle;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
 // ======================================================
@@ -149,6 +151,9 @@ function create() {
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
 
+    bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
+    bottomlessHoleRectangle = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
+
 
     // ======================================================
     // PLAYER CONSTRUCTOR
@@ -251,6 +256,10 @@ function update() {
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactWithDoor();
+    }
+
+    if ( bottomlessHoleRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 )) {
+        interactWithHole();
     }
 
     if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
@@ -447,6 +456,10 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
 } );
+
+function interactWithHole( player, hole ) {
+    player.destroy();
+}
 
 function interactWithDoor( player, door ) {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
