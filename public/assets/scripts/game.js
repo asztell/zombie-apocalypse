@@ -8,6 +8,11 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     render: render
 } );
 
+// sets the player to super strength
+var demoMode = true;
+var demoModeHP = 1000;
+var demoModeAP = 1000;
+
 var gameStartTime = Date.now();
 var gameEndTime;
 var gameID;
@@ -211,6 +216,11 @@ function create() {
             player.itemInventory.push( item );
         }
 
+    if ( demoMode ) {
+        player.hp = demoModeHP;
+        player.ap = demoModeAP;
+
+    }
 
     // ======================================================
     // MAKE ZOMBIE GROUPS
@@ -414,7 +424,7 @@ function update() {
 
     // check for an arrow key press
     // TODO: the current code doesn't allow for diagonal movement, but can be added in if we want by uncommenting the commented out lines
-    var playerSpeed = 400;
+    var playerSpeed = 500;
 
     if ( cursors.up.isDown ) {
         player.body.velocity.y -= playerSpeed;
@@ -577,8 +587,31 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
 function interactWithHole() {
     // TODO: player destroy isn't working
     console.log( "You fell down the hole..." );
+    gameEndTime = Date.now();
     player.kill();
-    // then need to end the game because the collision is still triggering
+
+    console.log( gameStartTime );
+    console.log( gameEndTime );
+    console.log( "Game over..." );
+
+    var gameObj = {
+        gameID: gameID,
+        ap: player.ap,
+        hp: 0,
+        zombieKills: player.zombieKills,
+        timeAlive: gameEndTime - gameStartTime
+    }
+
+    $.ajax( {
+        type: "put",
+        url: "game/over",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( gameObj ),
+        success: function ( response ) {
+            window.location = "/game/stats/" + gameID;
+        }
+    } );
 }
 
 function interactWithDoor( door ) {
@@ -762,7 +795,7 @@ function collectHealthPack( player, healthPack ) {
         font: "36px Creepster",
         fill: "#D4EB51"
     };
-    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp', style );
+    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp!', style );
     text.anchor.set( 0.5 );
 
     game.add.tween( text ).to( {
