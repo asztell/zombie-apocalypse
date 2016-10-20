@@ -83,8 +83,8 @@ function preload() {
     game.load.image( "logos", "assets/images/Logos.png" );
     game.load.image( "objects", "assets/images/Objects.png" );
     game.load.image( "trees", "assets/images/treetop.png" );
-    game.load.image( "rock", "assets/images/rock.png");
-    game.load.image( "hole", "assets/images/hole.png");
+    game.load.image( "rock", "assets/images/rock.png" );
+    game.load.image( "hole", "assets/images/hole.png" );
     game.load.audio( 'gameMusic', 'assets/audio/constance-kevin-macleod.m4a' );
     game.load.audio( 'zombieRoar', 'assets/audio/zombie-demon-spawn-mp3' );
 
@@ -258,7 +258,7 @@ function update() {
         interactWithDoor();
     }
 
-    if ( bottomlessHoleRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 )) {
+    if ( bottomlessHoleRectangle.contains( player.x, player.y ) ) {
         interactWithHole();
     }
 
@@ -457,11 +457,14 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 } );
 
-function interactWithHole( player, hole ) {
-    player.destroy();
+function interactWithHole() {
+    // TODO: player destory isn't working
+    console.log( "You fell down the hole..." );
+    player.kill();
+    // then need to end the game because the collision is still triggering
 }
 
-function interactWithDoor( player, door ) {
+function interactWithDoor( door ) {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
     console.log( "Entered door..." );
