@@ -36,5 +36,8 @@ router.get('/characters', function(req, res) {
 //     res.render('gameover');
 // });
 
+router.get('/signup', function(req, res) {
+	res.render('signup');
+});
 
 module.exports = router;

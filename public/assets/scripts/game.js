@@ -1,5 +1,6 @@
 // new up a Phaser game
 var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
+    // TODO: need to figure out how to have window size game with ~2x zoom
     // var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.CANVAS, "", {
     preload: preload,
     create: create,
@@ -77,6 +78,7 @@ function preload() {
     game.load.image( "grass", "assets/images/grass.png" );
     game.load.image( "logos", "assets/images/Logos.png" );
     game.load.image( "objects", "assets/images/Objects.png" );
+    game.load.image( "cobble", "assets/images/cobbleset.png" );
     game.load.image( "trees", "assets/images/treetop.png" );
     game.load.image( "rock", "assets/images/rock.png" );
     game.load.image( "hole", "assets/images/hole.png" );
@@ -125,6 +127,7 @@ function create() {
     map.addTilesetImage( "cars1", "cars" );
     map.addTilesetImage( "cars2", "jeep" );
     map.addTilesetImage( "food1", "food" );
+    map.addTilesetImage( "cobble", "cobble" );
     map.addTilesetImage( "player1", "player" );
     map.addTilesetImage( "side_objects", "objects" );
     map.addTilesetImage( "grass", "grass" );
