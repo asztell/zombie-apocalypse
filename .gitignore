@@ -3,3 +3,5 @@ config.json
 npm-debug.log
 jsconfig.json
 .eslintrc.json
+passport.js
+strategies
