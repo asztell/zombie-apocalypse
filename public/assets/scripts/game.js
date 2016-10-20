@@ -432,7 +432,7 @@ $( '#attack-button' ).on( 'click', function () {
                 contentType: "application/json",
                 data: JSON.stringify( gameObj ),
                 success: function ( response ) {
-                  window.location = "/game/over";
+                  window.location = "/game/stats/" + gameID;
                 }
             } );
 

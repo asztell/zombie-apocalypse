@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-var characters = require('../data/characters.js')
+var characters = require('../data/characters.js');
+var moment = require('moment');
+require("moment-duration-format");
 
 router.get('/', function(req, res) {
     res.render('game', {
@@ -93,6 +95,25 @@ router.put('/over', function(req, res) {
             status: 200
         }
         res.end(JSON.stringify(sendObj));
+    });
+});
+
+router.get('/stats/:id', function(req, res) {
+    models.Player.findOne({
+        where: {
+            GameId: req.params.id
+        },
+    }).then(function(player) {
+        var timeAlive = player.timeAlive;
+        timeAlive = moment.duration(timeAlive, "ms").format("hh [Hours], mm [Minutes], ss [Seconds]");
+        console.log(timeAlive);
+        return hbsObj = {
+          character: player.name,
+          zombieKills: player.zombieKills,
+          timeAlive: timeAlive
+        }
+    }).then(function(hbsObj){
+      res.render('gameover', hbsObj);
     });
 });
 
