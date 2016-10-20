@@ -204,10 +204,10 @@ function create() {
     // ======================================================
     // MAKE ZOMBIES
     // ======================================================
-    var zombiesTopLeftBuildingTotal = 4;
-    zombiesTopLeftBuilding = game.add.group();
-    makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
+    // var zombiesTopLeftBuildingTotal = 4;
+    // zombiesTopLeftBuilding = game.add.group();
+    // makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
+    // makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
@@ -222,7 +222,7 @@ function create() {
     var zombiesBottomRightBuildingTotal = 6;
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );    
+    makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
 
     // ======================================================
@@ -230,12 +230,12 @@ function create() {
     // ======================================================
     healthPacks = game.add.group();
     // sample function call to make a health pack or packs
-    // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );  
-          
-    
+    // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );
+
+
     // ======================================================
     // KEYBOARD INPUTS
-    // ======================================================    
+    // ======================================================
     cursors = game.input.keyboard.createCursorKeys();
     // spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
     // esc ...
@@ -263,7 +263,7 @@ function update() {
 
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithDoor();
+        interactWithDoor(door);
     }
 
     // triggered when player falls down hole
@@ -272,17 +272,17 @@ function update() {
     }
 
 
-    // this series handles the zombies following the player when the player gets too close    
+    // this series handles the zombies following the player when the player gets too close
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
-    
-    // group zombiesTopLeftBuilding
-    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
-    }
-    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
-    }
+
+    // // group zombiesTopLeftBuilding
+    // if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
+    //     game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
+    // }
+    // if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
+    //     game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
+    // }
 
     // group zombiesLowerLeftBuilding
     if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
@@ -430,12 +430,12 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( zombiesTopLeftBuilding.countLiving() );
             zombieToKill.kill();
             console.log( zombiesTopLeftBuilding.countLiving() );
- 
+
             // see function definition for more details on parameters
             // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
             // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
             makeHealthPack( healthPacks, 1, 100, 200, 100, 200, 10, 20 );
-            console.log( healthPacks );            
+            console.log( healthPacks );
         }
 
         if ( player.hp <= 0 ) {
@@ -481,6 +481,12 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 } );
 
+$( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
+    // this keeps the modal from popping up multiple times
+    player.body.velocity.setTo( 0, 0 );
+    game.paused = false;
+} );
+
 function interactWithHole() {
     // TODO: player destroy isn't working
     console.log( "You fell down the hole..." );
@@ -488,15 +494,15 @@ function interactWithHole() {
     // then need to end the game because the collision is still triggering
 }
 
-function interactWithDoor( door ) {
-    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    //     // audio.play();
-    console.log( "Entered door..." );
-
-    //     // doorEntered = door;
-    //     // game.paused = true;
-    //     // $( '#modal-door' ).modal( 'show' );
-}
+// function interactWithDoor( door ) {
+//     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+//     //     // audio.play();
+//     console.log( "Entered door..." );
+//
+//     //     // doorEntered = door;
+//     //     // game.paused = true;
+//     //     // $( '#modal-door' ).modal( 'show' );
+// }
 
 // // when modal is triggered, populate with current health stats for player and zombie
 // $( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {
