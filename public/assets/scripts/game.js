@@ -420,7 +420,7 @@ $( '#attack-button' ).on( 'click', function () {
             var gameObj = {
               gameID: gameID,
               ap: player.ap,
-              hp: player.hp,
+              hp: 0,
               zombieKills: player.zombieKills,
               timeAlive: gameEndTime - gameStartTime
             }
