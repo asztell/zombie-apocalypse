@@ -35,6 +35,7 @@ var healthPacks;
 
 var zombieToKill;
 var zombiesTopLeftBuilding;
+var zombiesRoadBlock;
 var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
 var zombiesByTheFirstJeep;
@@ -203,12 +204,17 @@ function create() {
 
 
     // ======================================================
-    // MAKE ZOMBIES
+    // MAKE ZOMBIE GROUPS
     // ======================================================
     var zombiesTopLeftBuildingTotal = 4;
     zombiesTopLeftBuilding = game.add.group();
     makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
+
+    var zombiesRoadBlockTotal = 20;
+    zombiesRoadBlock = game.add.group();
+    makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 300, 500, 6, 8, 50, 50, 50, 50, 'x' );
+    makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 100, 200, 5, 6, 50, 50, 50, 50, 'y' );
 
     var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
@@ -280,7 +286,9 @@ function update() {
     }
 
 
-    // this series handles the zombies following the player when the player gets too close    
+    // ======================================================
+    // CHASING ZOMBIES
+    // ======================================================        
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
 
@@ -333,6 +341,10 @@ function update() {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
+
+    // ======================================================
+    // KEYBOARD INPUTS
+    // ======================================================
 
     // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
