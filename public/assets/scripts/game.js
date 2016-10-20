@@ -81,7 +81,7 @@ function preload() {
     game.load.image( "logos", "assets/images/Logos.png" );
     game.load.image( "objects", "assets/images/Objects.png" );
     game.load.image( "trees", "assets/images/treetop.png" );
-    game.load.image( "rocks", "assets/images/rock.png");
+    game.load.image( "rock", "assets/images/rock.png");
     game.load.image( "hole", "assets/images/hole.png");
     game.load.audio( 'gameMusic', 'assets/audio/constance-kevin-macleod.m4a' );
     game.load.audio( 'zombieRoar', 'assets/audio/zombie-demon-spawn-mp3' );
@@ -131,6 +131,8 @@ function create() {
     map.addTilesetImage( "logos", "logos" );
     map.addTilesetImage( "dirt", "dirt" );
     map.addTilesetImage( "trees", "trees" );
+    map.addTilesetImage( "rocks", "rock" );
+    map.addTilesetImage( "hole", "hole" );
 
     // setup layers and collision layer
     grassLayer = map.createLayer( "grass_layer" );
