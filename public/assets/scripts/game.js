@@ -209,7 +209,7 @@ function create() {
     var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
     makeZombie( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7, 'y' );
+    makeZombie( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesCenterOfMapTotal = 10;
     zombiesCenterOfMap = game.add.group();
@@ -301,16 +301,16 @@ function update() {
     if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 5 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 5 ], player, zombieChaseSpeed, this );
     }
-    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 6 ], player ) < zombieDistancetoPlayer ) {
+    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 6 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 6 ], player, zombieChaseSpeed, this );
     }
 
     // group zombiesBottomRightBuilding
-    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
+    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 0 ], player, zombieChaseSpeed, this );
     }
 
-    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieDistancetoPlayer ) {
+    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
@@ -429,7 +429,10 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( zombiesTopLeftBuilding.countLiving() );
  
             // see function definition for more details on parameters
-            makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );            
+            // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
+            // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
+            makeHealthPack( healthPacks, 1, 100, 200, 100, 200, 10, 20 );
+            console.log( healthPacks );            
         }
 
         if ( player.hp <= 0 ) {
@@ -602,7 +605,7 @@ function makeZombie( group, howMany, startX, endX, startY, endY, pixelMoveMin, p
         var randomX = game.rnd.integerInRange( ( startX * mapTileSize ), ( endX * mapTileSize ) );
         var randomY = game.rnd.integerInRange( ( startY * mapTileSize ), ( endY * mapTileSize ) );
         var randomMove = game.rnd.integerInRange( pixelMoveMin, pixelMoveMax );
-        var randomSpeed = game.rnd.integerInRange( ( secondsMin * 1000 ), ( secondsMax * 1000 ) );
+        var randomSpeed = game.rnd.integerInRange( ( moveSecondsMin * 1000 ), ( moveSecondsMax * 1000 ) );
 
         // adds the zombie to the group passed in
         var zombie = group.create( randomX, randomY, 'zombieSpriteSheet' );
@@ -634,6 +637,7 @@ function makeZombie( group, howMany, startX, endX, startY, endY, pixelMoveMin, p
 
 // for a fixed position, enter equal X and equal Y coordinates for start and end, otherwise use different numbers to create bounds for random positioning; x and y are the number of tiles, which will be multiplied by the mapTileSize to determine the number of pixels
 // for predetermined HP, enter the same number for min and max, using different numbers will create a random number between the two bounds
+// TODO: fix this, currently not work
 function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
 
     for ( var i = 0; i < howMany; i++ ) {
@@ -642,7 +646,7 @@ function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMa
 
         // adds the health pack to the group passed in
         var healthPack = group.create( x, y, 'healthPack' );
-        healthPack.frame = game.rnd.integerInRange( 65, 110 );
+        healthPack.frame = 95; //game.rnd.integerInRange( 65, 110 );
         healthPack.hp = game.rnd.integerInRange( hpMin, hpMax );
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
