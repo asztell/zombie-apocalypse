@@ -360,7 +360,7 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
 $( '#attack-button' ).on( 'click', function () {
-    var audio = new Audio( '/assets/audio/weapon-blow.wav' );
+    var audio = new Audio( '/assets/audio/knife-slice.m4a' );
     audio.play();
     player.attack( zombieToKill );
 
