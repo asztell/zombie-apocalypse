@@ -40,6 +40,7 @@ var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
 var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
+var zombiesByDirtTopRight;
 var zombieInteractionRadius;
 var zombieChaseSpeed;
 var bottomlessHole;
@@ -163,7 +164,7 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( 32, 160, "playerAnimations" );
+    player = game.add.sprite( ( 156 * 32 ), ( 8 * 32 ), "playerAnimations" );
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -236,13 +237,28 @@ function create() {
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var ZombiesByDirtTopRightTotal = 4;
+    makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 6, 7, 40, 50, 20, 30, 'x' );
+    makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 6, 7, 40, 50, 20, 30, 'y' );
+
 
     // ======================================================
     // MAKE HEALTH PACKS
     // ======================================================
     healthPacks = game.add.group();
     // sample function call to make a health pack or packs
-    // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );  
+    // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );
+
+    // left of first building
+    makeHealthPack( healthPacks, 2, 2, 5, 19, 21, 20, 30, false );
+    // midpoint between first and second sections, top of map
+    makeHealthPack( healthPacks, 1, 83, 83, 1, 2, 10, 20, false );
+    // top right of map on dirt
+    makeHealthPack( healthPacks, 1, 194, 194, 5, 5, 10, 20, false );
+    // top right under dirt
+    makeHealthPack( healthPacks, 1, 185, 185, 13, 13, 40, 50, false );
+    // beginning of dirt path, top of map
+    makeHealthPack( healthPacks, 1, 168, 168, 3, 3, 5, 10, false );
 
 
     // ======================================================
@@ -263,16 +279,20 @@ function update() {
 
     game.physics.arcade.collide( player, collisionLayer );
     game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesRoadBlock, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesByTheFirstJeep, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesByDirtTopRight, interactWithZombie, null, this );
     game.physics.arcade.overlap( player, healthPacks, collectHealthPack, null, this );
     game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesRoadBlock, collisionLayer );
     game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
     game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
     game.physics.arcade.collide( zombiesByTheFirstJeep, collisionLayer );
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesByDirtTopRight, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
     // triggered when player "enters" a building door
@@ -463,7 +483,8 @@ $( '#attack-button' ).on( 'click', function () {
             // see function definition for more details on parameters
             // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
             // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
-            makeHealthPack( healthPacks, 1, -3, 3, -3, 3, 10, 20 );
+            // TODO: NEED TO FIX THIS FOR COLLECTING HEALTH AFTER ZOMBIE KILL, CURRENT FORMULA DOESN'T WORK'
+            makeHealthPack( healthPacks, 1, -3, 3, -3, 3, 10, 20, true );
             console.log( healthPacks );
         }
 
@@ -670,11 +691,16 @@ function makeZombie( group, howMany, startX, endX, startY, endY, pixelMoveMin, p
 // for a fixed position, enter equal X and equal Y coordinates for start and end, otherwise use different numbers to create bounds for random positioning; x and y are the number of tiles, which will be multiplied by the mapTileSize to determine the number of pixels
 // for predetermined HP, enter the same number for min and max, using different numbers will create a random number between the two bounds
 // TODO: fix this, currently not work
-function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
+function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax, forZombieKill ) {
 
     for ( var i = 0; i < howMany; i++ ) {
-        var x = game.rnd.integerInRange( ( player.x + ( startX * mapTileSize ) ), ( player.x + ( endX * mapTileSize ) ) );
-        var y = game.rnd.integerInRange( ( player.y + ( startY * mapTileSize ) ), ( player.y + ( endY * mapTileSize ) ) );
+        if ( forZombieKill ) {
+            var x = game.rnd.integerInRange( player.x + ( startX * mapTileSize ), player.x + ( endX * mapTileSize ) );
+            var y = game.rnd.integerInRange( player.y + ( startY * mapTileSize ), player.y + ( endY * mapTileSize ) );
+        } else {
+            var x = game.rnd.integerInRange( ( startX * mapTileSize ), ( endX * mapTileSize ) );
+            var y = game.rnd.integerInRange( ( startY * mapTileSize ), ( endY * mapTileSize ) );
+        }
 
         // adds the health pack to the group passed in
         var healthPack = group.create( x, y, 'healthPack' );
@@ -688,14 +714,17 @@ function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMa
 }
 
 function collectHealthPack( player, healthPack ) {
-    
-    var style = { font: "36px Creepster", fill: "#D4EB51" };
-    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp', style);
-    text.anchor.set(0.5);
+
+    var style = {
+        font: "36px Creepster",
+        fill: "#D4EB51"
+    };
+    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp', style );
+    text.anchor.set( 0.5 );
 
     game.add.tween( text ).to( {
-            alpha: 0
-        }, 3000, Phaser.Easing.Linear.None, true );    
+        alpha: 0
+    }, 3000, Phaser.Easing.Linear.None, true );
 
     player.hp += healthPack.hp;
     healthPack.destroy();
