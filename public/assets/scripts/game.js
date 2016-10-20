@@ -117,7 +117,10 @@ function create() {
         url: "game/new",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( chosenCharacter )
+        data: JSON.stringify( chosenCharacter ),
+        success: function(response){
+          gameID = response.gameID;
+        }
     } );
 
     // setup map images
@@ -224,7 +227,7 @@ function create() {
     makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
 
     healthPacks = game.add.group();
-    // createHealthPack();    
+    // createHealthPack();
 
 
     // key inputs
@@ -393,20 +396,20 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
-            // var updateObj = {
-            //   gameID: gameID,
-            //   ap: player.ap,
-            //   hp: player.hp,
-            //   zombieKills: player.zombieKills,
-            //   timeAlive: Date.now() - gameStartTime
-            // }
-            // $.ajax( {
-            //     type: "put",
-            //     url: "game/update",
-            //     dataType: "json",
-            //     contentType: "application/json",
-            //     data: JSON.stringify( updateObj )
-            // } );
+            var updateObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: Date.now() - gameStartTime
+            }
+            $.ajax( {
+                type: "put",
+                url: "game/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( updateObj )
+            } );
 
             console.log( zombiesTopLeftBuilding.countLiving() );
             zombieToKill.kill();
@@ -427,24 +430,24 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( gameEndTime );
             console.log( "Game over..." );
 
-            // var gameObj = {
-            //   gameID: gameID,
-            //   ap: player.ap,
-            //   hp: player.hp,
-            //   zombieKills: player.zombieKills,
-            //   timeAlive: gameEndTime - gameStartTime
-            // }
-            //
-            // $.ajax( {
-            //     type: "put",
-            //     url: "game/over",
-            //     dataType: "json",
-            //     contentType: "application/json",
-            //     data: JSON.stringify( gameObj ),
-            //     success: function ( response ) {
-            //       window.location = "/game/over";
-            //     }
-            // } );
+            var gameObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: 0,
+              zombieKills: player.zombieKills,
+              timeAlive: gameEndTime - gameStartTime
+            }
+
+            $.ajax( {
+                type: "put",
+                url: "game/over",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( gameObj ),
+                success: function ( response ) {
+                  window.location = "/game/stats/" + gameID;
+                }
+            } );
 
             $( '#modal' ).modal( 'toggle' );
             player.destroy();
@@ -608,20 +611,20 @@ function createHealthPack( howMany, startX, endX, startY, endY, hpMin, hpMax ) {
 function collectHealth( player, healthPack ) {
     player.hp += healthPack.hp;
     healthPack.destroy();
-    // var gameObj = {
-    //   gameID: gameID,
-    //   ap: player.ap,
-    //   hp: player.hp,
-    //   zombieKills: player.zombieKills,
-    //   timeAlive: gameEndTime - gameStartTime
-    // }
-    // $.ajax( {
-    //   type: "put",
-    //   url: "game/update",
-    //   dataType: "json",
-    //   contentType: "application/json",
-    //   data: JSON.stringify( updateObj )
-    // } );
+    var updateObj = {
+      gameID: gameID,
+      ap: player.ap,
+      hp: player.hp,
+      zombieKills: player.zombieKills,
+      timeAlive: gameEndTime - gameStartTime
+    }
+    $.ajax( {
+      type: "put",
+      url: "game/update",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify( updateObj )
+    } );
 }
 
 function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {

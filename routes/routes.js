@@ -11,14 +11,6 @@ router.get('/error', function(req, res) {
     res.render('error');
 });
 
-// router.get('/signup', function(req, res) {
-//     res.render('signup');
-// });
-
-// router.get('/login', function(req, res) {
-//     res.render('login');
-// });
-
 router.get('/characters', function(req, res) {
     var hbsObj = {
         characters: characters
@@ -26,22 +18,23 @@ router.get('/characters', function(req, res) {
     res.render('characters', hbsObj);
 });
 
-router.get('/auth/login', function(req, res) {
-    //TODO: Process registering
-    res.render('login');
-});
+//Will be adding authentication later
+// router.get('/auth/login', function(req, res) {
+//     //TODO: Process registering
+//     res.render('login');
+// });
 
-router.get('/game', function(req, res) {
-    res.render('game', {
-        title: 'game',
-        layout: 'gamelayout'
-    });
-});
-
-
-router.get('/game/over', function(req, res){
-    res.render('gameover');
-});
+// router.get('/game', function(req, res) {
+//     res.render('game', {
+//         title: 'game',
+//         layout: 'gamelayout'
+//     });
+// });
+//
+//
+// router.get('/game/over', function(req, res){
+//     res.render('gameover');
+// });
 
 
 module.exports = router;
