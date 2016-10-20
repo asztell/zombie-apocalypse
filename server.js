@@ -13,6 +13,9 @@ var signup = require('./routes/signup.js');
 var users = require('./routes/users.js');
 var controller = require('./controllers/controller.js');
 
+// from config.json file
+// "use_env_variable": "mysql://ytm5krzizxnbwc7y:p7rpko1fq7hci6mz@z37udk8g6jiaqcbx.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/jfuf1adok2ei9jwx"
+
 //express setup
 var app = express();
 
