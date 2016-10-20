@@ -45,5 +45,6 @@ app.use('/signup', signup);
 app.use('/users', users);
 app.use('/controller', controller)
 
-var port = 3000;
-app.listen(port);
+// var port = process.env.PORT || 3000;
+// app.listen(port);
+module.exports = app;
