@@ -1,6 +1,6 @@
 // new up a Phaser game
 var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
-// var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.CANVAS, "", {
+    // var game = new Phaser.Game( window.innerWidth, window.innerHeight, Phaser.CANVAS, "", {
     preload: preload,
     create: create,
     update: update,
@@ -45,7 +45,7 @@ var zombiesBottomRightBuilding;
 var zombieDistancetoPlayer = 400;
 var zombieChaseSpeed = 200;
 
-var audio = new Audio('/assets/audio/constance-kevin-macleod.m4a');
+var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
 // ======================================================
 // PHASER FUNCTION
 //
@@ -141,10 +141,10 @@ function create() {
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
-    
+
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
-        
+
 
     // ======================================================
     // PLAYER CONSTRUCTOR
@@ -152,15 +152,15 @@ function create() {
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
     player = game.add.sprite( 0, 800, "playerAnimations" );
-    player.frame = 18;    
+    player.frame = 18;
     // game.physics.arcade.enable( player );
-    game.physics.enable( player, Phaser.Physics.ARCADE);
+    game.physics.enable( player, Phaser.Physics.ARCADE );
     player.body.collideWorldBounds = true;
     player.anchor.setTo( 0.5, 0.5 );
     game.camera.follow( player );
 
     // TODO: check the zombie size as well
-    player.body.setSize(18, 35, 0, 5); // woohoo!
+    player.body.setSize( 18, 35, 0, 5 ); // woohoo!
 
     // these are the animations as the player walks around
     player.animations.add( "up", [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ], 10, true );
@@ -245,42 +245,50 @@ function update() {
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
-    if ( buildingDoorRectangle.contains( player.x + player.width/2, player.y + player.height/2)) {
+    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactWithDoor();
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesTopLeftBuilding.children[0],player) < zombieDistancetoPlayer ) {
-        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[0], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesTopLeftBuilding.children[2],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[2], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesLowerLeftBuilding.children[0],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[0], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesLowerLeftBuilding.children[3],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[3], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ 3 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesCenterOfMap.children[0],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[0], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 0 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 0 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesCenterOfMap.children[5],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[5], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 1 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 1 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesBottomRightBuilding.children[0],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[0], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 5 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 5 ], player, zombieChaseSpeed, this );
     }
 
-    if (game.physics.arcade.distanceBetween(zombiesBottomRightBuilding.children[3],player) < zombieDistancetoPlayer) {
-        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[3], player, zombieChaseSpeed, this);
+    if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 6 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 6 ], player, zombieChaseSpeed, this );
     }
-    
+
+    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+
+    if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieDistancetoPlayer ) {
+        game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
+    }
+
 
     // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
@@ -302,7 +310,7 @@ function update() {
     } else {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
-    } 
+    }
 }
 
 
@@ -312,7 +320,7 @@ function update() {
 // this is for debugging
 // ======================================================
 function render() {
-    
+
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
@@ -320,7 +328,7 @@ function render() {
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
     game.debug.text( 'HP: ' + player.hp, 232, 48, textColor );
     game.debug.text( 'AP: ' + player.ap, 432, 48, textColor );
-    game.debug.geom(buildingDoor_TopLeft,'#0fffff');
+    game.debug.geom( buildingDoor_TopLeft, '#0fffff' );
 }
 
 
@@ -334,7 +342,7 @@ function interactWithZombie( player, zombie ) {
     audio.play();
     // zombieRoar.play();
 
-    zombieToKill = zombie;    
+    zombieToKill = zombie;
     game.paused = true;
     $( '#modal' ).modal( 'show' );
 }
@@ -347,7 +355,6 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 
     $( '#modal #message' ).html(
         "Player HP: " + player.hp + "\n" +
-        "Zombie name: " + zombieToKill.name + "\n" +
         "Zombie HP: " + zombieToKill.hp );
 } );
 
@@ -359,7 +366,6 @@ $( '#attack-button' ).on( 'click', function () {
     if ( player.hp > 0 && zombieToKill.hp > 0 ) {
         $( '#modal #message' ).html(
             "Player HP: " + player.hp + "\n" +
-            "Zombie name: " + zombieToKill.name + "\n" +
             "Zombie HP: " + zombieToKill.hp );
     } else {
 
@@ -368,7 +374,6 @@ $( '#attack-button' ).on( 'click', function () {
             player.zombieKills++;
             $( '#modal #message' ).html(
                 "Player HP: " + player.hp + "\n" +
-                "Zombie name: " + zombieToKill.name + "\n" +
                 "Zombie HP: 0" );
 
             $( '#attack-button' ).hide();
@@ -388,10 +393,10 @@ $( '#attack-button' ).on( 'click', function () {
             //     data: JSON.stringify( updateObj )
             // } );
 
-            console.log(zombiesTopLeftBuilding.countLiving());
+            console.log( zombiesTopLeftBuilding.countLiving() );
             zombieToKill.kill();
-            console.log(zombiesTopLeftBuilding.countLiving());
-                
+            console.log( zombiesTopLeftBuilding.countLiving() );
+
             createHealthPackZombieKill();
         }
 
@@ -401,7 +406,6 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#modal #message' ).html(
                 "Player HP: 0" +
-                "Zombie name: " + zombieToKill.name + "\n" +
                 "Zombie HP: " + zombieToKill.hp );
 
             console.log( gameStartTime );
@@ -431,21 +435,21 @@ $( '#attack-button' ).on( 'click', function () {
             player.destroy();
         }
     }
-});
+} );
 
 $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
-});
+} );
 
 function interactWithDoor( player, door ) {
-//     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-//     // audio.play();
-    console.log("Entered door...");
+    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+    //     // audio.play();
+    console.log( "Entered door..." );
 
-//     // doorEntered = door;
-//     // game.paused = true;
-//     // $( '#modal-door' ).modal( 'show' );
+    //     // doorEntered = door;
+    //     // game.paused = true;
+    //     // $( '#modal-door' ).modal( 'show' );
 }
 
 // // when modal is triggered, populate with current health stats for player and zombie
@@ -501,7 +505,7 @@ function interactWithDoor( player, door ) {
 //             console.log(zombiesTopLeftBuilding.countLiving());
 //             zombieToKill.kill();
 //             console.log(zombiesTopLeftBuilding.countLiving());
-                
+
 //             createHealthPackZombieKill();
 //         }
 
@@ -553,7 +557,7 @@ function createHealthPackZombieKill() {
     var randomY = game.rnd.integerInRange( -300, 300 );
 
     var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
-    healthPack.frame = 95; // pizza
+    healthPack.frame = game.rnd.integerInRange( 65, 110 );
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
     healthPack.body.immovable = true;
@@ -565,7 +569,7 @@ function createHealthPackRandom() {
     var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
 
     var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
-    healthPack.frame = 95; // pizza
+    healthPack.frame = game.rnd.integerInRange( 65, 110 );
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
     healthPack.body.immovable = true;
@@ -573,7 +577,7 @@ function createHealthPackRandom() {
 }
 
 function collectHealth( player, healthPack ) {
-    player.hp += 10;
+    player.hp += 20;
     healthPack.destroy();
     // var gameObj = {
     //   gameID: gameID,
