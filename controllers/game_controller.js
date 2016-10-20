@@ -1,37 +1,18 @@
 var express = require('express');
 var router = express.Router();
 var models = require('../models');
-var characters = require('../data/characters.js')
+var characters = require('../data/characters.js');
+var moment = require('moment');
+require("moment-duration-format");
 
-// router.get('/', function(req, res) {
-//     res.render('index');
-// });
-
-// router.get('/characters', function(req, res) {
-//     var hbsObj = {
-//         characters: characters
-//     };
-//     res.render('characters', hbsObj);
-// });
-
-// router.get('/game', function(req, res) {
-//     res.render('game', {
-//         title: 'game',
-//         layout: 'gamelayout'
-//     });
-// });
-
-router.get('/stats/:id', function(req, res) {
-    var gameID = req.params.id;
-    models.Player.findOne({
-      where: {GameId: gameID}
-    }).then(function(result) {
-      res.render('index');
-    })
+router.get('/', function(req, res) {
+    res.render('game', {
+        title: 'game',
+        layout: 'gamelayout'
+    });
 });
 
-
-router.post('/game/new', function(req, res) {
+router.post('/new', function(req, res) {
     var game;
     var character = req.body;
     var sequelizeConnection = models.sequelize;
@@ -69,7 +50,7 @@ router.post('/game/new', function(req, res) {
     })
 })
 
-router.put('/game/update', function(req, res) {
+router.put('/update', function(req, res) {
     models.Player.update({
         ap: req.body.ap,
         hp: req.body.hp,
@@ -90,7 +71,7 @@ router.put('/game/update', function(req, res) {
     });
 });
 
-router.put('/game/over', function(req, res) {
+router.put('/over', function(req, res) {
     models.Game.update({
         isGameOver: 1
     }, {
@@ -114,6 +95,25 @@ router.put('/game/over', function(req, res) {
             status: 200
         }
         res.end(JSON.stringify(sendObj));
+    });
+});
+
+router.get('/stats/:id', function(req, res) {
+    models.Player.findOne({
+        where: {
+            GameId: req.params.id
+        },
+    }).then(function(player) {
+        var timeAlive = player.timeAlive;
+        timeAlive = moment.duration(timeAlive, "ms").format("hh [Hours], mm [Minutes], ss [Seconds]");
+        console.log(timeAlive);
+        return hbsObj = {
+          character: player.name,
+          zombieKills: player.zombieKills,
+          timeAlive: timeAlive
+        }
+    }).then(function(hbsObj){
+      res.render('gameover', hbsObj);
     });
 });
 

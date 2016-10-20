@@ -11,7 +11,7 @@ var routes = require('./routes/routes.js');
 var auth = require('./routes/auth.js');
 var signup = require('./routes/signup.js');
 var users = require('./routes/users.js');
-var controller = require('./controllers/controller.js');
+var game_controller = require('./controllers/game_controller.js');
 
 // from config.json file
 // "use_env_variable": "mysql://ytm5krzizxnbwc7y:p7rpko1fq7hci6mz@z37udk8g6jiaqcbx.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/jfuf1adok2ei9jwx"
@@ -43,11 +43,12 @@ require('./config/passport')(app);
 
 
 app.use('/', routes);
-app.use('/auth', auth);
-app.use('/signup', signup);
-app.use('/users', users);
-app.use('/controller', controller)
+app.use('/game', game_controller);
+//Will use this later for authentication
 
-// var port = process.env.PORT || 3000;
-// app.listen(port);
+// app.use('/auth', auth);
+// app.use('/signup', signup);
+// app.use('/users', users);
+// app.use('/controller', controller);
+
 module.exports = app;
