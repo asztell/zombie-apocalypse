@@ -220,7 +220,7 @@ function create() {
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
-    var zombiesByTheFirstJeep = 4;
+    var zombiesByTheFirstJeepTotal = 4;
     zombiesByTheFirstJeep = game.add.group();
     makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
