@@ -2,9 +2,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
-var passport = require('passport');
+// var passport = require('passport');
 var methodOverride = require('method-override');
-var session = require('express-session');
+// var session = require('express-session');
 var exphbs = require('express-handlebars');
 
 var routes = require('./routes/routes.js');
@@ -30,11 +30,11 @@ app.engine('handlebars', exphbs({
 }));
 app.set('view engine', 'handlebars');
 
-app.use(session({
-  secret: 'anything',
-  resave: false,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: 'anything',
+//   resave: false,
+//   saveUninitialized: false
+// }));
 
 require('./config/passport')(app);
 
