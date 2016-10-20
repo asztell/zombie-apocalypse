@@ -113,7 +113,10 @@ function create() {
         url: "game/new",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( chosenCharacter )
+        data: JSON.stringify( chosenCharacter ),
+        success: function(response){
+          gameID = response.gameID;
+        }
     } );
 
     // setup map images
@@ -141,10 +144,10 @@ function create() {
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
-    
+
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
-        
+
 
     // ======================================================
     // PLAYER CONSTRUCTOR
@@ -152,7 +155,7 @@ function create() {
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
     player = game.add.sprite( 0, 800, "playerAnimations" );
-    player.frame = 18;    
+    player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE);
     player.body.collideWorldBounds = true;
@@ -215,7 +218,7 @@ function create() {
     makeZombiesYaxis( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7 );
 
     healthPacks = game.add.group();
-    // createHealthPack();    
+    // createHealthPack();
 
 
     // key inputs
@@ -280,7 +283,7 @@ function update() {
     if (game.physics.arcade.distanceBetween(zombiesBottomRightBuilding.children[3],player) < zombieDistancetoPlayer) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[3], player, zombieChaseSpeed, this);
     }
-    
+
 
     // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
@@ -302,7 +305,7 @@ function update() {
     } else {
         // when player stops moving maintains last direction and frame
         player.animations.stop();
-    } 
+    }
 }
 
 
@@ -312,7 +315,7 @@ function update() {
 // this is for debugging
 // ======================================================
 function render() {
-    
+
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
@@ -334,7 +337,7 @@ function interactWithZombie( player, zombie ) {
     audio.play();
     // zombieRoar.play();
 
-    zombieToKill = zombie;    
+    zombieToKill = zombie;
     game.paused = true;
     $( '#modal' ).modal( 'show' );
 }
@@ -373,25 +376,25 @@ $( '#attack-button' ).on( 'click', function () {
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" );
-            // var updateObj = {
-            //   gameID: gameID,
-            //   ap: player.ap,
-            //   hp: player.hp,
-            //   zombieKills: player.zombieKills,
-            //   timeAlive: Date.now() - gameStartTime
-            // }
-            // $.ajax( {
-            //     type: "put",
-            //     url: "game/update",
-            //     dataType: "json",
-            //     contentType: "application/json",
-            //     data: JSON.stringify( updateObj )
-            // } );
+            var updateObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: Date.now() - gameStartTime
+            }
+            $.ajax( {
+                type: "put",
+                url: "game/update",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( updateObj )
+            } );
 
             console.log(zombiesTopLeftBuilding.countLiving());
             zombieToKill.kill();
             console.log(zombiesTopLeftBuilding.countLiving());
-                
+
             createHealthPackZombieKill();
         }
 
@@ -408,24 +411,24 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( gameEndTime );
             console.log( "Game over..." );
 
-            // var gameObj = {
-            //   gameID: gameID,
-            //   ap: player.ap,
-            //   hp: player.hp,
-            //   zombieKills: player.zombieKills,
-            //   timeAlive: gameEndTime - gameStartTime
-            // }
-            //
-            // $.ajax( {
-            //     type: "put",
-            //     url: "game/over",
-            //     dataType: "json",
-            //     contentType: "application/json",
-            //     data: JSON.stringify( gameObj ),
-            //     success: function ( response ) {
-            //       window.location = "/game/over";
-            //     }
-            // } );
+            var gameObj = {
+              gameID: gameID,
+              ap: player.ap,
+              hp: player.hp,
+              zombieKills: player.zombieKills,
+              timeAlive: gameEndTime - gameStartTime
+            }
+
+            $.ajax( {
+                type: "put",
+                url: "game/over",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify( gameObj ),
+                success: function ( response ) {
+                  window.location = "/game/over";
+                }
+            } );
 
             $( '#modal' ).modal( 'toggle' );
             player.destroy();
@@ -501,7 +504,7 @@ function interactWithDoor( player, door ) {
 //             console.log(zombiesTopLeftBuilding.countLiving());
 //             zombieToKill.kill();
 //             console.log(zombiesTopLeftBuilding.countLiving());
-                
+
 //             createHealthPackZombieKill();
 //         }
 
@@ -575,20 +578,20 @@ function createHealthPackRandom() {
 function collectHealth( player, healthPack ) {
     player.hp += 10;
     healthPack.destroy();
-    // var gameObj = {
-    //   gameID: gameID,
-    //   ap: player.ap,
-    //   hp: player.hp,
-    //   zombieKills: player.zombieKills,
-    //   timeAlive: gameEndTime - gameStartTime
-    // }
-    // $.ajax( {
-    //   type: "put",
-    //   url: "game/update",
-    //   dataType: "json",
-    //   contentType: "application/json",
-    //   data: JSON.stringify( updateObj )
-    // } );
+    var updateObj = {
+      gameID: gameID,
+      ap: player.ap,
+      hp: player.hp,
+      zombieKills: player.zombieKills,
+      timeAlive: gameEndTime - gameStartTime
+    }
+    $.ajax( {
+      type: "put",
+      url: "game/update",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify( updateObj )
+    } );
 }
 
 function makeZombiesXaxis( group, howMany, startX, endX, startY, endY, pixelMoveMin, pixelMoveMax, secondsMin, secondsMax ) {
