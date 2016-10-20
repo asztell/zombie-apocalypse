@@ -162,7 +162,7 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( 0, 800, "playerAnimations" );
+    player = game.add.sprite( 32, 160, "playerAnimations" );
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -228,7 +228,7 @@ function create() {
     var zombiesBottomRightBuildingTotal = 6;
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );    
+    makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
 
     // ======================================================
@@ -237,8 +237,8 @@ function create() {
     healthPacks = game.add.group();
     // sample function call to make a health pack or packs
     // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );  
-          
-    
+
+
     // ======================================================
     // KEYBOARD INPUTS
     // ======================================================    
@@ -283,7 +283,7 @@ function update() {
     // this series handles the zombies following the player when the player gets too close    
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
-    
+
     // group zombiesTopLeftBuilding
     if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
@@ -369,6 +369,7 @@ function render() {
 
     var textColor = 'rgb(255, 255, 255)';
 
+    //TODO: comment all of this out for the final game
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
     game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
@@ -446,12 +447,12 @@ $( '#attack-button' ).on( 'click', function () {
             console.log( zombiesTopLeftBuilding.countLiving() );
             zombieToKill.kill();
             console.log( zombiesTopLeftBuilding.countLiving() );
- 
+
             // see function definition for more details on parameters
             // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
             // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
-            makeHealthPack( healthPacks, 1, 100, 200, 100, 200, 10, 20 );
-            console.log( healthPacks );            
+            makeHealthPack( healthPacks, 1, -3, 3, -3, 3, 10, 20 );
+            console.log( healthPacks );
         }
 
         if ( player.hp <= 0 ) {
@@ -660,12 +661,12 @@ function makeZombie( group, howMany, startX, endX, startY, endY, pixelMoveMin, p
 function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
 
     for ( var i = 0; i < howMany; i++ ) {
-        var x = game.rnd.integerInRange( ( startX * mapTileSize ), ( endX * mapTileSize ) );
-        var y = game.rnd.integerInRange( ( startY * mapTileSize ), ( endY * mapTileSize ) );
+        var x = game.rnd.integerInRange( ( player.x + ( startX * mapTileSize ) ), ( player.x + ( endX * mapTileSize ) ) );
+        var y = game.rnd.integerInRange( ( player.y + ( startY * mapTileSize ) ), ( player.y + ( endY * mapTileSize ) ) );
 
         // adds the health pack to the group passed in
         var healthPack = group.create( x, y, 'healthPack' );
-        healthPack.frame = 95; //game.rnd.integerInRange( 65, 110 );
+        healthPack.frame = game.rnd.integerInRange( 65, 110 );
         healthPack.hp = game.rnd.integerInRange( hpMin, hpMax );
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
@@ -675,6 +676,15 @@ function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMa
 }
 
 function collectHealthPack( player, healthPack ) {
+    
+    var style = { font: "36px Creepster", fill: "#D4EB51" };
+    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp', style);
+    text.anchor.set(0.5);
+
+    game.add.tween( text ).to( {
+            alpha: 0
+        }, 3000, Phaser.Easing.Linear.None, true );    
+
     player.hp += healthPack.hp;
     healthPack.destroy();
     var updateObj = {
