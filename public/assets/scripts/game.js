@@ -580,18 +580,33 @@ function createHealthPackZombieKill() {
 
     var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
     healthPack.frame = game.rnd.integerInRange( 65, 110 );
+    healthPack.hp = game.rnd.integerInRange( 10, 20 );
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
     healthPack.body.immovable = true;
     healthPack.anchor.setTo( 0.5, 0.5 );
 }
 
-function createHealthPackRandom() {
-    var randomX = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
-    var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+function createHealthPacksRandom( howMany ) {
 
-    var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
+    for (var i = 0; i < howMany; i++ ) {
+        var randomX = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+        var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+
+        var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
+        healthPack.frame = game.rnd.integerInRange( 65, 110 );
+        healthPack.hp = game.rnd.integerInRange( 10, 20 );
+        game.physics.arcade.enable( healthPack );
+        healthPack.body.enable = true;
+        healthPack.body.immovable = true;
+        healthPack.anchor.setTo( 0.5, 0.5 );
+    }
+}
+
+function createHealthPackFixedPosition( x, y, hp ) {
+    var healthPack = healthPacks.create( x, y, 'healthPack' );
     healthPack.frame = game.rnd.integerInRange( 65, 110 );
+    healthPack.hp = hp;
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
     healthPack.body.immovable = true;
@@ -599,7 +614,7 @@ function createHealthPackRandom() {
 }
 
 function collectHealth( player, healthPack ) {
-    player.hp += 20;
+    player.hp += healthPack.hp;
     healthPack.destroy();
     // var gameObj = {
     //   gameID: gameID,
