@@ -44,6 +44,8 @@ var zombiesCenterOfMap;
 var zombiesBottomRightBuilding;
 var zombieDistancetoPlayer = 400;
 var zombieChaseSpeed = 200;
+var bottomlessHole;
+var bottomlessHoleRectangle;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
 // ======================================================
@@ -81,6 +83,8 @@ function preload() {
     game.load.image( "logos", "assets/images/Logos.png" );
     game.load.image( "objects", "assets/images/Objects.png" );
     game.load.image( "trees", "assets/images/treetop.png" );
+    game.load.image( "rock", "assets/images/rock.png" );
+    game.load.image( "hole", "assets/images/hole.png" );
     game.load.audio( 'gameMusic', 'assets/audio/constance-kevin-macleod.m4a' );
     game.load.audio( 'zombieRoar', 'assets/audio/zombie-demon-spawn-mp3' );
 
@@ -132,6 +136,8 @@ function create() {
     map.addTilesetImage( "logos", "logos" );
     map.addTilesetImage( "dirt", "dirt" );
     map.addTilesetImage( "trees", "trees" );
+    map.addTilesetImage( "rocks", "rock" );
+    map.addTilesetImage( "hole", "hole" );
 
     // setup layers and collision layer
     grassLayer = map.createLayer( "grass_layer" );
@@ -147,6 +153,9 @@ function create() {
 
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
+
+    bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
+    bottomlessHoleRectangle = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
 
     // ======================================================
@@ -250,6 +259,10 @@ function update() {
 
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactWithDoor();
+    }
+
+    if ( bottomlessHoleRectangle.contains( player.x, player.y ) ) {
+        interactWithHole();
     }
 
     if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieDistancetoPlayer ) {
@@ -402,7 +415,7 @@ $( '#attack-button' ).on( 'click', function () {
             zombieToKill.kill();
             console.log( zombiesTopLeftBuilding.countLiving() );
 
-            createHealthPackZombieKill();
+            createHealthPackOnZombieKill();
         }
 
         if ( player.hp <= 0 ) {
@@ -447,7 +460,14 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 } );
 
-function interactWithDoor( player, door ) {
+function interactWithHole() {
+    // TODO: player destory isn't working
+    console.log( "You fell down the hole..." );
+    player.kill();
+    // then need to end the game because the collision is still triggering
+}
+
+function interactWithDoor( door ) {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
     console.log( "Entered door..." );
@@ -511,7 +531,7 @@ function interactWithDoor( player, door ) {
 //             zombieToKill.kill();
 //             console.log(zombiesTopLeftBuilding.countLiving());
 
-//             createHealthPackZombieKill();
+//             createHealthPackOnZombieKill();
 //         }
 
 //         if ( player.hp <= 0 ) {
@@ -557,32 +577,39 @@ function interactWithDoor( player, door ) {
 //     game.paused = false;
 // });
 
-function createHealthPackZombieKill() {
-    var randomX = game.rnd.integerInRange( -300, 300 );
-    var randomY = game.rnd.integerInRange( -300, 300 );
+function createHealthPackOnZombieKill() {
+    var randomX = game.rnd.integerInRange( -200, 200 );
+    var randomY = game.rnd.integerInRange( -200, 200 );
 
     var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
     healthPack.frame = game.rnd.integerInRange( 65, 110 );
+    healthPack.hp = game.rnd.integerInRange( 10, 20 );
     game.physics.arcade.enable( healthPack );
     healthPack.body.enable = true;
     healthPack.body.immovable = true;
     healthPack.anchor.setTo( 0.5, 0.5 );
 }
 
-function createHealthPackRandom() {
-    var randomX = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
-    var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+// for a fixed position, enter equal X and equal Y coordinates for start and end
+// for predetermined HP, enter the same number for min and max
+function createHealthPack( howMany, startX, endX, startY, endY, hpMin, hpMax ) {
 
-    var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
-    healthPack.frame = game.rnd.integerInRange( 65, 110 );
-    game.physics.arcade.enable( healthPack );
-    healthPack.body.enable = true;
-    healthPack.body.immovable = true;
-    healthPack.anchor.setTo( 0.5, 0.5 );
+    for (var i = 0; i < howMany; i++ ) {
+        var x = game.rnd.integerInRange( ( startX * mapPixelSize ), ( endX * mapPixelSize ) );
+        var y = game.rnd.integerInRange( ( startY * mapPixelSize ), ( endY * mapPixelSize ) );
+
+        var healthPack = healthPacks.create( x, y, 'healthPack' );
+        healthPack.frame = game.rnd.integerInRange( 65, 110 );
+        healthPack.hp = game.rnd.integerInRange( hpMin, hpMax );
+        game.physics.arcade.enable( healthPack );
+        healthPack.body.enable = true;
+        healthPack.body.immovable = true;
+        healthPack.anchor.setTo( 0.5, 0.5 );
+    }
 }
 
 function collectHealth( player, healthPack ) {
-    player.hp += 20;
+    player.hp += healthPack.hp;
     healthPack.destroy();
     var updateObj = {
       gameID: gameID,
