@@ -81,6 +81,8 @@ function preload() {
     game.load.image( "logos", "assets/images/Logos.png" );
     game.load.image( "objects", "assets/images/Objects.png" );
     game.load.image( "trees", "assets/images/treetop.png" );
+    game.load.image( "rocks", "assets/images/rock.png");
+    game.load.image( "hole", "assets/images/hole.png");
     game.load.audio( 'gameMusic', 'assets/audio/constance-kevin-macleod.m4a' );
     game.load.audio( 'zombieRoar', 'assets/audio/zombie-demon-spawn-mp3' );
 
