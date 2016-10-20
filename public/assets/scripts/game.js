@@ -37,6 +37,7 @@ var zombieToKill;
 var zombiesTopLeftBuilding;
 var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
+var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
 var zombieInteractionRadius;
 var zombieChaseSpeed;
@@ -219,6 +220,11 @@ function create() {
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var zombiesByTheFirstJeep = 4;
+    zombiesByTheFirstJeep = game.add.group();
+    makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
+    makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
+
     var zombiesBottomRightBuildingTotal = 6;
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
@@ -253,11 +259,13 @@ function update() {
     game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesByTheFirstJeep, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
     game.physics.arcade.overlap( player, healthPacks, collectHealthPack, null, this );
     game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
     game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
     game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
+    game.physics.arcade.collide( zombiesByTheFirstJeep, collisionLayer );
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
@@ -306,6 +314,14 @@ function update() {
     }
     if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 6 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 6 ], player, zombieChaseSpeed, this );
+    }
+
+    // group zombiesByTheFirstJeep
+    if ( game.physics.arcade.distanceBetween( zombiesByTheFirstJeep.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesByTheFirstJeep.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+    if ( game.physics.arcade.distanceBetween( zombiesByTheFirstJeep.children[ 2 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesByTheFirstJeep.children[ 2 ], player, zombieChaseSpeed, this );
     }
 
     // group zombiesBottomRightBuilding
