@@ -82,6 +82,17 @@
                  "width":88,
                  "x":3221,
                  "y":4753
+                }, 
+                {
+                 "height":306,
+                 "id":12,
+                 "name":"quadrant_2_spawn_point",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":30,
+                 "x":6114,
+                 "y":74
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -90,7 +101,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":9,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tileheight":32,
