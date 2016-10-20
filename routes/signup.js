@@ -1,3 +1,5 @@
+//This will be used later for authentication
+
 var express 	= require('express'),
 	router 		= express.Router();
 
