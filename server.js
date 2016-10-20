@@ -48,5 +48,4 @@ app.use('/game', game_controller);
 // app.use('/users', users);
 // app.use('/controller', controller);
 
-var port = 3000;
-app.listen(port);
+module.exports = app;
