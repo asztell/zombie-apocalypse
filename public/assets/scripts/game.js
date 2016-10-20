@@ -412,7 +412,7 @@ $( '#attack-button' ).on( 'click', function () {
             zombieToKill.kill();
             console.log( zombiesTopLeftBuilding.countLiving() );
 
-            createHealthPackZombieKill();
+            createHealthPackOnZombieKill();
         }
 
         if ( player.hp <= 0 ) {
@@ -528,7 +528,7 @@ function interactWithDoor( door ) {
 //             zombieToKill.kill();
 //             console.log(zombiesTopLeftBuilding.countLiving());
 
-//             createHealthPackZombieKill();
+//             createHealthPackOnZombieKill();
 //         }
 
 //         if ( player.hp <= 0 ) {
@@ -574,9 +574,9 @@ function interactWithDoor( door ) {
 //     game.paused = false;
 // });
 
-function createHealthPackZombieKill() {
-    var randomX = game.rnd.integerInRange( -300, 300 );
-    var randomY = game.rnd.integerInRange( -300, 300 );
+function createHealthPackOnZombieKill() {
+    var randomX = game.rnd.integerInRange( -200, 200 );
+    var randomY = game.rnd.integerInRange( -200, 200 );
 
     var healthPack = healthPacks.create( player.x + randomX, player.y + randomY, 'healthPack' );
     healthPack.frame = game.rnd.integerInRange( 65, 110 );
@@ -587,30 +587,22 @@ function createHealthPackZombieKill() {
     healthPack.anchor.setTo( 0.5, 0.5 );
 }
 
-function createHealthPacksRandom( howMany ) {
+// for a fixed position, enter equal X and equal Y coordinates for start and end
+// for predetermined HP, enter the same number for min and max
+function createHealthPack( howMany, startX, endX, startY, endY, hpMin, hpMax ) {
 
     for (var i = 0; i < howMany; i++ ) {
-        var randomX = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
-        var randomY = game.rnd.integerInRange( ( 1 * mapPixelSize ), ( 199 * mapPixelSize ) );
+        var x = game.rnd.integerInRange( ( startX * mapPixelSize ), ( endX * mapPixelSize ) );
+        var y = game.rnd.integerInRange( ( startY * mapPixelSize ), ( endY * mapPixelSize ) );
 
-        var healthPack = healthPacks.create( randomX, randomY, 'healthPack' );
+        var healthPack = healthPacks.create( x, y, 'healthPack' );
         healthPack.frame = game.rnd.integerInRange( 65, 110 );
-        healthPack.hp = game.rnd.integerInRange( 10, 20 );
+        healthPack.hp = game.rnd.integerInRange( hpMin, hpMax );
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
         healthPack.body.immovable = true;
         healthPack.anchor.setTo( 0.5, 0.5 );
     }
-}
-
-function createHealthPackFixedPosition( x, y, hp ) {
-    var healthPack = healthPacks.create( x, y, 'healthPack' );
-    healthPack.frame = game.rnd.integerInRange( 65, 110 );
-    healthPack.hp = hp;
-    game.physics.arcade.enable( healthPack );
-    healthPack.body.enable = true;
-    healthPack.body.immovable = true;
-    healthPack.anchor.setTo( 0.5, 0.5 );
 }
 
 function collectHealth( player, healthPack ) {
