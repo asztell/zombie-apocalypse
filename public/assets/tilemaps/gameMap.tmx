@@ -872,7 +872,7 @@
  </objectgroup>
  <objectgroup name="other_objects">
   <object id="6" name="bottomless_hole" type="hole" x="3221" y="4753" width="88" height="124"/>
-  <object id="12" name="quadrant_2_spawn_point" x="6114" y="74" width="30" height="306"/>
+  <object id="12" name="quadrant_2_spawn_point" type="zombie_spawn" x="6114" y="74" width="30" height="306"/>
   <object id="13" name="food" type="door" x="4577" y="5344" width="94" height="43"/>
   <object id="14" name="medicine" type="door" x="5497" y="4323" width="45" height="40"/>
  </objectgroup>
