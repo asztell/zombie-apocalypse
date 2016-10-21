@@ -8,6 +8,11 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
     render: render
 } );
 
+// sets the player to super strength
+var demoMode = true;
+var demoModeHP = 1000;
+var demoModeAP = 1000;
+
 var gameStartTime = Date.now();
 var gameEndTime;
 var gameID;
@@ -35,15 +40,28 @@ var healthPacks;
 
 var zombieToKill;
 var zombiesTopLeftBuilding;
+var zombiesRoadBlock;
 var zombiesLowerLeftBuilding;
 var zombiesCenterOfMap;
+var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
+var zombiesByDirtTopRight;
+var zombiesUnderTopRightRoad;
+var zombiesRightSideMiddle;
+var zombiesBottomLeftQuadrant;
+var zombiesBottomLeftQuadrantSecondGroup;
+var zombiesTriggeredTopRight;
+var zombieKillerLeftQuadrant;
 var zombieInteractionRadius;
 var zombieChaseSpeed;
 var bottomlessHole;
-var bottomlessHoleRectangle;
+var bottomlessHoleRectangleTrigger;
+var zombiesEnterFromTopRightRectangleTrigger;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
+var zombieCryAudio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+var attackSmack = new Audio( '/assets/audio/weapon-blow.wav' );
+
 // ======================================================
 // PHASER FUNCTION
 //
@@ -55,6 +73,7 @@ function preload() {
     // TODO: change scale to zoom in map, but still keep it full size on the screen
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignHorizontally = true;
+    // game.scale.setScreenSize( true );
     // game.scale.pageAlignVertically = true;
     // game.stage.backgroundColor = '#eee';
     // game.world.scale.x = 1.5;
@@ -100,7 +119,7 @@ function preload() {
 // ======================================================
 function create() {
 
-    game.physics.startSystem( Phaser.Physics.ARCADE );
+    game.physics.startSystem( Phaser.Physics.ARCADE );    
 
     gameMusic = game.add.audio( 'gameMusic' );
     gameMusic.play();
@@ -153,7 +172,10 @@ function create() {
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
 
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
-    bottomlessHoleRectangle = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
+    bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
+
+    // need an object on the map to trigger this
+    // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
 
 
     // ======================================================
@@ -161,7 +183,7 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( 0, 800, "playerAnimations" );
+    player = game.add.sprite( ( 2 * 32 ), ( 7 * 32 ), "playerAnimations" );
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -200,30 +222,76 @@ function create() {
             player.itemInventory.push( item );
         }
 
+    if ( demoMode ) {
+        player.hp = demoModeHP;
+        player.ap = demoModeAP;
+    }
 
     // ======================================================
-    // MAKE ZOMBIES
+    // MAKE ZOMBIE GROUPS
     // ======================================================
     // var zombiesTopLeftBuildingTotal = 4;
     // zombiesTopLeftBuilding = game.add.group();
     // makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
     // makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var zombiesRoadBlockTotal = 20;
+    zombiesRoadBlock = game.add.group();
+    makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 300, 500, 6, 8, 50, 50, 50, 50, 'x' );
+    makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 100, 200, 5, 6, 50, 50, 50, 50, 'y' );
+
+    var zombiesTriggeredTopRight = 12;
+    zombiesTriggeredTopRight = game.add.group();
+    makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 200, 300, 6, 8, 20, 30, 15, 20, 'x' );
+    makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 100, 150, 6, 8, 20, 30, 15, 20, 'y' );
+
     var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
-    makeZombie( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7, 20, 50, 10, 20, 'y' );
+    makeZombie( zombiesLowerLeftBuilding, 3, 56, 62, 191, 197, 100, 300, 6, 7, 20, 50, 40, 50, 'x' );
+    makeZombie( zombiesLowerLeftBuilding, 3, 59, 66, 191, 194, 100, 150, 6, 7, 20, 50, 40, 50, 'y' );
 
     var zombiesCenterOfMapTotal = 10;
     zombiesCenterOfMap = game.add.group();
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesCenterOfMap, 5, 75, 85, 100, 115, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var zombiesByTheFirstJeepTotal = 4;
+    zombiesByTheFirstJeep = game.add.group();
+    makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
+    makeZombie( zombiesByTheFirstJeep, 2, 35, 48, 9, 11, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
+
     var zombiesBottomRightBuildingTotal = 6;
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var zombiesByDirtTopRightTotal = 4;
+    makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 3, 4, 40, 50, 20, 30, 'x' );
+    makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 3, 4, 40, 50, 20, 30, 'y' );
+
+    var zombiesUnderTopRightRoadTotal = 4;
+    zombiesUnderTopRightRoad = game.add.group();
+    makeZombie( zombiesUnderTopRightRoad, 2, 192, 194, 37, 39, 100, 100, 5, 5, 50, 50, 50, 50, 'x' );
+    makeZombie( zombiesUnderTopRightRoad, 2, 191, 194, 38, 41, 150, 150, 6, 6, 50, 50, 50, 50, 'y' );
+
+    var zombiesRightSideMiddleTotal = 6;
+    zombiesRightSideMiddle = game.add.group();
+    makeZombie( zombiesRightSideMiddle, 3, 188, 194, 89, 91, 200, 200, 5, 6, 10, 20, 10, 20, 'x' );
+    makeZombie( zombiesRightSideMiddle, 3, 189, 192, 90, 98, 200, 200, 5, 6, 10, 20, 10, 20, 'y' );
+
+    var zombiesBottomLeftQuadrantTotal = 10;
+    zombiesBottomLeftQuadrant = game.add.group();
+    makeZombie( zombiesBottomLeftQuadrant, 5, 92, 102, 158, 162, 200, 300, 5, 7, 20, 25, 15, 20, 'x' );
+    makeZombie( zombiesBottomLeftQuadrant, 5, 92, 102, 158, 162, 150, 200, 5, 7, 20, 25, 15, 20, 'y' );
+
+    var zombiesBottomLeftQuadrantSecondGroupTotal = 6;
+    zombiesBottomLeftQuadrantSecondGroup = game.add.group();
+    makeZombie( zombiesBottomLeftQuadrantSecondGroup, 3, 92, 98, 168, 172, 150, 200, 6, 8, 20, 25, 40, 60, 'x' );
+    makeZombie( zombiesBottomLeftQuadrantSecondGroup, 3, 92, 98, 168, 172, 150, 200, 6, 8, 20, 25, 40, 60, 'y' );
+
+    var zombieKillerLeftQuadrantTotal = 1;
+    zombieKillerLeftQuadrant = game.add.group();
+    makeZombie( zombieKillerLeftQuadrant, 1, 120, 120, 46, 52, 150, 200, 6, 8, 20, 25, 75, 100, 'y' );
 
     // ======================================================
     // MAKE HEALTH PACKS
@@ -232,6 +300,46 @@ function create() {
     // sample function call to make a health pack or packs
     // makeHealthPack( healthPacks, 1, -7, 7, -7, 7, 10, 20 );
 
+
+    // left of first building
+    makeHealthPack( healthPacks, 2, 2, 5, 19, 21, 20, 30, false );
+    // midpoint between first and second sections, top of map
+    makeHealthPack( healthPacks, 1, 83, 83, 1, 2, 10, 20, false );
+    // at the end of the top road, first quadrant
+    makeHealthPack( healthPacks, 1, 123, 123, 19, 19, 20, 30, false );
+    // to the left of the one above
+    makeHealthPack( healthPacks, 1, 97, 97, 38, 38, 100, 150, false );    
+    // top right of map on dirt
+    makeHealthPack( healthPacks, 1, 194, 194, 5, 5, 10, 20, false );
+    // top right under dirt
+    makeHealthPack( healthPacks, 1, 185, 185, 13, 13, 40, 50, false );
+    // beginning of dirt path, top of map
+    makeHealthPack( healthPacks, 1, 168, 168, 3, 3, 5, 10, false );
+    // right side of zombie road block
+    makeHealthPack( healthPacks, 1, 105, 105, 36, 36, 10, 15, false );
+    // by car road blaock on right of map
+    makeHealthPack( healthPacks, 1, 131, 131, 87, 87, 10, 15, false );
+    // corner of road, top right of map
+    makeHealthPack( healthPacks, 1, 162, 162, 39, 39, 10, 15, false );
+    // top right of map, under road
+    makeHealthPack( healthPacks, 1, 195, 195, 37, 37, 50, 70, false );
+    // top right of map, under road, to the left
+    makeHealthPack( healthPacks, 1, 183, 183, 78, 78, 20, 30, false );
+    // right side middle
+    makeHealthPack( healthPacks, 1, 196, 196, 81, 81, 10, 20, false );
+    // right side bottom
+    makeHealthPack( healthPacks, 1, 198, 198, 196, 196, 20, 30, false );
+    makeHealthPack( healthPacks, 1, 174, 174, 187, 187, 20, 30, false );
+    // dirt patch left side of map
+    makeHealthPack( healthPacks, 1, 77, 77, 99, 99, 80, 120, false );
+    makeHealthPack( healthPacks, 1, 70, 70, 102, 102, 100, 150, false );
+    // bottom left quadrant
+    makeHealthPack( healthPacks, 1, 87, 87, 173, 173, 100, 150, false );    
+    makeHealthPack( healthPacks, 1, 92, 92, 177, 177, 100, 150, false );
+    // left side
+    makeHealthPack( healthPacks, 1, 67, 67, 42, 42, 10, 20, false );
+    // below game start point
+    makeHealthPack( healthPacks, 1, 3, 3, 42, 42, 50, 100, false );
 
     // ======================================================
     // KEYBOARD INPUTS
@@ -251,14 +359,32 @@ function update() {
 
     game.physics.arcade.collide( player, collisionLayer );
     game.physics.arcade.collide( player, zombiesTopLeftBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesRoadBlock, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesLowerLeftBuilding, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesByTheFirstJeep, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesByDirtTopRight, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesUnderTopRightRoad, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesRightSideMiddle, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesBottomLeftQuadrant, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesBottomLeftQuadrantSecondGroup, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesTriggeredTopRight, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombieKillerLeftQuadrant, interactWithZombie, null, this );
     game.physics.arcade.overlap( player, healthPacks, collectHealthPack, null, this );
     game.physics.arcade.collide( zombiesTopLeftBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesRoadBlock, collisionLayer );
     game.physics.arcade.collide( zombiesLowerLeftBuilding, collisionLayer );
     game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
+    game.physics.arcade.collide( zombiesByTheFirstJeep, collisionLayer );
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesByDirtTopRight, collisionLayer );
+    game.physics.arcade.collide( zombiesUnderTopRightRoad, collisionLayer );
+    game.physics.arcade.collide( zombiesRightSideMiddle, collisionLayer );
+    game.physics.arcade.collide( zombiesBottomLeftQuadrant, collisionLayer );
+    game.physics.arcade.collide( zombiesBottomLeftQuadrantSecondGroup, collisionLayer );
+    game.physics.arcade.collide( zombiesTriggeredTopRight, collisionLayer );
+    game.physics.arcade.collide( zombieKillerLeftQuadrant, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
     // triggered when player "enters" a building door
@@ -267,30 +393,32 @@ function update() {
     }
 
     // triggered when player falls down hole
-    if ( bottomlessHoleRectangle.contains( player.x, player.y ) ) {
+    if ( bottomlessHoleRectangleTrigger.contains( player.x, player.y ) ) {
         interactWithHole();
     }
 
 
-    // this series handles the zombies following the player when the player gets too close
+
+    // ======================================================
+    // CHASING ZOMBIES
+    // ======================================================        
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
 
-    // // group zombiesTopLeftBuilding
-    // if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
-    //     game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
-    // }
-    // if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
-    //     game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
-    // }
+    // group zombiesTopLeftBuilding
+    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
+    }
 
     // group zombiesLowerLeftBuilding
-    if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
-    }
-    if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ 3 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ 3 ], player, zombieChaseSpeed, this );
-    }
+    for ( var i = 0; i < zombiesLowerLeftBuilding.children.length; i++ ) {
+        if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ i ], player ) < zombieInteractionRadius ) {
+            game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ i ], player, zombieChaseSpeed, this );
+        }
+    }    
 
     // group zombiesCenterOfMap
     if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 0 ], player ) < zombieInteractionRadius ) {
@@ -308,22 +436,52 @@ function update() {
         game.physics.arcade.moveToObject( zombiesCenterOfMap.children[ 6 ], player, zombieChaseSpeed, this );
     }
 
+    // group zombiesByTheFirstJeep
+    if ( game.physics.arcade.distanceBetween( zombiesByTheFirstJeep.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesByTheFirstJeep.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+    if ( game.physics.arcade.distanceBetween( zombiesByTheFirstJeep.children[ 2 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesByTheFirstJeep.children[ 2 ], player, zombieChaseSpeed, this );
+    }
+
     // group zombiesBottomRightBuilding
     if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 0 ], player, zombieChaseSpeed, this );
     }
-
     if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
+    // group zombiesRightSideMiddle
+    for ( var i = 0; i < zombiesRightSideMiddle.children.length; i++ ) {
+        if ( game.physics.arcade.distanceBetween( zombiesRightSideMiddle.children[ i ], player ) < zombieInteractionRadius ) {
+            game.physics.arcade.moveToObject( zombiesRightSideMiddle.children[ i ], player, zombieChaseSpeed, this );
+        }
+    }
+
+    // group zombiesBottomLeftQuadrantSecondGroup
+    for ( var i = 0; i < zombiesBottomLeftQuadrantSecondGroup.children.length; i++ ) {
+        if ( game.physics.arcade.distanceBetween( zombiesBottomLeftQuadrantSecondGroup.children[ i ], player ) < zombieInteractionRadius ) {
+            game.physics.arcade.moveToObject( zombiesBottomLeftQuadrantSecondGroup.children[ i ], player, zombieChaseSpeed, this );
+        }
+    }
+
+    // group zombieKillerLeftQuadrant
+    if ( game.physics.arcade.distanceBetween( zombieKillerLeftQuadrant.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombieKillerLeftQuadrant.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+
+
+    // ======================================================
+    // KEYBOARD INPUTS
+    // ======================================================
 
     // reset the player's velocity with each frame update
     player.body.velocity.setTo( 0, 0 );
 
     // check for an arrow key press
     // TODO: the current code doesn't allow for diagonal movement, but can be added in if we want by uncommenting the commented out lines
-    var playerSpeed = 400;
+    var playerSpeed = 500;
 
     if ( cursors.up.isDown ) {
         player.body.velocity.y -= playerSpeed;
@@ -353,6 +511,7 @@ function render() {
 
     var textColor = 'rgb(255, 255, 255)';
 
+    //TODO: comment all of this out for the final game
     //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
     game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
     game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
@@ -369,9 +528,7 @@ function render() {
 // ======================================================
 function interactWithZombie( player, zombie ) {
 
-    // zombie roar
-    var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    audio.play();
+    zombieCryAudio.play();
 
     // save zombie to global so it can be accessed later
     zombieToKill = zombie;
@@ -390,10 +547,8 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
 $( '#attack-button' ).on( 'click', function () {
-
-    // play a weapon blow sound
-    var audio = new Audio( '/assets/audio/weapon-blow.wav' );
-    audio.play();
+    
+    attackSmack.play();
 
     // call player attack function and pass in opponent
     player.attack( zombieToKill );
@@ -434,7 +589,9 @@ $( '#attack-button' ).on( 'click', function () {
             // see function definition for more details on parameters
             // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
             // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
-            makeHealthPack( healthPacks, 1, 100, 200, 100, 200, 10, 20 );
+
+            // TODO: NEED TO FIX THIS FOR COLLECTING HEALTH AFTER ZOMBIE KILL, CURRENT FORMULA DOESN'T WORK'
+            makeHealthPack( healthPacks, 1, -3, 3, -3, 3, 10, 20, true );
             console.log( healthPacks );
         }
 
@@ -488,10 +645,38 @@ $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
 } );
 
 function interactWithHole() {
-    // TODO: player destroy isn't working
-    console.log( "You fell down the hole..." );
-    player.kill();
-    // then need to end the game because the collision is still triggering
+
+    var hpLoss = 25;
+
+    var style = {
+        font: "36px Creepster",
+        fill: "#910000"
+    };
+    var text = game.add.text( player.x, player.y, '-' + hpLoss + ' hp!', style );
+    text.anchor.set( 0.5 );
+
+    game.add.tween( text ).to( {
+        alpha: 0
+    }, 3000, Phaser.Easing.Linear.None, true );
+
+    player.hp -= hpLoss;
+    player.x = ( 99 * mapTileSize );
+    player.y = ( 150 * mapTileSize );
+
+    var updateObj = {
+        gameID: gameID,
+        ap: player.ap,
+        hp: player.hp,
+        zombieKills: player.zombieKills,
+        timeAlive: gameEndTime - gameStartTime
+    }
+    $.ajax( {
+        type: "put",
+        url: "game/update",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( updateObj )
+    } );
 }
 
 // function interactWithDoor( door ) {
@@ -647,24 +832,41 @@ function makeZombie( group, howMany, startX, endX, startY, endY, pixelMoveMin, p
 // for a fixed position, enter equal X and equal Y coordinates for start and end, otherwise use different numbers to create bounds for random positioning; x and y are the number of tiles, which will be multiplied by the mapTileSize to determine the number of pixels
 // for predetermined HP, enter the same number for min and max, using different numbers will create a random number between the two bounds
 // TODO: fix this, currently not work
-function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
+function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax, forZombieKill ) {
 
     for ( var i = 0; i < howMany; i++ ) {
-        var x = game.rnd.integerInRange( ( startX * mapTileSize ), ( endX * mapTileSize ) );
-        var y = game.rnd.integerInRange( ( startY * mapTileSize ), ( endY * mapTileSize ) );
+        if ( forZombieKill ) {
+            var x = game.rnd.integerInRange( player.x + ( startX * mapTileSize ), player.x + ( endX * mapTileSize ) );
+            var y = game.rnd.integerInRange( player.y + ( startY * mapTileSize ), player.y + ( endY * mapTileSize ) );
+        } else {
+            var x = game.rnd.integerInRange( ( startX * mapTileSize ), ( endX * mapTileSize ) );
+            var y = game.rnd.integerInRange( ( startY * mapTileSize ), ( endY * mapTileSize ) );
+        }
 
         // adds the health pack to the group passed in
         var healthPack = group.create( x, y, 'healthPack' );
-        healthPack.frame = 95; //game.rnd.integerInRange( 65, 110 );
+        healthPack.frame = game.rnd.integerInRange( 65, 110 );
         healthPack.hp = game.rnd.integerInRange( hpMin, hpMax );
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
         healthPack.body.immovable = true;
-        healthPack.anchor.setTo( 0.5, 0.5 );
+        healthPack.anchor.setTo( 0.5, 0.5 );                        
     }
 }
 
 function collectHealthPack( player, healthPack ) {
+
+    var style = {
+        font: "36px Creepster",
+        fill: "#D4EB51"
+    };
+    var text = game.add.text( healthPack.x, healthPack.y, '+' + healthPack.hp + ' hp!', style );
+    text.anchor.set( 0.5 );
+
+    game.add.tween( text ).to( {
+        alpha: 0
+    }, 3000, Phaser.Easing.Linear.None, true );
+
     player.hp += healthPack.hp;
     healthPack.destroy();
     var updateObj = {
