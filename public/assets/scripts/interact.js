@@ -40,7 +40,7 @@ function interactWithDoor(  ) {
       // doorEntered = door;
   $('#building-message').text('You entered the Grocery Story and found some crack. Your HP increased by 300.')
   $( '#modal-door' ).modal( 'show' );
-  player.hp += 300;
+  player.hp += 300; // TODO: randomly create this number
   player.y += 100;
   var updateObj = {
       gameID: gameID,
