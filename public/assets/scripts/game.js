@@ -9,7 +9,7 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 } );
 
 // sets the player to super strength
-var demoMode = true;
+var demoMode = false;
 var demoModeHP = 1000;
 var demoModeAP = 1000;
 
@@ -425,9 +425,9 @@ function update() {
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
     // player stats
-    playerAPDisplay.setText( " AP: " + player.ap );
     playerHPDisplay.setText( "HP: " + player.hp );
-    playerKillsDisplay.setText( " KILLS: " + player.zombieKills );
+    playerAPDisplay.setText( "AP: " + player.ap );
+    playerKillsDisplay.setText( "KILLS: " + player.zombieKills );
 
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
