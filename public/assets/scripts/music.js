@@ -7,7 +7,7 @@ $(document).ready(function(){
       
       $(this).jPlayer("setMedia", {
       
-        mp3: "../assets/audio/Constance.mp3"
+        mp3: "../assets/audio/zombie_music.mp3"
 
       }).jPlayer("play");
     
