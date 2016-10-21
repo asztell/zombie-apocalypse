@@ -42,6 +42,8 @@ var medicalDoor;
 var cursors;
 // var spacebar;
 
+var tweeningZombiesAreReleased;
+
 var healthPacks;
 
 var zombieToKill;
@@ -52,6 +54,7 @@ var zombiesCenterOfMap;
 var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
 var zombiesByDirtTopRight;
+var zombiesTweeningFromTopRight;
 var zombiesUnderTopRightRoad;
 var zombiesRightSideMiddle;
 var zombiesBottomLeftQuadrant;
@@ -63,6 +66,7 @@ var zombieChaseSpeed;
 var bottomlessHole;
 var bottomlessHoleRectangleTrigger;
 var zombiesEnterFromTopRightRectangleTrigger;
+var zombiesEnterFromTopRight;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
 var zombieCryAudio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
@@ -127,8 +131,8 @@ function create() {
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
-    gameMusic = game.add.audio( 'gameMusic' );
-    gameMusic.play();
+    // gameMusic = game.add.audio( 'gameMusic' );
+    // gameMusic.play();
 
     zombieRoar = game.add.audio( 'zombieRoar' );
 
@@ -173,13 +177,15 @@ function create() {
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
-
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
 
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
+    // need an object on the map to trigger this
+    zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
+    zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
     //TO DO: This needs to be updated to the proper door
     medicalDoor = map.objects[ 'building_doors' ][ 0 ];
     buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
@@ -274,6 +280,11 @@ function create() {
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
+
+    var zombiesTweeningFromTopRightTotal = 6;
+    zombiesTweeningFromTopRight = game.add.group();
+    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
+    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesByDirtTopRightTotal = 4;
     makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 3, 4, 40, 50, 20, 30, 'x' );
@@ -388,6 +399,7 @@ function update() {
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesByTheFirstJeep, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesTweeningFromTopRight, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesByDirtTopRight, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesUnderTopRightRoad, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesRightSideMiddle, interactWithZombie, null, this );
@@ -402,6 +414,7 @@ function update() {
     game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
     game.physics.arcade.collide( zombiesByTheFirstJeep, collisionLayer );
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesTweeningFromTopRight, collisionLayer );
     game.physics.arcade.collide( zombiesByDirtTopRight, collisionLayer );
     game.physics.arcade.collide( zombiesUnderTopRightRoad, collisionLayer );
     game.physics.arcade.collide( zombiesRightSideMiddle, collisionLayer );
@@ -424,6 +437,11 @@ function update() {
     // triggered when player falls down hole
     if ( bottomlessHoleRectangleTrigger.contains( player.x, player.y ) ) {
         interactWithHole();
+    }
+
+    // triggered when player reaches top right corner of map
+    if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
+        // releaseZombiesFromTopRight();
     }
 
     if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
@@ -481,6 +499,14 @@ function update() {
     }
     if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
+    }
+
+    // group zombiesTweeningFromTopRight
+    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 3 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
     // group zombiesRightSideMiddle
@@ -553,8 +579,6 @@ function render() {
 //
 //
 // ======================================================
-
-
 
 
 // function interactWithDoor( door ) {

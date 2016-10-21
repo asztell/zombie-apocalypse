@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-up" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="15">
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="18">
  <tileset firstgid="1" name="level1" tilewidth="32" tileheight="32" tilecount="475" columns="25">
   <image source="../images/Street.png" trans="fb7be2" width="800" height="608"/>
  </tileset>
@@ -869,11 +869,11 @@
  </layer>
  <objectgroup name="building_doors">
   <object id="4" name="food" type="door" x="738.727" y="831.727" width="123" height="50"/>
+  <object id="16" name="food" type="door" x="4578" y="5346" width="93" height="41"/>
+  <object id="17" name="medicine" type="door" x="5500" y="4323" width="39" height="43"/>
  </objectgroup>
  <objectgroup name="other_objects">
   <object id="6" name="bottomless_hole" type="hole" x="3221" y="4753" width="88" height="124"/>
   <object id="12" name="quadrant_2_spawn_point" type="zombie_spawn" x="6114" y="74" width="30" height="306"/>
-  <object id="13" name="food" type="door" x="4577" y="5344" width="94" height="43"/>
-  <object id="14" name="medicine" type="door" x="5497" y="4323" width="45" height="40"/>
  </objectgroup>
 </map>
