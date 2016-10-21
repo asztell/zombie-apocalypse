@@ -71,7 +71,7 @@ body{
 }
 
 h1,h2,h3,h4,h5,h6,p {
-  color: #D4EB51;
+  color: #D4EB51;  
 }
 
 .panel {
@@ -126,3 +126,5 @@ h1,h2,h3,h4,h5,h6,p {
 .character-name{
   text-decoration: underline;
 }
+
+
