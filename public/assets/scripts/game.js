@@ -117,8 +117,8 @@ function create() {
 
     game.physics.startSystem( Phaser.Physics.ARCADE );
 
-    gameMusic = game.add.audio( 'gameMusic' );
-    gameMusic.play();
+    // gameMusic = game.add.audio( 'gameMusic' );
+    // gameMusic.play();
 
     zombieRoar = game.add.audio( 'zombieRoar' );
 
@@ -422,7 +422,7 @@ function update() {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
-    // group zombiesBottomRightBuilding
+    // group zombiesTweeningFromTopRight
     if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 0 ], player, zombieChaseSpeed, this );
     }
@@ -641,11 +641,13 @@ function releaseZombiesFromTopRight() {
     let t = zombiesTweeningFromTopRight;
     if(!t) {
         tweeningZombiesAreReleased = false;
-        var rand = game.rnd.integerInRange(152, 158);
+        var rand = game.rnd.integerInRange(152*32, 158*32);
         var tween = [];
+        var where;
         // zombiesTweeningFromTopRight
         for(var i = 0; i < t.length; i++) {
-            tween[i] = game.add.tween(t[i]).to({rand}, 150, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true );
+            where = t.children[i].x - rand;
+            tween[i] = game.add.tween(t.children[i]).to({where}, 150, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true );
             // tween[i].onComplete.add(upRightBackAndForth, this);
         }
     }
