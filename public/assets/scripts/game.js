@@ -9,7 +9,7 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 } );
 
 // sets the player to super strength
-var demoMode = true;
+var demoMode = false;
 var demoModeHP = 1000;
 var demoModeAP = 1000;
 
@@ -19,6 +19,10 @@ var gameID;
 
 var chosenCharacter;
 var player;
+var playerHPDisplay;
+var playerAPDisplay;
+var playerKillsDisplay;
+var playerStatsDisplayStyle;
 
 var gameMusic;
 var zombieRoar;
@@ -183,9 +187,8 @@ function create() {
     zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
     zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
     //TO DO: This needs to be updated to the proper door
-    medicalDoor = map.objects[ 'building_doors'][0];
+    medicalDoor = map.objects[ 'building_doors' ][ 0 ];
     buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
-
 
     // need an object on the map to trigger this
     // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
@@ -365,6 +368,20 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     // spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
     // esc ...
+
+    // ======================================================
+    // PLAYER STATS
+    // ======================================================
+    playerStatsDisplayStyle = {
+        font: "24px Creepster",
+        fill: "#fff"        
+    };
+    playerHPDisplay = game.add.text( 32, 38, "HP: " + player.hp, playerStatsDisplayStyle );
+    playerAPDisplay = game.add.text( 32, 62, "AP: " + player.ap, playerStatsDisplayStyle );
+    playerKillsDisplay = game.add.text( 32, 86, "KILLS: " + player.zombieKills, playerStatsDisplayStyle );   
+    playerHPDisplay.fixedToCamera = true;
+    playerAPDisplay.fixedToCamera = true;
+    playerKillsDisplay.fixedToCamera = true;
 }
 
 
@@ -407,6 +424,11 @@ function update() {
     game.physics.arcade.collide( zombieKillerLeftQuadrant, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
+    // player stats
+    playerHPDisplay.setText( "HP: " + player.hp );
+    playerAPDisplay.setText( "AP: " + player.ap );
+    playerKillsDisplay.setText( "KILLS: " + player.zombieKills );
+
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactWithMedicalDoor();
@@ -419,7 +441,7 @@ function update() {
 
     // triggered when player reaches top right corner of map
     if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
-        releaseZombiesFromTopRight();
+        // releaseZombiesFromTopRight();
     }
 
     if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
@@ -547,12 +569,8 @@ function render() {
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: comment all of this out for the final game
-    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
-    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
-    game.debug.text( 'HP: ' + player.hp, 232, 48, textColor );
-    game.debug.text( 'AP: ' + player.ap, 432, 48, textColor );
-    game.debug.geom( buildingDoor_TopLeft, '#0fffff' );
+    // game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    // game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 
