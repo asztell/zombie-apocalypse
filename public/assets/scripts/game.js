@@ -19,6 +19,10 @@ var gameID;
 
 var chosenCharacter;
 var player;
+var playerHPDisplay;
+var playerAPDisplay;
+var playerKillsDisplay;
+var playerStatsDisplayStyle;
 
 var gameMusic;
 var zombieRoar;
@@ -125,7 +129,7 @@ function preload() {
 // ======================================================
 function create() {
 
-    game.physics.startSystem( Phaser.Physics.ARCADE );    
+    game.physics.startSystem( Phaser.Physics.ARCADE );
 
     // gameMusic = game.add.audio( 'gameMusic' );
     // gameMusic.play();
@@ -183,9 +187,8 @@ function create() {
     zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
     zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
     //TO DO: This needs to be updated to the proper door
-    medicalDoor = map.objects[ 'building_doors'][0];
+    medicalDoor = map.objects[ 'building_doors' ][ 0 ];
     buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
-
 
     // need an object on the map to trigger this
     // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
@@ -326,7 +329,7 @@ function create() {
     // at the end of the top road, first quadrant
     makeHealthPack( healthPacks, 1, 123, 123, 19, 19, 20, 30, false );
     // to the left of the one above
-    makeHealthPack( healthPacks, 1, 97, 97, 38, 38, 100, 150, false );    
+    makeHealthPack( healthPacks, 1, 97, 97, 38, 38, 100, 150, false );
     // top right of map on dirt
     makeHealthPack( healthPacks, 1, 194, 194, 5, 5, 10, 20, false );
     // top right under dirt
@@ -352,7 +355,7 @@ function create() {
     makeHealthPack( healthPacks, 1, 77, 77, 99, 99, 80, 120, false );
     makeHealthPack( healthPacks, 1, 70, 70, 102, 102, 100, 150, false );
     // bottom left quadrant
-    makeHealthPack( healthPacks, 1, 87, 87, 173, 173, 100, 150, false );    
+    makeHealthPack( healthPacks, 1, 87, 87, 173, 173, 100, 150, false );
     makeHealthPack( healthPacks, 1, 92, 92, 177, 177, 100, 150, false );
     // left side
     makeHealthPack( healthPacks, 1, 67, 67, 42, 42, 10, 20, false );
@@ -365,6 +368,20 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     // spacebar = game.input.keyboard.addKey( Phaser.Keyboard.SPACEBAR );
     // esc ...
+
+    // ======================================================
+    // PLAYER STATS
+    // ======================================================
+    playerStatsDisplayStyle = {
+        font: "24px Creepster",
+        fill: "#fff"        
+    };
+    playerHPDisplay = game.add.text( 32, 38, "HP: " + player.hp, playerStatsDisplayStyle );
+    playerAPDisplay = game.add.text( 32, 62, "AP: " + player.ap, playerStatsDisplayStyle );
+    playerKillsDisplay = game.add.text( 32, 86, "KILLS: " + player.zombieKills, playerStatsDisplayStyle );   
+    playerHPDisplay.fixedToCamera = true;
+    playerAPDisplay.fixedToCamera = true;
+    playerKillsDisplay.fixedToCamera = true;
 }
 
 
@@ -407,6 +424,11 @@ function update() {
     game.physics.arcade.collide( zombieKillerLeftQuadrant, collisionLayer );
     game.physics.arcade.collide( healthPacks, collisionLayer );
 
+    // player stats
+    playerAPDisplay.setText( " AP: " + player.ap );
+    playerHPDisplay.setText( "HP: " + player.hp );
+    playerKillsDisplay.setText( " KILLS: " + player.zombieKills );
+
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
         interactWithMedicalDoor();
@@ -445,7 +467,7 @@ function update() {
         if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ i ], player ) < zombieInteractionRadius ) {
             game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ i ], player, zombieChaseSpeed, this );
         }
-    }    
+    }
 
     // group zombiesCenterOfMap
     if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 0 ], player ) < zombieInteractionRadius ) {
@@ -547,12 +569,8 @@ function render() {
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: comment all of this out for the final game
-    //TODO: put the player's x/y coordinates on the screen, this same code can be used to get the player's coordinates to save to the database
-    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
-    game.debug.text( 'HP: ' + player.hp, 232, 48, textColor );
-    game.debug.text( 'AP: ' + player.ap, 432, 48, textColor );
-    game.debug.geom( buildingDoor_TopLeft, '#0fffff' );
+    // game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    // game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 
@@ -734,7 +752,7 @@ function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMa
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
         healthPack.body.immovable = true;
-        healthPack.anchor.setTo( 0.5, 0.5 );                        
+        healthPack.anchor.setTo( 0.5, 0.5 );
     }
 }
 
