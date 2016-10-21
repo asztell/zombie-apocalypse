@@ -157,9 +157,8 @@ $( '#attack-button' ).on( 'click', function () {
             //TODO: save game length(time), save zombie kills
             gameEndTime = Date.now();
 
-            $( '#modal #message' ).html(
-                "Player HP: 0" +
-                "Zombie HP: " + zombieToKill.hp );
+            $( '#modal #message' ).html('Game Over!');
+            $( '#close-button' ).hide();
 
             console.log( gameStartTime );
             console.log( gameEndTime );
@@ -180,12 +179,12 @@ $( '#attack-button' ).on( 'click', function () {
                 contentType: "application/json",
                 data: JSON.stringify( gameObj ),
                 success: function ( response ) {
-                    window.location = "/game/stats/" + gameID;
+                  setTimeout(gameOverRedirect, 3000);
                 }
             } );
 
-            $( '#modal' ).modal( 'toggle' );
-            player.destroy();
+            // $( '#modal' ).modal( 'toggle' );
+            // player.destroy();
         }
     }
 } );
@@ -201,3 +200,7 @@ $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
 });
+
+function gameOverRedirect(){
+  window.location = "/game/stats/" + gameID;
+}
