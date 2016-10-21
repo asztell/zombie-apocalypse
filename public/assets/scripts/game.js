@@ -419,7 +419,7 @@ function update() {
 
     // triggered when player reaches top right corner of map
     if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
-        releaseZombiesFromTopRight();
+        // releaseZombiesFromTopRight();
     }
 
     if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
