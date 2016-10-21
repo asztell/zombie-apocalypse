@@ -125,7 +125,7 @@ function preload() {
 // ======================================================
 function create() {
 
-    game.physics.startSystem( Phaser.Physics.ARCADE );    
+    game.physics.startSystem( Phaser.Physics.ARCADE );
 
     // gameMusic = game.add.audio( 'gameMusic' );
     // gameMusic.play();
@@ -326,7 +326,7 @@ function create() {
     // at the end of the top road, first quadrant
     makeHealthPack( healthPacks, 1, 123, 123, 19, 19, 20, 30, false );
     // to the left of the one above
-    makeHealthPack( healthPacks, 1, 97, 97, 38, 38, 100, 150, false );    
+    makeHealthPack( healthPacks, 1, 97, 97, 38, 38, 100, 150, false );
     // top right of map on dirt
     makeHealthPack( healthPacks, 1, 194, 194, 5, 5, 10, 20, false );
     // top right under dirt
@@ -352,7 +352,7 @@ function create() {
     makeHealthPack( healthPacks, 1, 77, 77, 99, 99, 80, 120, false );
     makeHealthPack( healthPacks, 1, 70, 70, 102, 102, 100, 150, false );
     // bottom left quadrant
-    makeHealthPack( healthPacks, 1, 87, 87, 173, 173, 100, 150, false );    
+    makeHealthPack( healthPacks, 1, 87, 87, 173, 173, 100, 150, false );
     makeHealthPack( healthPacks, 1, 92, 92, 177, 177, 100, 150, false );
     // left side
     makeHealthPack( healthPacks, 1, 67, 67, 42, 42, 10, 20, false );
@@ -428,7 +428,7 @@ function update() {
 
     // ======================================================
     // CHASING ZOMBIES
-    // ======================================================        
+    // ======================================================
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
 
@@ -445,7 +445,7 @@ function update() {
         if ( game.physics.arcade.distanceBetween( zombiesLowerLeftBuilding.children[ i ], player ) < zombieInteractionRadius ) {
             game.physics.arcade.moveToObject( zombiesLowerLeftBuilding.children[ i ], player, zombieChaseSpeed, this );
         }
-    }    
+    }
 
     // group zombiesCenterOfMap
     if ( game.physics.arcade.distanceBetween( zombiesCenterOfMap.children[ 0 ], player ) < zombieInteractionRadius ) {
@@ -734,7 +734,7 @@ function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMa
         game.physics.arcade.enable( healthPack );
         healthPack.body.enable = true;
         healthPack.body.immovable = true;
-        healthPack.anchor.setTo( 0.5, 0.5 );                        
+        healthPack.anchor.setTo( 0.5, 0.5 );
     }
 }
 
@@ -758,7 +758,7 @@ function collectHealthPack( player, healthPack ) {
         ap: player.ap,
         hp: player.hp,
         zombieKills: player.zombieKills,
-        timeAlive: gameEndTime - gameStartTime
+        timeAlive: Date.now() - gameStartTime
     }
     $.ajax( {
         type: "put",
