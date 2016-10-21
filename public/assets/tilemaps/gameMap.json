@@ -115,6 +115,17 @@
                  "width":30,
                  "x":6114,
                  "y":74
+                }, 
+                {
+                 "height":225.33,
+                 "id":18,
+                 "name":"barn_door_spawn_trigger",
+                 "rotation":0,
+                 "type":"zombie_spawn",
+                 "visible":true,
+                 "width":34.6666666666667,
+                 "x":1730.66666666667,
+                 "y":6100
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -123,7 +134,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":18,
+ "nextobjectid":19,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tileheight":32,

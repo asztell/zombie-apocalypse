@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-up" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="18">
+<map version="1.0" orientation="orthogonal" renderorder="left-up" width="200" height="200" tilewidth="32" tileheight="32" nextobjectid="19">
  <tileset firstgid="1" name="level1" tilewidth="32" tileheight="32" tilecount="475" columns="25">
   <image source="../images/Street.png" trans="fb7be2" width="800" height="608"/>
  </tileset>
@@ -875,5 +875,6 @@
  <objectgroup name="other_objects">
   <object id="6" name="bottomless_hole" type="hole" x="3221" y="4753" width="88" height="124"/>
   <object id="12" name="quadrant_2_spawn_point" type="zombie_spawn" x="6114" y="74" width="30" height="306"/>
+  <object id="18" name="barn_door_spawn_trigger" type="zombie_spawn" x="1730.67" y="6100" width="34.6667" height="225.33"/>
  </objectgroup>
 </map>

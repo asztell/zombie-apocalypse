@@ -9,7 +9,7 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 } );
 
 // sets the player to super strength
-var demoMode = false;
+var demoMode = true;
 var demoModeHP = 1000;
 var demoModeAP = 1000;
 
@@ -40,11 +40,13 @@ var foodDoorTopLeft;
 var buildingMedicalDoorRectangle;
 var foodDoorBottomRight;
 var foodDoorBottomRightRectangle;
+var barnDoorZombieSpawnRectangle;
 var medicalDoor;
 var cursors;
 // var spacebar;
 
 var tweeningZombiesAreReleased = false;
+var middleLeftZombiesAreReleased = false;
 
 var healthPacks;
 
@@ -56,9 +58,11 @@ var zombiesCenterOfMap;
 var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
 var zombiesByDirtTopRight;
+var zombiesEnterLeftSideMiddle;
 var zombiesTweeningFromTopRight;
 var zombiesUnderTopRightRoad;
 var zombiesRightSideMiddle;
+var zombiesLeftSideMiddle;
 var zombiesBottomLeftQuadrant;
 var zombiesBottomLeftQuadrantSecondGroup;
 var zombiesTriggeredTopRight;
@@ -192,12 +196,11 @@ function create() {
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
-    // need an object on the map to trigger this
     zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
     zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
 
-    // need an object on the map to trigger this
-    // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
+    zombiesEnterLeftSideMiddle = map.objects[ 'other_objects' ][ 2 ];
+    barnDoorZombieSpawnRectangle = new Phaser.Rectangle( zombiesEnterLeftSideMiddle.x, zombiesEnterLeftSideMiddle.y, zombiesEnterLeftSideMiddle.width, zombiesEnterLeftSideMiddle.height );
 
 
     // ======================================================
@@ -205,7 +208,19 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( ( 155 * 32 ), ( 7 * 32 ), "playerAnimations" );
+    // player spawned at top right
+    // player = game.add.sprite( ( 155 * 32 ), ( 7 * 32 ), "playerAnimations" );
+    // player spawned before barn door
+    player = game.add.sprite( ( 30 * 32 ), ( 194 * 32 ), "playerAnimations" );
+    // player spawned at top left
+    // player = game.add.sprite( ( 6 * 32 ), ( 7 * 32 ), "playerAnimations" );
+    // player spawned at crack building
+    // player = game.add.sprite( ( 134 * 32 ), ( 140 * 32 ), "playerAnimations" );
+    // player spawned below baricade
+    // player = game.add.sprite( ( 155 * 32 ), ( 155 * 32 ), "playerAnimations" );
+    // player spawned at bottomless hole
+    // player = game.add.sprite( ( 101 * 32 ), ( 134 * 32 ), "playerAnimations" );
+
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -405,6 +420,7 @@ function update() {
     game.physics.arcade.collide( player, zombiesUnderTopRightRoad, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesRightSideMiddle, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomLeftQuadrant, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesLeftSideMiddle, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomLeftQuadrantSecondGroup, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesTriggeredTopRight, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombieKillerLeftQuadrant, interactWithZombie, null, this );
@@ -420,6 +436,7 @@ function update() {
     game.physics.arcade.collide( zombiesUnderTopRightRoad, collisionLayer );
     game.physics.arcade.collide( zombiesRightSideMiddle, collisionLayer );
     game.physics.arcade.collide( zombiesBottomLeftQuadrant, collisionLayer );
+    game.physics.arcade.collide( zombiesLeftSideMiddle, collisionLayer );
     game.physics.arcade.collide( zombiesBottomLeftQuadrantSecondGroup, collisionLayer );
     game.physics.arcade.collide( zombiesTriggeredTopRight, collisionLayer );
     game.physics.arcade.collide( zombieKillerLeftQuadrant, collisionLayer );
@@ -446,6 +463,11 @@ function update() {
     // triggered when player reaches top right corner of map
     if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
         releaseZombiesFromTopRight();
+    }
+
+    // triggered when player reaches top right corner of map
+    if ( barnDoorZombieSpawnRectangle.contains( player.x, player.y ) ) {
+        releaseZombiesFromMiddleLeft();
     }
 
     // triggered when player falls down hole
@@ -543,6 +565,14 @@ function update() {
         }
     }
 
+    if ( zombiesLeftSideMiddle ) {
+        for ( var i = 0; i < zombiesLeftSideMiddle.children.length; i++ ) {
+            if ( game.physics.arcade.distanceBetween( zombiesLeftSideMiddle.children[ i ], player ) < zombieInteractionRadius ) {
+                game.physics.arcade.moveToObject( zombiesLeftSideMiddle.children[ i ], player, zombieChaseSpeed, this );
+            }
+        }
+    }
+
 
     // ======================================================
     // KEYBOARD INPUTS
@@ -581,11 +611,11 @@ function update() {
 // ======================================================
 function render() {
 
-    // var textColor = 'rgb(255, 255, 255)';
+    var textColor = 'rgb(255, 255, 255)';
 
     //TODO: comment all of this out for the final game
-    // game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    // game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 
@@ -694,29 +724,20 @@ function releaseZombiesFromTopRight() {
 
     if ( !tweeningZombiesAreReleased ) {
         tweeningZombiesAreReleased = true;
-
-        // var zombiesTweeningFromTopRightTotal = 6;
         zombiesTweeningFromTopRight = game.add.group();
         makeZombie( zombiesTweeningFromTopRight, 3, 150, 158, 29, 31, 100, 300, 6, 8, 20, 50, 10, 20, 'x' );
         makeZombie( zombiesTweeningFromTopRight, 3, 150, 158, 29, 31, 100, 300, 6, 8, 20, 50, 10, 20, 'y' );
     }
+}
 
-    // let t = zombiesTweeningFromTopRight;
+function releaseZombiesFromMiddleLeft() {
 
-    // if ( !tweeningZombiesAreReleased ) {
-    //     tweeningZombiesAreReleased = false;
-    //     var rand = game.rnd.integerInRange( 152 * 32, 158 * 32 );
-    //     var tween = [];
-    //     var where;
-    //     // zombiesTweeningFromTopRight
-    //     for ( var i = 0; i < t.children.length; i++ ) {
-    //         where = rand;
-    //         tween[ i ] = game.add.tween( t.children[ i ] ).to( {
-    //             x: where
-    //         }, 2000, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true );
-    //         // tween[i].onComplete.add(upRightBackAndForth, this);
-    //     }
-    // }
+    if ( !middleLeftZombiesAreReleased ) {
+        middleLeftZombiesAreReleased = true;
+        zombiesLeftSideMiddle = game.add.group();
+        makeZombie( zombiesLeftSideMiddle, 10, 15, 35, 120, 130, 200, 600, 4, 10, 20, 50, 10, 20, 'x' );
+        makeZombie( zombiesLeftSideMiddle, 10, 15, 35, 120, 130, 200, 600, 4, 10, 20, 50, 10, 20, 'y' );
+    }
 }
 
 // logs an error if a property already exists on the player or zombie, this is to handle custom properties and functions we add
