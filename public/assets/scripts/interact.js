@@ -200,4 +200,4 @@ $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
     // this keeps the modal from popping up multiple times
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
-} );
+});

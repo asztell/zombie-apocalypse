@@ -42,7 +42,7 @@ var medicalDoor;
 var cursors;
 // var spacebar;
 
-var tweeningZombiesAreReleased;
+var tweeningZombiesAreReleased = false;
 
 var healthPacks;
 
@@ -199,7 +199,7 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( ( 2 * 32 ), ( 7 * 32 ), "playerAnimations" );
+    player = game.add.sprite( ( 155 * 32 ), ( 7 * 32 ), "playerAnimations" );
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -256,10 +256,10 @@ function create() {
     makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 300, 500, 6, 8, 50, 50, 50, 50, 'x' );
     makeZombie( zombiesRoadBlock, 10, 70, 100, 28, 30, 100, 200, 5, 6, 50, 50, 50, 50, 'y' );
 
-    var zombiesTriggeredTopRight = 12;
-    zombiesTriggeredTopRight = game.add.group();
-    makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 200, 300, 6, 8, 20, 30, 15, 20, 'x' );
-    makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 100, 150, 6, 8, 20, 30, 15, 20, 'y' );
+    // var zombiesTriggeredTopRight = 12;
+    // zombiesTriggeredTopRight = game.add.group();
+    // makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 200, 300, 6, 8, 20, 30, 15, 20, 'x' );
+    // makeZombie( zombiesTriggeredTopRight, 6, 190, 198, 28, 32, 100, 150, 6, 8, 20, 30, 15, 20, 'y' );
 
     var zombiesLowerLeftBuildingTotal = 6;
     zombiesLowerLeftBuilding = game.add.group();
@@ -280,11 +280,6 @@ function create() {
     zombiesBottomRightBuilding = game.add.group();
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
-
-    var zombiesTweeningFromTopRightTotal = 6;
-    zombiesTweeningFromTopRight = game.add.group();
-    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
-    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesByDirtTopRightTotal = 4;
     makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 3, 4, 40, 50, 20, 30, 'x' );
@@ -374,11 +369,11 @@ function create() {
     // ======================================================
     playerStatsDisplayStyle = {
         font: "24px Creepster",
-        fill: "#fff"        
+        fill: "#fff"
     };
     playerHPDisplay = game.add.text( 32, 38, "HP: " + player.hp, playerStatsDisplayStyle );
     playerAPDisplay = game.add.text( 32, 62, "AP: " + player.ap, playerStatsDisplayStyle );
-    playerKillsDisplay = game.add.text( 32, 86, "KILLS: " + player.zombieKills, playerStatsDisplayStyle );   
+    playerKillsDisplay = game.add.text( 32, 86, "KILLS: " + player.zombieKills, playerStatsDisplayStyle );
     playerHPDisplay.fixedToCamera = true;
     playerAPDisplay.fixedToCamera = true;
     playerKillsDisplay.fixedToCamera = true;
@@ -441,12 +436,12 @@ function update() {
 
     // triggered when player reaches top right corner of map
     if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
-        // releaseZombiesFromTopRight();
+        releaseZombiesFromTopRight();
     }
 
-    if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithMedicalDoor();
-    }
+    // if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    //     interactWithMedicalDoor();
+    // }
 
     // ======================================================
     // CHASING ZOMBIES
@@ -502,12 +497,12 @@ function update() {
     }
 
     // group zombiesTweeningFromTopRight
-    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 0 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 0 ], player, zombieChaseSpeed, this );
-    }
-    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 3 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 3 ], player, zombieChaseSpeed, this );
-    }
+    // if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 0 ], player ) < zombieInteractionRadius ) {
+    //     game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 0 ], player, zombieChaseSpeed, this );
+    // }
+    // if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 3 ], player ) < zombieInteractionRadius ) {
+    //     game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 3 ], player, zombieChaseSpeed, this );
+    // }
 
     // group zombiesRightSideMiddle
     for ( var i = 0; i < zombiesRightSideMiddle.children.length; i++ ) {
@@ -526,6 +521,14 @@ function update() {
     // group zombieKillerLeftQuadrant
     if ( game.physics.arcade.distanceBetween( zombieKillerLeftQuadrant.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombieKillerLeftQuadrant.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+
+    if ( zombiesTweeningFromTopRight ) {
+        for ( var i = 0; i < zombiesTweeningFromTopRight.children.length; i++ ) {
+            if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ i ], player ) < zombieInteractionRadius ) {
+                game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ i ], player, zombieChaseSpeed, this );
+            }
+        }
     }
 
 
@@ -566,7 +569,7 @@ function update() {
 // ======================================================
 function render() {
 
-    var textColor = 'rgb(255, 255, 255)';
+    // var textColor = 'rgb(255, 255, 255)';
 
     //TODO: comment all of this out for the final game
     // game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
@@ -579,118 +582,6 @@ function render() {
 //
 //
 // ======================================================
-
-
-// function interactWithDoor( door ) {
-//     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-//     //     // audio.play();
-//     console.log( "Entered door..." );
-//
-//     //     // doorEntered = door;
-//     //     // game.paused = true;
-//     //     // $( '#modal-door' ).modal( 'show' );
-// }
-
-// // when modal is triggered, populate with current health stats for player and zombie
-// $( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {
-
-//     $( '#collect-button' ).show();
-//     $( '#close-button' ).html( "RETREAT!" );
-
-//     $( '#modal-door #message' ).html(
-//         "Player HP: " + player.hp + "\n" +
-//         "Zombie name: " + zombieToKill.name + "\n" +
-//         "Zombie HP: " + zombieToKill.hp );
-// } );
-
-// // do a bunch of stuff each time the attack button is clicked when inside the modal
-// $( '#collect-button' ).on( 'click', function () {
-//     // itemClickedOn
-//     player.collectItem( itemClickedOn );
-
-//     // if player has room in inventory, then allow them to collect item, otherwise, no
-//     if ( player.hp > 0 && zombieToKill.hp > 0 ) {
-//         $( '#modal #message' ).html(
-//             "Player HP: " + player.hp + "\n" +
-//             "Zombie name: " + zombieToKill.name + "\n" +
-//             "Zombie HP: " + zombieToKill.hp );
-//     } else {
-
-//         if ( zombieToKill.hp <= 0 ) {
-//             // if the zombie is killed do all this
-//             player.zombieKills++;
-//             $( '#modal #message' ).html(
-//                 "Player HP: " + player.hp + "\n" +
-//                 "Zombie name: " + zombieToKill.name + "\n" +
-//                 "Zombie HP: 0" );
-
-//             $( '#attack-button' ).hide();
-//             $( '#close-button' ).html( "RESUME GAME" );
-//             // var updateObj = {
-//             //   gameID: gameID,
-//             //   ap: player.ap,
-//             //   hp: player.hp,
-//             //   zombieKills: player.zombieKills,
-//             //   timeAlive: Date.now() - gameStartTime
-//             // }
-//             // $.ajax( {
-//             //     type: "put",
-//             //     url: "game/update",
-//             //     dataType: "json",
-//             //     contentType: "application/json",
-//             //     data: JSON.stringify( updateObj )
-//             // } );
-
-//             console.log(zombiesTopLeftBuilding.countLiving());
-//             zombieToKill.kill();
-//             console.log(zombiesTopLeftBuilding.countLiving());
-
-//             createHealthPackOnZombieKill();
-//         }
-
-//         if ( player.hp <= 0 ) {
-//             //TODO: save game length(time), save zombie kills
-//             gameEndTime = Date.now();
-
-//             $( '#modal #message' ).html(
-//                 "Player HP: 0" +
-//                 "Zombie name: " + zombieToKill.name + "\n" +
-//                 "Zombie HP: " + zombieToKill.hp );
-
-//             console.log( gameStartTime );
-//             console.log( gameEndTime );
-//             console.log( "Game over..." );
-
-//             // var gameObj = {
-//             //   gameID: gameID,
-//             //   ap: player.ap,
-//             //   hp: player.hp,
-//             //   zombieKills: player.zombieKills,
-//             //   timeAlive: gameEndTime - gameStartTime
-//             // }
-//             //
-//             // $.ajax( {
-//             //     type: "put",
-//             //     url: "game/over",
-//             //     dataType: "json",
-//             //     contentType: "application/json",
-//             //     data: JSON.stringify( gameObj ),
-//             //     success: function ( response ) {
-//             //       window.location = "/game/over";
-//             //     }
-//             // } );
-
-//             $( '#modal' ).modal( 'toggle' );
-//             player.destroy();
-//         }
-//     }
-// });
-
-// $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
-//     player.body.velocity.setTo( 0, 0 );
-//     game.paused = false;
-// });
-
 
 // make any number of zombies with a list of parameters, all parameters are required
 // for a fixed position, enter equal X and equal Y coordinates for start and end, otherwise use different numbers to create bounds for random positioning; x and y are the number of tiles, which will be multiplied by the mapTileSize to determine the number of pixels
@@ -785,6 +676,35 @@ function collectHealthPack( player, healthPack ) {
         contentType: "application/json",
         data: JSON.stringify( updateObj )
     } );
+}
+
+function releaseZombiesFromTopRight() {
+
+    if ( !tweeningZombiesAreReleased ) {
+        tweeningZombiesAreReleased = true;
+
+        // var zombiesTweeningFromTopRightTotal = 6;
+        zombiesTweeningFromTopRight = game.add.group();
+        makeZombie( zombiesTweeningFromTopRight, 3, 150, 158, 29, 31, 100, 300, 6, 8, 20, 50, 10, 20, 'x' );
+        makeZombie( zombiesTweeningFromTopRight, 3, 150, 158, 29, 31, 100, 300, 6, 8, 20, 50, 10, 20, 'y' );
+    }
+
+    // let t = zombiesTweeningFromTopRight;
+
+    // if ( !tweeningZombiesAreReleased ) {
+    //     tweeningZombiesAreReleased = false;
+    //     var rand = game.rnd.integerInRange( 152 * 32, 158 * 32 );
+    //     var tween = [];
+    //     var where;
+    //     // zombiesTweeningFromTopRight
+    //     for ( var i = 0; i < t.children.length; i++ ) {
+    //         where = rand;
+    //         tween[ i ] = game.add.tween( t.children[ i ] ).to( {
+    //             x: where
+    //         }, 2000, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true );
+    //         // tween[i].onComplete.add(upRightBackAndForth, this);
+    //     }
+    // }
 }
 
 // logs an error if a property already exists on the player or zombie, this is to handle custom properties and functions we add
