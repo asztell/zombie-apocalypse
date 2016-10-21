@@ -176,6 +176,7 @@ function create() {
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
+    //TO DO: This needs to be updated to the proper door
     medicalDoor = map.objects[ 'building_doors'][0];
     buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
 

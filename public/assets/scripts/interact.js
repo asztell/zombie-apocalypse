@@ -100,7 +100,7 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
     $( '#attack-button' ).show().focus();
     $( '#close-button' ).html( "RETREAT!" );
 
-    $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: " + zombieToKill.hp );
+    $( '#modal #message' ).html( "Player HP: " + player.hp + "<br>Zombie HP: " + zombieToKill.hp );
 } );
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
@@ -113,13 +113,13 @@ $( '#attack-button' ).on( 'click', function () {
 
     // as long as the zombie is alive keep attacking
     if ( player.hp > 0 && zombieToKill.hp > 0 ) {
-        $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: " + zombieToKill.hp );
+        $( '#modal #message' ).html( "Player HP: " + player.hp + "<br>Zombie HP: " + zombieToKill.hp );
     } else {
 
         if ( zombieToKill.hp <= 0 ) {
             // if the zombie is killed do all this
             player.zombieKills++;
-            $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: 0" );
+            $( '#modal #message' ).html( "Player HP: " + player.hp + "<br>Zombie killed!" );
 
             $( '#attack-button' ).hide();
             $( '#close-button' ).html( "RESUME GAME" ).focus();
