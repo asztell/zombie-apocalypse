@@ -183,7 +183,7 @@ function create() {
     // This is a Phaser sprite object extended by us with our own properties and methods
     // TODO: refactor this into its own module or elsewhere in the code to clean things up
     // ======================================================
-    player = game.add.sprite( ( 125 * 32 ), ( 139 * 32 ), "playerAnimations" );
+    player = game.add.sprite( ( 2 * 32 ), ( 7 * 32 ), "playerAnimations" );
     player.frame = 18;
     // game.physics.arcade.enable( player );
     game.physics.enable( player, Phaser.Physics.ARCADE );
@@ -399,7 +399,7 @@ function update() {
         interactWithHole();
     }
 
-    
+
 
 
     // ======================================================
