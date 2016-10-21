@@ -55,6 +55,9 @@ var bottomlessHoleRectangleTrigger;
 var zombiesEnterFromTopRightRectangleTrigger;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
+var zombieCryAudio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+var attackSmack = new Audio( '/assets/audio/weapon-blow.wav' );
+
 // ======================================================
 // PHASER FUNCTION
 //
@@ -278,6 +281,8 @@ function create() {
     makeHealthPack( healthPacks, 2, 2, 5, 19, 21, 20, 30, false );
     // midpoint between first and second sections, top of map
     makeHealthPack( healthPacks, 1, 83, 83, 1, 2, 10, 20, false );
+    // at the end of the top road, first quadrant
+    makeHealthPack( healthPacks, 1, 123, 123, 19, 19, 20, 30, false );
     // top right of map on dirt
     makeHealthPack( healthPacks, 1, 194, 194, 5, 5, 10, 20, false );
     // top right under dirt
@@ -468,9 +473,7 @@ function render() {
 // ======================================================
 function interactWithZombie( player, zombie ) {
 
-    // zombie roar
-    var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    audio.play();
+    zombieCryAudio.play();
 
     // save zombie to global so it can be accessed later
     zombieToKill = zombie;
@@ -489,10 +492,8 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
 $( '#attack-button' ).on( 'click', function () {
-
-    // play a weapon blow sound
-    var audio = new Audio( '/assets/audio/weapon-blow.wav' );
-    audio.play();
+    
+    attackSmack.play();
 
     // call player attack function and pass in opponent
     player.attack( zombieToKill );
@@ -598,8 +599,8 @@ function interactWithHole() {
 
     player.hp -= hpLoss;
     player.x = ( 99 * mapTileSize );
-    player.y = ( 150 * mapTileSize );        
-    
+    player.y = ( 150 * mapTileSize );
+
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
