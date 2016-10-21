@@ -170,8 +170,6 @@ function create() {
     // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
 
 
-
-
     // ======================================================
     // PLAYER CONSTRUCTOR
     // This is a Phaser sprite object extended by us with our own properties and methods
@@ -219,7 +217,6 @@ function create() {
     if ( demoMode ) {
         player.hp = demoModeHP;
         player.ap = demoModeAP;
-
     }
 
     // ======================================================
@@ -585,32 +582,37 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
 } );
 
 function interactWithHole() {
-    // TODO: player destroy isn't working
-    console.log( "You fell down the hole..." );
-    gameEndTime = Date.now();
-    player.kill();
 
-    console.log( gameStartTime );
-    console.log( gameEndTime );
-    console.log( "Game over..." );
+    var hpLoss = 25;
 
-    var gameObj = {
+    var style = {
+        font: "36px Creepster",
+        fill: "#910000"
+    };
+    var text = game.add.text( player.x, player.y, '-' + hpLoss + ' hp!', style );
+    text.anchor.set( 0.5 );
+
+    game.add.tween( text ).to( {
+        alpha: 0
+    }, 3000, Phaser.Easing.Linear.None, true );
+
+    player.hp -= hpLoss;
+    player.x = ( 99 * mapTileSize );
+    player.y = ( 150 * mapTileSize );        
+    
+    var updateObj = {
         gameID: gameID,
         ap: player.ap,
-        hp: 0,
+        hp: player.hp,
         zombieKills: player.zombieKills,
         timeAlive: gameEndTime - gameStartTime
     }
-
     $.ajax( {
         type: "put",
-        url: "game/over",
+        url: "game/update",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify( gameObj ),
-        success: function ( response ) {
-            window.location = "/game/stats/" + gameID;
-        }
+        data: JSON.stringify( updateObj )
     } );
 }
 
