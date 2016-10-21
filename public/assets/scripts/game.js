@@ -36,8 +36,10 @@ var randomItemsLayer;
 var door;
 var doorEntered;
 var buildingDoorRectangle;
-var buildingDoor_TopLeft;
+var foodDoorTopLeft;
 var buildingMedicalDoorRectangle;
+var foodDoorBottomRight;
+var foodDoorBottomRightRectangle;
 var medicalDoor;
 var cursors;
 // var spacebar;
@@ -176,9 +178,16 @@ function create() {
     map.setCollisionBetween( 0, 2000, true, collisionLayer, true );
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
-    buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
+    foodDoorTopLeft = map.objects[ 'building_doors' ][ 0 ];
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
-    buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
+    buildingDoorRectangle = new Phaser.Rectangle( foodDoorTopLeft.x, foodDoorTopLeft.y, foodDoorTopLeft.width, foodDoorTopLeft.height );
+
+    foodDoorBottomRight = map.objects[ 'building_doors' ][ 1 ];
+    foodDoorBottomRightRectangle = new Phaser.Rectangle( foodDoorBottomRight.x, foodDoorBottomRight.y, foodDoorBottomRight.width, foodDoorBottomRight.height );
+
+    //TO DO: This needs to be updated to the proper door
+    medicalDoor = map.objects[ 'building_doors' ][ 2 ];
+    buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
 
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
@@ -186,9 +195,6 @@ function create() {
     // need an object on the map to trigger this
     zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
     zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
-    //TO DO: This needs to be updated to the proper door
-    medicalDoor = map.objects[ 'building_doors' ][ 0 ];
-    buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
 
     // need an object on the map to trigger this
     // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
@@ -426,12 +432,15 @@ function update() {
 
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithMedicalDoor();
+        interactWithDoor();        
     }
 
-    // triggered when player falls down hole
-    if ( bottomlessHoleRectangleTrigger.contains( player.x, player.y ) ) {
-        interactWithHole();
+    if ( foodDoorBottomRightRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        interactWithDoor();        
+    }
+
+    if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+    //    interactWithMedicalDoor();
     }
 
     // triggered when player reaches top right corner of map
@@ -439,9 +448,12 @@ function update() {
         releaseZombiesFromTopRight();
     }
 
-    // if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-    //     interactWithMedicalDoor();
-    // }
+    // triggered when player falls down hole
+    if ( bottomlessHoleRectangleTrigger.contains( player.x, player.y ) ) {
+        interactWithHole();
+    }
+
+
 
     // ======================================================
     // CHASING ZOMBIES
