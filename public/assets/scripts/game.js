@@ -33,6 +33,8 @@ var door;
 var doorEntered;
 var buildingDoorRectangle;
 var buildingDoor_TopLeft;
+var buildingMedicalDoorRectangle;
+var medicalDoor;
 var cursors;
 // var spacebar;
 
@@ -174,6 +176,10 @@ function create() {
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
+    medicalDoor = map.objects[ 'building_doors'][0];
+    buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
+
+
     // need an object on the map to trigger this
     // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
 
@@ -230,9 +236,9 @@ function create() {
     // ======================================================
     // MAKE ZOMBIE GROUPS
     // ======================================================
-    // var zombiesTopLeftBuildingTotal = 4;
-    // zombiesTopLeftBuilding = game.add.group();
-    // makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
+    var zombiesTopLeftBuildingTotal = 4;
+    zombiesTopLeftBuilding = game.add.group();
+    makeZombie( zombiesTopLeftBuilding, 1, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
     // makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesRoadBlockTotal = 20;
@@ -389,7 +395,7 @@ function update() {
 
     // triggered when player "enters" a building door
     if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithDoor(door);
+        interactWithMedicalDoor();
     }
 
     // triggered when player falls down hole
@@ -397,7 +403,9 @@ function update() {
         interactWithHole();
     }
 
-
+    if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        interactWithMedicalDoor();
+    }
 
     // ======================================================
     // CHASING ZOMBIES
@@ -409,9 +417,9 @@ function update() {
     if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 0 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 0 ], player, zombieChaseSpeed, this );
     }
-    if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
-        game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
-    }
+    // if ( game.physics.arcade.distanceBetween( zombiesTopLeftBuilding.children[ 2 ], player ) < zombieInteractionRadius ) {
+    //     game.physics.arcade.moveToObject( zombiesTopLeftBuilding.children[ 2 ], player, zombieChaseSpeed, this );
+    // }
 
     // group zombiesLowerLeftBuilding
     for ( var i = 0; i < zombiesLowerLeftBuilding.children.length; i++ ) {
@@ -526,158 +534,9 @@ function render() {
 //
 //
 // ======================================================
-function interactWithZombie( player, zombie ) {
 
-    zombieCryAudio.play();
 
-    // save zombie to global so it can be accessed later
-    zombieToKill = zombie;
-    game.paused = true;
-    $( '#modal' ).modal( 'show' );
-}
 
-// when modal is triggered, populate with current health stats for player and zombie
-$( '#modal' ).on( 'shown.bs.modal', function ( e ) {
-
-    $( '#attack-button' ).show();
-    $( '#close-button' ).html( "RETREAT!" );
-
-    $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: " + zombieToKill.hp );
-} );
-
-// do a bunch of stuff each time the attack button is clicked when inside the modal
-$( '#attack-button' ).on( 'click', function () {
-    
-    attackSmack.play();
-
-    // call player attack function and pass in opponent
-    player.attack( zombieToKill );
-
-    // as long as the zombie is alive keep attacking
-    if ( player.hp > 0 && zombieToKill.hp > 0 ) {
-        $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: " + zombieToKill.hp );
-    } else {
-
-        if ( zombieToKill.hp <= 0 ) {
-            // if the zombie is killed do all this
-            player.zombieKills++;
-            $( '#modal #message' ).html( "Player HP: " + player.hp + "     " + "Zombie HP: 0" );
-
-            $( '#attack-button' ).hide();
-            $( '#close-button' ).html( "RESUME GAME" );
-
-            var updateObj = {
-                gameID: gameID,
-                ap: player.ap,
-                hp: player.hp,
-                zombieKills: player.zombieKills,
-                timeAlive: Date.now() - gameStartTime
-            }
-
-            $.ajax( {
-                type: "put",
-                url: "game/update",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( updateObj )
-            } );
-
-            console.log( zombiesTopLeftBuilding.countLiving() );
-            zombieToKill.kill();
-            console.log( zombiesTopLeftBuilding.countLiving() );
-
-            // see function definition for more details on parameters
-            // function makeHealthPack( group, howMany, startX, endX, startY, endY, hpMin, hpMax ) {
-            // makeHealthPack( healthPacks, 1, 1, 7, 1, 7, 10, 20 );
-
-            // TODO: NEED TO FIX THIS FOR COLLECTING HEALTH AFTER ZOMBIE KILL, CURRENT FORMULA DOESN'T WORK'
-            makeHealthPack( healthPacks, 1, -3, 3, -3, 3, 10, 20, true );
-            console.log( healthPacks );
-        }
-
-        if ( player.hp <= 0 ) {
-            //TODO: save game length(time), save zombie kills
-            gameEndTime = Date.now();
-
-            $( '#modal #message' ).html(
-                "Player HP: 0" +
-                "Zombie HP: " + zombieToKill.hp );
-
-            console.log( gameStartTime );
-            console.log( gameEndTime );
-            console.log( "Game over..." );
-
-            var gameObj = {
-                gameID: gameID,
-                ap: player.ap,
-                hp: 0,
-                zombieKills: player.zombieKills,
-                timeAlive: gameEndTime - gameStartTime
-            }
-
-            $.ajax( {
-                type: "put",
-                url: "game/over",
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify( gameObj ),
-                success: function ( response ) {
-                    window.location = "/game/stats/" + gameID;
-                }
-            } );
-
-            $( '#modal' ).modal( 'toggle' );
-            player.destroy();
-        }
-    }
-} );
-
-$( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
-    // this keeps the modal from popping up multiple times
-    player.body.velocity.setTo( 0, 0 );
-    game.paused = false;
-} );
-
-$( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
-    // this keeps the modal from popping up multiple times
-    player.body.velocity.setTo( 0, 0 );
-    game.paused = false;
-} );
-
-function interactWithHole() {
-
-    var hpLoss = 25;
-
-    var style = {
-        font: "36px Creepster",
-        fill: "#910000"
-    };
-    var text = game.add.text( player.x, player.y, '-' + hpLoss + ' hp!', style );
-    text.anchor.set( 0.5 );
-
-    game.add.tween( text ).to( {
-        alpha: 0
-    }, 3000, Phaser.Easing.Linear.None, true );
-
-    player.hp -= hpLoss;
-    player.x = ( 99 * mapTileSize );
-    player.y = ( 150 * mapTileSize );
-
-    var updateObj = {
-        gameID: gameID,
-        ap: player.ap,
-        hp: player.hp,
-        zombieKills: player.zombieKills,
-        timeAlive: gameEndTime - gameStartTime
-    }
-    $.ajax( {
-        type: "put",
-        url: "game/update",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify( updateObj )
-    } );
-}
 
 // function interactWithDoor( door ) {
 //     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
