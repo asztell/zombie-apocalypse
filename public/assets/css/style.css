@@ -127,13 +127,14 @@ h2,h3,h4,h5,h6,p {
     font-size: 3em;
 }
 
-#zombie-attack-modal-image {
+.modal-image {
   max-width: 100%;
   height: auto;
 }
 .character-name{
   text-decoration: underline;
 }
+
 
 
 .footer {
