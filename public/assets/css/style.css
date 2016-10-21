@@ -64,16 +64,24 @@ body{
 }
 
 .jumbotron {
-  background-color: rgba(81,92,67, .2);
+  background-color: rgba(81,92,67, .0);
   /*color: #D7FF47;*/
-  color: #D4EB51;
+  color: #910000;
 
 }
 
-h1,h2,h3,h4,h5,h6,p {
-  color: #D4EB51;  
+h1 {
+  color: #910000;
 }
 
+h2,h3,h4,h5,h6,p {
+  color: #fff;  
+}
+
+#message {
+  font-size: 3em;
+  color: #910000;
+}
 .panel {
     margin-bottom: 20px;
     background-color: rgba(208,215,200, .8);
@@ -102,7 +110,7 @@ h1,h2,h3,h4,h5,h6,p {
 
 .modal-content {
     position: relative;
-    background-color: rgba(208,215,200, .8);
+    background-color: rgba(255,255,255, .4);
     font-family: "Creepster", sans-serif;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
@@ -127,4 +135,9 @@ h1,h2,h3,h4,h5,h6,p {
   text-decoration: underline;
 }
 
+
+.footer {
+  color: #D4EB51;
+  font-size: 12px;
+}
 
