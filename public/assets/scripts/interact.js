@@ -91,7 +91,8 @@ function interactWithZombie( player, zombie ) {
     // save zombie to global so it can be accessed later
     zombieToKill = zombie;
     game.paused = true;
-    $( '#modal' ).modal( 'show' );
+    $( '#modal' ).modal( { backdrop: 'static',
+    keyboard: false } );
 }
 
 // when modal is triggered, populate with current health stats for player and zombie
@@ -202,4 +203,9 @@ $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 } );
 
+
+// $('#modal').modal({
+//     backdrop: 'static',
+//     keyboard: false
+// })
 
