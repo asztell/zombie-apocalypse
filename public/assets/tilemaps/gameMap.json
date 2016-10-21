@@ -59,6 +59,28 @@
                  "width":123,
                  "x":738.727,
                  "y":831.727
+                }, 
+                {
+                 "height":41,
+                 "id":16,
+                 "name":"food",
+                 "rotation":0,
+                 "type":"door",
+                 "visible":true,
+                 "width":93,
+                 "x":4578,
+                 "y":5346
+                }, 
+                {
+                 "height":43,
+                 "id":17,
+                 "name":"medicine",
+                 "rotation":0,
+                 "type":"door",
+                 "visible":true,
+                 "width":39,
+                 "x":5500,
+                 "y":4323
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -93,28 +115,6 @@
                  "width":30,
                  "x":6114,
                  "y":74
-                }, 
-                {
-                 "height":43,
-                 "id":13,
-                 "name":"food",
-                 "rotation":0,
-                 "type":"door",
-                 "visible":true,
-                 "width":94,
-                 "x":4577,
-                 "y":5344
-                }, 
-                {
-                 "height":40,
-                 "id":14,
-                 "name":"medicine",
-                 "rotation":0,
-                 "type":"door",
-                 "visible":true,
-                 "width":45,
-                 "x":5497,
-                 "y":4323
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -123,7 +123,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":15,
+ "nextobjectid":18,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tileheight":32,

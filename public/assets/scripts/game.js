@@ -36,6 +36,8 @@ var buildingDoor_TopLeft;
 var cursors;
 // var spacebar;
 
+var tweeningZombiesAreReleased;
+
 var healthPacks;
 
 var zombieToKill;
@@ -46,6 +48,7 @@ var zombiesCenterOfMap;
 var zombiesByTheFirstJeep;
 var zombiesBottomRightBuilding;
 var zombiesByDirtTopRight;
+var zombiesTweeningFromTopRight;
 var zombiesUnderTopRightRoad;
 var zombiesRightSideMiddle;
 var zombieInteractionRadius;
@@ -53,6 +56,7 @@ var zombieChaseSpeed;
 var bottomlessHole;
 var bottomlessHoleRectangleTrigger;
 var zombiesEnterFromTopRightRectangleTrigger;
+var zombiesEnterFromTopRight;
 
 var audio = new Audio( '/assets/audio/constance-kevin-macleod.m4a' );
 // ======================================================
@@ -159,7 +163,6 @@ function create() {
 
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     buildingDoor_TopLeft = map.objects[ 'building_doors' ][ 0 ];
-
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
     buildingDoorRectangle = new Phaser.Rectangle( buildingDoor_TopLeft.x, buildingDoor_TopLeft.y, buildingDoor_TopLeft.width, buildingDoor_TopLeft.height );
 
@@ -167,7 +170,8 @@ function create() {
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
 
     // need an object on the map to trigger this
-    // zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( )
+    zombiesEnterFromTopRight = map.objects[ 'other_objects' ][ 1 ];
+    zombiesEnterFromTopRightRectangleTrigger = new Phaser.Rectangle( zombiesEnterFromTopRight.x, zombiesEnterFromTopRight.y, zombiesEnterFromTopRight.width, zombiesEnterFromTopRight.height );
 
 
 
@@ -255,6 +259,11 @@ function create() {
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
     makeZombie( zombiesBottomRightBuilding, 3, 138, 150, 140, 140, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
 
+    var zombiesTweeningFromTopRightTotal = 6;
+    zombiesTweeningFromTopRight = game.add.group();
+    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'x' );
+    makeZombie( zombiesTweeningFromTopRight, 3, 210, 215, 29, 31, 100, 300, 6, 7, 20, 50, 10, 20, 'y' );
+
     var zombiesByDirtTopRightTotal = 4;
     makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 6, 7, 40, 50, 20, 30, 'x' );
     makeZombie( zombiesByTheFirstJeep, 2, 184, 188, 11, 13, 100, 100, 6, 7, 40, 50, 20, 30, 'y' );
@@ -327,6 +336,7 @@ function update() {
     game.physics.arcade.collide( player, zombiesCenterOfMap, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesByTheFirstJeep, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesBottomRightBuilding, interactWithZombie, null, this );
+    game.physics.arcade.collide( player, zombiesTweeningFromTopRight, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesByDirtTopRight, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesUnderTopRightRoad, interactWithZombie, null, this );
     game.physics.arcade.collide( player, zombiesRightSideMiddle, interactWithZombie, null, this );
@@ -337,6 +347,7 @@ function update() {
     game.physics.arcade.collide( zombiesCenterOfMap, collisionLayer );
     game.physics.arcade.collide( zombiesByTheFirstJeep, collisionLayer );
     game.physics.arcade.collide( zombiesBottomRightBuilding, collisionLayer );
+    game.physics.arcade.collide( zombiesTweeningFromTopRight, collisionLayer );
     game.physics.arcade.collide( zombiesByDirtTopRight, collisionLayer );
     game.physics.arcade.collide( zombiesUnderTopRightRoad, collisionLayer );
     game.physics.arcade.collide( zombiesRightSideMiddle, collisionLayer );
@@ -352,6 +363,10 @@ function update() {
         interactWithHole();
     }
 
+    // triggered when player falls down hole
+    if ( zombiesEnterFromTopRightRectangleTrigger.contains( player.x, player.y ) ) {
+        releaseZombiesFromTopRight();
+    }
 
     // ======================================================
     // CHASING ZOMBIES
@@ -405,6 +420,14 @@ function update() {
     }
     if ( game.physics.arcade.distanceBetween( zombiesBottomRightBuilding.children[ 3 ], player ) < zombieInteractionRadius ) {
         game.physics.arcade.moveToObject( zombiesBottomRightBuilding.children[ 3 ], player, zombieChaseSpeed, this );
+    }
+
+    // group zombiesBottomRightBuilding
+    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 0 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 0 ], player, zombieChaseSpeed, this );
+    }
+    if ( game.physics.arcade.distanceBetween( zombiesTweeningFromTopRight.children[ 3 ], player ) < zombieInteractionRadius ) {
+        game.physics.arcade.moveToObject( zombiesTweeningFromTopRight.children[ 3 ], player, zombieChaseSpeed, this );
     }
 
     // group zombiesRightSideMiddle
@@ -613,6 +636,25 @@ function interactWithHole() {
         }
     } );
 }
+
+function releaseZombiesFromTopRight() {
+    let t = zombiesTweeningFromTopRight;
+    if(!t) {
+        tweeningZombiesAreReleased = false;
+        var rand = game.rnd.integerInRange(152, 158);
+        var tween = [];
+        // zombiesTweeningFromTopRight
+        for(var i = 0; i < t.length; i++) {
+            tween[i] = game.add.tween(t[i]).to({rand}, 150, Phaser.Easing.Linear.None, true, 0, Number.MAX_VALUE, true );
+            // tween[i].onComplete.add(upRightBackAndForth, this);
+        }
+    }
+
+}
+
+// function upRightBackAndForth() {
+//     game.add.tween(upRightBackAndForth.caller).to({}, 150, Phaser.Easing.Linear.InOut, true, 0, Number.MAX_VALUE, true);
+// }
 
 function interactWithDoor( door ) {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
