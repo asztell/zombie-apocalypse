@@ -450,7 +450,7 @@ function update() {
 
     // ======================================================
     // CHASING ZOMBIES
-    // ======================================================        
+    // ======================================================
     zombieInteractionRadius = 400;
     zombieChaseSpeed = 200;
 
@@ -776,7 +776,7 @@ function collectHealthPack( player, healthPack ) {
         ap: player.ap,
         hp: player.hp,
         zombieKills: player.zombieKills,
-        timeAlive: gameEndTime - gameStartTime
+        timeAlive: Date.now() - gameStartTime
     }
     $.ajax( {
         type: "put",

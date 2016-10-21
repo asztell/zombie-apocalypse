@@ -44,7 +44,6 @@ router.post('/new', function(req, res) {
                     gameID: game.id
                 }
                 res.end(JSON.stringify(sendObj));
-                // res.end('{"success" : "Updated Successfully", "status" : 200}');
             })
         })
     })

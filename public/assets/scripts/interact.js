@@ -22,7 +22,7 @@ function interactWithHole() {
         ap: player.ap,
         hp: player.hp,
         zombieKills: player.zombieKills,
-        timeAlive: gameEndTime - gameStartTime
+        timeAlive: Date.now() - gameStartTime
     }
     $.ajax( {
         type: "put",
@@ -47,7 +47,7 @@ function interactWithDoor(  ) {
       ap: player.ap,
       hp: player.hp,
       zombieKills: player.zombieKills,
-      timeAlive: gameEndTime - gameStartTime
+      timeAlive: Date.now() - gameStartTime
   }
   $.ajax( {
       type: "put",
@@ -73,7 +73,7 @@ function interactWithMedicalDoor(  ) {
       ap: player.ap,
       hp: player.hp,
       zombieKills: player.zombieKills,
-      timeAlive: gameEndTime - gameStartTime
+      timeAlive: gameStartTime - Date.now()
   }
   $.ajax( {
       type: "put",
@@ -105,7 +105,7 @@ $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
 $( '#attack-button' ).on( 'click', function () {
-    
+
     attackSmack.play();
 
     // call player attack function and pass in opponent
@@ -201,5 +201,3 @@ $( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
     player.body.velocity.setTo( 0, 0 );
     game.paused = false;
 } );
-
-
