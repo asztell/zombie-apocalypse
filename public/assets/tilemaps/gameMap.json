@@ -72,7 +72,7 @@
                  "y":5346
                 }, 
                 {
-                 "height":43,
+                 "height":63,
                  "id":17,
                  "name":"medicine",
                  "rotation":0,
@@ -134,7 +134,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":19,
+ "nextobjectid":21,
  "orientation":"orthogonal",
  "renderorder":"left-up",
  "tileheight":32,

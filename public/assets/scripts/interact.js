@@ -1,7 +1,7 @@
 function interactWithDoor() {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
-
+    console.log('inside interactWithDoor()');
     game.paused = true;
     // doorEntered = door;
     $( '#building-message' ).text( 'You entered the Grocery Story and found some crack. Your HP increased by 300.' )
@@ -32,14 +32,14 @@ function interactWithMedicalDoor() {
     // doorEntered = door;
     $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by 600.' )
     $( '#modal-door' ).modal( 'show' );
+    $('#close-door-modal-button').focus();
     player.hp += 600;
-    player.y += 100;
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
         hp: player.hp,
         zombieKills: player.zombieKills,
-        timeAlive: gameStartTime - Date.now()
+        timeAlive: Date.now() - gameStartTime
     }
     $.ajax( {
         type: "put",
@@ -48,6 +48,7 @@ function interactWithMedicalDoor() {
         contentType: "application/json",
         data: JSON.stringify( updateObj )
     } );
+    player.y += 100;
 }
 
 $( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {

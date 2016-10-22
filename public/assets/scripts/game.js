@@ -38,10 +38,10 @@ var doorEntered;
 var foodDoorTopLeftRectangle;
 var foodDoorTopLeft;
 var medicalDoorRectangle;
+var medicalDoor;
 var foodDoorBottomRight;
 var foodDoorBottomRightRectangle;
 var barnDoorZombieSpawnRectangle;
-var medicalDoor;
 var cursors;
 // var spacebar;
 
@@ -206,6 +206,9 @@ function create() {
     barnDoorZombieSpawnRectangle = new Phaser.Rectangle( zombiesEnterLeftSideMiddle.x, zombiesEnterLeftSideMiddle.y, zombiesEnterLeftSideMiddle.width, zombiesEnterLeftSideMiddle.height );
 
 
+    console.log('map.objects - food'+'\n'+map.objects['building_doors'][0].height.toString());
+    console.log('map.objects - food'+'\n'+map.objects['building_doors'][1].height.toString());
+    console.log('map.objects - medical'+'\n'+map.objects['building_doors'][2].height.toString());
     // ======================================================
     // PLAYER CONSTRUCTOR
     // This is a Phaser sprite object extended by us with our own properties and methods
@@ -272,8 +275,8 @@ function create() {
     // ======================================================
     var zombiesTopLeftBuildingTotal = 4;
     zombiesTopLeftBuilding = game.add.group();
-    makeZombie( zombiesTopLeftBuilding, 1, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
-    // makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
+    makeZombie( zombiesTopLeftBuilding, 2, 22, 25, 26, 27, 100, 200, 6, 7, 20, 50, 10, 20, 'x' );
+    makeZombie( zombiesTopLeftBuilding, 2, 22, 27, 26, 27, 50, 75, 6, 7, 20, 50, 10, 20, 'y' );
 
     var zombiesRoadBlockTotal = 20;
     zombiesRoadBlock = game.add.group();
@@ -452,6 +455,7 @@ function update() {
 
     // triggered when player "enters" a building door
     if ( foodDoorTopLeftRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        console.log('before interactWithDoor()');
         if ( !foodDoorTopLeftRectangle.wasEntered ) {
             foodDoorTopLeftRectangle.wasEntered = true;
             interactWithDoor();
@@ -459,8 +463,10 @@ function update() {
     }
 
     if ( foodDoorBottomRightRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        console.log('before interactWithDoor()');
         if ( !foodDoorBottomRightRectangle.wasEntered ) {
             foodDoorBottomRightRectangle.wasEntered = true;
+            console.log('calling interactWithDoor()');
             interactWithDoor();        
         }
     }
@@ -626,8 +632,8 @@ function render() {
     var textColor = 'rgb(255, 255, 255)';
 
     //TODO: comment all of this out for the final game
-    game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
-    game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
+    // game.debug.text( 'Tile X: ' + grassLayer.getTileX( player.x ), 32, 48, textColor );
+    // game.debug.text( 'Tile Y: ' + grassLayer.getTileY( player.y ), 32, 64, textColor );
 }
 
 
