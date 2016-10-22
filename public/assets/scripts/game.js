@@ -9,7 +9,7 @@ var game = new Phaser.Game( 800, 600, Phaser.AUTO, "", {
 } );
 
 // sets the player to super strength
-var demoMode = true;
+// var demoMode = true;
 var demoModeHP = 1000;
 var demoModeAP = 1000;
 
