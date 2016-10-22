@@ -2,12 +2,13 @@ function interactWithDoor() {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
     console.log('inside interactWithDoor()');
+    var randomHP = game.rnd.integerInRange( 50, 150 ); 
     game.paused = true;
     // doorEntered = door;
-    $( '#building-message' ).text( 'You entered the Grocery Story and found some crack. Your HP increased by 300.' )
+    $( '#building-message' ).text( 'You entered the Grocery Store and found some crack. Your HP increased by ' + randomHP + '!' )
     $( '#modal-door' ).modal( 'show' );
     $( '#close-door-modal-button' ).focus();
-    player.hp += game.rnd.integerInRange( 50, 150 );
+    player.hp += randomHP;
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
@@ -28,12 +29,13 @@ function interactWithDoor() {
 function interactWithMedicalDoor() {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
+    var randomHP = game.rnd.integerInRange( 50, 150 );
     game.paused = true;
+    player.hp += randomHP;
     // doorEntered = door;
-    $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by 600.' )
+    $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by ' + randomHP + '!' )
     $( '#modal-door' ).modal( 'show' );
     $('#close-door-modal-button').focus();
-    player.hp += 600;
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
