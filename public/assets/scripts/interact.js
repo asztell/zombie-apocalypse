@@ -1,22 +1,13 @@
-function interactWithHole() {
+function interactWithDoor() {
+    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+    //     // audio.play();
 
-    var hpLoss = 25;
-
-    var style = {
-        font: "36px Creepster",
-        fill: "#910000"
-    };
-    var text = game.add.text( player.x, player.y, '-' + hpLoss + ' hp!', style );
-    text.anchor.set( 0.5 );
-
-    game.add.tween( text ).to( {
-        alpha: 0
-    }, 3000, Phaser.Easing.Linear.None, true );
-
-    player.hp -= hpLoss;
-    player.x = ( 99 * mapTileSize );
-    player.y = ( 150 * mapTileSize );
-
+    game.paused = true;
+    // doorEntered = door;
+    $( '#building-message' ).text( 'You entered the Grocery Story and found some crack. Your HP increased by 300.' )
+    $( '#modal-door' ).modal( 'show' );
+    $( '#close-door-modal-button' ).focus();
+    player.hp += 300; // TODO: randomly create this number
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
@@ -30,59 +21,44 @@ function interactWithHole() {
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify( updateObj )
+    });
+    player.y += 100;
+}
+
+function interactWithMedicalDoor() {
+    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
+    //     // audio.play();
+    game.paused = true;
+    // doorEntered = door;
+    $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by 600.' )
+    $( '#modal-door' ).modal( 'show' );
+    player.hp += 600;
+    player.y += 100;
+    var updateObj = {
+        gameID: gameID,
+        ap: player.ap,
+        hp: player.hp,
+        zombieKills: player.zombieKills,
+        timeAlive: gameStartTime - Date.now()
+    }
+    $.ajax( {
+        type: "put",
+        url: "game/update",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( updateObj )
     } );
 }
 
-function interactWithDoor(  ) {
-    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    //     // audio.play();
-  game.paused = true;
-      // doorEntered = door;
-  $('#building-message').text('You entered the Grocery Story and found some crack. Your HP increased by 300.')
-  $( '#modal-door' ).modal( 'show' );
-  player.hp += 300; // TODO: randomly create this number
-  player.y += 100;
-  var updateObj = {
-      gameID: gameID,
-      ap: player.ap,
-      hp: player.hp,
-      zombieKills: player.zombieKills,
-      timeAlive: Date.now() - gameStartTime
-  }
-  $.ajax( {
-      type: "put",
-      url: "game/update",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify( updateObj )
-  } );
-}
+$( '#modal-door' ).on( 'shown.bs.modal', function ( e ) {
+    $( '#close-door-modal-button' ).show().focus();
+} );
 
-
-function interactWithMedicalDoor(  ) {
-    //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
-    //     // audio.play();
-  game.paused = true;
-      // doorEntered = door;
-  $('#building-message').text('You entered the Pharmacy and found some crack. Your HP increased by 600.')
-  $( '#modal-door' ).modal( 'show' );
-  player.hp += 600;
-  player.y += 100;
-  var updateObj = {
-      gameID: gameID,
-      ap: player.ap,
-      hp: player.hp,
-      zombieKills: player.zombieKills,
-      timeAlive: gameStartTime - Date.now()
-  }
-  $.ajax( {
-      type: "put",
-      url: "game/update",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify( updateObj )
-  } );
-}
+$( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
+    // this keeps the modal from popping up multiple times
+    player.body.velocity.setTo( 0, 0 );
+    game.paused = false;
+} );
 
 function interactWithZombie( player, zombie ) {
 
@@ -157,7 +133,7 @@ $( '#attack-button' ).on( 'click', function () {
             //TODO: save game length(time), save zombie kills
             gameEndTime = Date.now();
 
-            $( '#modal #message' ).html('Game Over!');
+            $( '#modal #message' ).html( 'Game Over!' );
             $( '#close-button' ).hide();
 
             console.log( gameStartTime );
@@ -179,7 +155,7 @@ $( '#attack-button' ).on( 'click', function () {
                 contentType: "application/json",
                 data: JSON.stringify( gameObj ),
                 success: function ( response ) {
-                  setTimeout(gameOverRedirect, 3000);
+                    setTimeout( gameOverRedirect, 3000 );
                 }
             } );
 
@@ -195,12 +171,41 @@ $( '#modal' ).on( 'hidden.bs.modal', function ( e ) {
     game.paused = false;
 } );
 
-$( '#modal-door' ).on( 'hidden.bs.modal', function ( e ) {
-    // this keeps the modal from popping up multiple times
-    player.body.velocity.setTo( 0, 0 );
-    game.paused = false;
-});
+function interactWithHole() {
 
-function gameOverRedirect(){
-  window.location = "/game/stats/" + gameID;
+    var hpLoss = 25;
+
+    var style = {
+        font: "36px Creepster",
+        fill: "#910000"
+    };
+    var text = game.add.text( player.x, player.y, '-' + hpLoss + ' hp!', style );
+    text.anchor.set( 0.5 );
+
+    game.add.tween( text ).to( {
+        alpha: 0
+    }, 3000, Phaser.Easing.Linear.None, true );
+
+    player.hp -= hpLoss;
+    player.x = ( 99 * mapTileSize );
+    player.y = ( 150 * mapTileSize );
+
+    var updateObj = {
+        gameID: gameID,
+        ap: player.ap,
+        hp: player.hp,
+        zombieKills: player.zombieKills,
+        timeAlive: Date.now() - gameStartTime
+    }
+    $.ajax( {
+        type: "put",
+        url: "game/update",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify( updateObj )
+    } );
+}
+
+function gameOverRedirect() {
+    window.location = "/game/stats/" + gameID;
 }

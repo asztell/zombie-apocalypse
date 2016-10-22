@@ -35,9 +35,9 @@ var collisionLayer;
 var randomItemsLayer;
 var door;
 var doorEntered;
-var buildingDoorRectangle;
+var foodDoorTopLeftRectangle;
 var foodDoorTopLeft;
-var buildingMedicalDoorRectangle;
+var medicalDoorRectangle;
 var foodDoorBottomRight;
 var foodDoorBottomRightRectangle;
 var barnDoorZombieSpawnRectangle;
@@ -184,14 +184,17 @@ function create() {
     // can see where/what the objects are in the map json, the objects on any layer are an array of objects, can get their properties and such like any object
     foodDoorTopLeft = map.objects[ 'building_doors' ][ 0 ];
     // this creates a rectangle to put on the map that the player can interact with, in this case an overlap
-    buildingDoorRectangle = new Phaser.Rectangle( foodDoorTopLeft.x, foodDoorTopLeft.y, foodDoorTopLeft.width, foodDoorTopLeft.height );
+    foodDoorTopLeftRectangle = new Phaser.Rectangle( foodDoorTopLeft.x, foodDoorTopLeft.y, foodDoorTopLeft.width, foodDoorTopLeft.height );
+    foodDoorTopLeftRectangle.wasEntered = false;
 
     foodDoorBottomRight = map.objects[ 'building_doors' ][ 1 ];
     foodDoorBottomRightRectangle = new Phaser.Rectangle( foodDoorBottomRight.x, foodDoorBottomRight.y, foodDoorBottomRight.width, foodDoorBottomRight.height );
+    foodDoorBottomRightRectangle.wasEntered = false;
 
     //TO DO: This needs to be updated to the proper door
     medicalDoor = map.objects[ 'building_doors' ][ 2 ];
-    buildingMedicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
+    medicalDoorRectangle = new Phaser.Rectangle( medicalDoor.x, medicalDoor.y, medicalDoor.width, medicalDoor.height );
+    medicalDoorRectangle.wasEntered = false;
 
     bottomlessHole = map.objects[ 'other_objects' ][ 0 ];
     bottomlessHoleRectangleTrigger = new Phaser.Rectangle( bottomlessHole.x, bottomlessHole.y, bottomlessHole.width, bottomlessHole.height );
@@ -211,9 +214,9 @@ function create() {
     // player spawned at top right
     // player = game.add.sprite( ( 155 * 32 ), ( 7 * 32 ), "playerAnimations" );
     // player spawned before barn door
-    player = game.add.sprite( ( 30 * 32 ), ( 194 * 32 ), "playerAnimations" );
+    // player = game.add.sprite( ( 30 * 32 ), ( 194 * 32 ), "playerAnimations" );
     // player spawned at top left
-    // player = game.add.sprite( ( 6 * 32 ), ( 7 * 32 ), "playerAnimations" );
+    player = game.add.sprite( ( 6 * 32 ), ( 7 * 32 ), "playerAnimations" );
     // player spawned at crack building
     // player = game.add.sprite( ( 134 * 32 ), ( 140 * 32 ), "playerAnimations" );
     // player spawned below baricade
@@ -448,16 +451,25 @@ function update() {
     playerKillsDisplay.setText( "KILLS: " + player.zombieKills );
 
     // triggered when player "enters" a building door
-    if ( buildingDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithDoor();        
+    if ( foodDoorTopLeftRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        if ( !foodDoorTopLeftRectangle.wasEntered ) {
+            foodDoorTopLeftRectangle.wasEntered = true;
+            interactWithDoor();
+        }        
     }
 
     if ( foodDoorBottomRightRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-        interactWithDoor();        
+        if ( !foodDoorBottomRightRectangle.wasEntered ) {
+            foodDoorBottomRightRectangle.wasEntered = true;
+            interactWithDoor();        
+        }
     }
 
-    if ( buildingMedicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
-    //    interactWithMedicalDoor();
+    if ( medicalDoorRectangle.contains( player.x + player.width / 2, player.y + player.height / 2 ) ) {
+        if ( !medicalDoorRectangle.wasEntered ) {
+            medicalDoorRectangle.wasEntered = true;
+           interactWithMedicalDoor();
+        }
     }
 
     // triggered when player reaches top right corner of map
