@@ -134,8 +134,9 @@ $( '#attack-button' ).on( 'click', function () {
             //TODO: save game length(time), save zombie kills
             gameEndTime = Date.now();
 
-            $( '#modal #message' ).html( 'Death by Zombie!<br>Game Over!' );
+            $( '#attack-button' ).hide();
             $( '#close-button' ).hide();
+            $( '#modal #message' ).html( 'Death by Zombie!<br>Game Over!' );
 
             console.log( gameStartTime );
             console.log( gameEndTime );
