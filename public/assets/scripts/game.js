@@ -601,7 +601,7 @@ function update() {
 
     // check for an arrow key press
     // TODO: the current code doesn't allow for diagonal movement, but can be added in if we want by uncommenting the commented out lines
-    var playerSpeed = 500;
+    var playerSpeed = 400;
 
     if ( cursors.up.isDown ) {
         player.body.velocity.y -= playerSpeed;
