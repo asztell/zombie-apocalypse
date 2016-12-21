@@ -4,7 +4,6 @@ var express 	= require('express'),
 	router 		= express.Router();
 
 router.get('/', function(req, res) {
-    //TODO: Process registering
     res.render('signup');
 });
 
