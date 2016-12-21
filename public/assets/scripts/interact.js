@@ -2,12 +2,13 @@ function interactWithDoor() {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
     console.log('inside interactWithDoor()');
+    var randomHP = game.rnd.integerInRange( 50, 150 ); 
     game.paused = true;
     // doorEntered = door;
-    $( '#building-message' ).text( 'You entered the Grocery Story and found some crack. Your HP increased by 300.' )
+    $( '#building-message' ).text( 'You entered the Grocery Store and found some crack. Your HP increased by ' + randomHP + '!' )
     $( '#modal-door' ).modal( 'show' );
     $( '#close-door-modal-button' ).focus();
-    player.hp += 300; // TODO: randomly create this number
+    player.hp += randomHP;
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
@@ -28,12 +29,13 @@ function interactWithDoor() {
 function interactWithMedicalDoor() {
     //     // var audio = new Audio( '/assets/audio/zombie-demon-spawn.mp3' );
     //     // audio.play();
+    var randomHP = game.rnd.integerInRange( 50, 150 );
     game.paused = true;
+    player.hp += randomHP;
     // doorEntered = door;
-    $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by 600.' )
+    $( '#building-message' ).text( 'You entered the Pharmacy and found some crack. Your HP increased by ' + randomHP + '!' )
     $( '#modal-door' ).modal( 'show' );
     $('#close-door-modal-button').focus();
-    player.hp += 600;
     var updateObj = {
         gameID: gameID,
         ap: player.ap,
@@ -68,16 +70,14 @@ function interactWithZombie( player, zombie ) {
     // save zombie to global so it can be accessed later
     zombieToKill = zombie;
     game.paused = true;
+    $( '#modal #message' ).html( "Player HP: " + player.hp + "<br>Zombie HP: " + zombieToKill.hp );
+    $( '#close-button' ).html( "RETREAT!" );
     $( '#modal' ).modal( 'show' );
 }
 
 // when modal is triggered, populate with current health stats for player and zombie
 $( '#modal' ).on( 'shown.bs.modal', function ( e ) {
-
     $( '#attack-button' ).show().focus();
-    $( '#close-button' ).html( "RETREAT!" );
-
-    $( '#modal #message' ).html( "Player HP: " + player.hp + "<br>Zombie HP: " + zombieToKill.hp );
 } );
 
 // do a bunch of stuff each time the attack button is clicked when inside the modal
@@ -134,8 +134,9 @@ $( '#attack-button' ).on( 'click', function () {
             //TODO: save game length(time), save zombie kills
             gameEndTime = Date.now();
 
-            $( '#modal #message' ).html( 'Game Over!' );
+            $( '#attack-button' ).hide();
             $( '#close-button' ).hide();
+            $( '#modal #message' ).html( 'Death by Zombie!<br>Game Over!' );
 
             console.log( gameStartTime );
             console.log( gameEndTime );
