@@ -1,6 +1,17 @@
+@font-face {
+  font-family: "Creepster";
+  src: url("../fonts/creepster-regular.ttf");
+}
+
+* {
+  font-family: "Creepster", sans-serif;
+  font-size: 24px;
+}
+
 body{
 	background: url(../images/background.jpg) no-repeat center center fixed;
 	background-size: cover;
+  padding: 2em;
 }
 
 #character-page{
@@ -51,3 +62,82 @@ body{
 .character:hover{
   border: #D4EB51 2px solid;
 }
+
+.jumbotron {
+  background-color: rgba(81,92,67, .0);
+  /*color: #D7FF47;*/
+  color: #910000;
+
+}
+
+h1 {
+  color: #910000;
+}
+
+h2,h3,h4,h5,h6,p {
+  color: #fff;  
+}
+
+#message {
+  font-size: 3em;
+  color: #910000;
+}
+.panel {
+    margin-bottom: 20px;
+    background-color: rgba(208,215,200, .8);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #910000;
+    border-color: #6C0000;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #6C0000;
+    border-color: #6C0000;
+  }
+
+.very-large {
+  font-size: 2em;
+  padding: 50px;
+}
+
+.modal-content {
+    position: relative;
+    background-color: rgba(255,255,255, .4);
+    font-family: "Creepster", sans-serif;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
+}
+
+.close {
+    color: #910000;
+    font-size: 3em;
+}
+
+#zombie-attack-modal-image {
+  max-width: 100%;
+  height: auto;
+}
+.character-name{
+  text-decoration: underline;
+}
+
+
+.footer {
+  color: #D4EB51;
+  font-size: 12px;
+}
+

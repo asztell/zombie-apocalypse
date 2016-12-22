@@ -3,13 +3,13 @@
   <div class="row">
     <div class="col-md-12">
       {{#each characters}}
-        <div class="character" data-name="{{this.name}}">
-          <h3>{{this.name}}</h3>
+        <div class="character" data-name="{{this.name}}" data-ap={{this.ap}} data-hp={{this.hp}}>
+          <h1 class="character-name">{{this.name}}</h1>
           <p>
             {{this.description}}
           </p>
-          <h5>Attack Points: {{this.attackPoints}}</h5>
-          <h5>Health Points: {{this.healthPoints}}</h5>
+          <h3>Attack Points: {{this.ap}}</h3>
+          <h3>Health Points: {{this.hp}}</h3>
         </div>
       {{/each}}
     </div>
@@ -20,8 +20,12 @@
 We may want to change this later -->
 <script type="text/javascript">
   $(document).on('click', '.character', function(){
-    var character = $(this).attr('data-name');
-    localStorage.setItem('character', character);
+    var character = {
+      name: $(this).attr('data-name'),
+      hp: $(this).attr('data-hp'),
+      ap: $(this).attr('data-ap'),
+    }
+    localStorage.setItem('character', JSON.stringify(character));
     window.location = '/game';
   });
 </script>

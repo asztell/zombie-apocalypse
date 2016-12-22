@@ -1,3 +1,5 @@
+<div id="jp"><div id="jquery_jplayer_1"></div></div>
+
 <div id="container">
   <div id="map">
    <div id ="ball"></div>
@@ -8,17 +10,59 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h1 id="error" class="modal-title text-center"></h1>
-            </div>
-            <div class="modal-body">
                 <h4 id="message" class="text-center">{{this.message}}</h4>
             </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+
+                    <div class="col-lg-6">
+                        <img src="/assets/images/zombie-attack-modal.jpg"  class="img-fluid img-rounded" id="zombie-attack-modal-image" alt="dayz by patrickbrown d5d5uvf - deviantart.net">
+                    </div>
+                    {{!-- <div class="col-lg-6"></div> --}}
+                    <div class="col-lg-3"></div>
+                </div>
+
+            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-4 text-center">
+                    <button id="attack-button" type="submit" class="btn btn-default">ATTACK</button>
+                    <!--<button id="close-button" type="button" class="btn btn-default">FLEE!</button>-->
+                    <button id="close-button" type="button" class="btn btn-default" data-dismiss="modal">RETREAT!</button>
+                </div>
+                <div class="col-lg-4"></div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="modal-door" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title text-center" id="building-message"></h1>
+                <h4 class="text-center">{{this.message}}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+
+                    <div class="col-lg-6">
+                        <img src="/assets/images/crack.jpg"  class="img-fluid img-rounded" alt="dayz by patrickbrown d5d5uvf - deviantart.net">
+                    </div>
+                    {{!-- <div class="col-lg-6"></div> --}}
+                    <div class="col-lg-3"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button id="close-door-modal-button" type="button" class="btn btn-default" data-dismiss="modal">Resume Game</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="assets/scripts/interact.js"></script>
 <script type="text/javascript" src="assets/scripts/game.js"></script>
