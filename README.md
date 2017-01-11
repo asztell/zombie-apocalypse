@@ -19,6 +19,6 @@ It is built around an MVC structure utilizing MySQL, Express, Handlebars, the Ph
 * After a zombie kill, a health pack with randomly generated points is dropped within a defined radius around the character
 * Some buildings can be entered to collect food for more health
 * There are several trigger points in the game that result in zombie hoards being generated where previously there were no zombies
-* Currently, due to the strength of some zombies, it is impossible to kill them all, the goal is to figure out how to kill as many as you can before you run out of health
+* Currently, due to the strength of some zombies, it is impossible to kill them all, so the goal is to figure out how to kill as many as you can before you run out of health
 
 [1]: http://www.sajegames.com
